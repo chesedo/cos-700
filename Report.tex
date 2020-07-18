@@ -68,12 +68,12 @@ Moving happens when one variable is assigned to another. The compiler's state ma
 % rewrite
 
 \begin{code}{Example of ownership transfer}{moved}
- {
-   let s = String::from("string");
-   let t = s;
+{
+  let s = String::from("string");
+  let t = s;
 
-   println!("String len is {}", s.len()); // borrow of moved value: `s`
- } // Compiler will add memory clean up code for t here
+  println!("String len is {}", s.len()); // borrow of moved value: `s`
+} // Compiler will add memory clean up code for t here
 \end{code}
 
 In listing \ref{lst:moved}, on line 2 a new on heap memory object is created and assigned to variable \textit{s}. Line 3 has the memory from \textit{s} assigned to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the memory from \textit{s} to \textit{t}.
@@ -83,31 +83,31 @@ When trying to use the memory on line 5, via \textit{s}, the compiler therefore 
 Finally, the scope of \textit{t} ends on line 6. Since the compiler is able to guarantee \textit{t} is the only variable using the underlying memory, the compiler can therefore safely insert the memory cleanup code for the heap object on line 6.
 
 \begin{code}{Function taking ownership}{fn-move}
- fn main() {
-   let s = String::from("string");
-   take_ownership(s);
+fn main() {
+  let s = String::from("string");
+  take_ownership(s);
 
-   println!("String len is {}", s.len()); // borrow of moved value: `s`
- }
+  println!("String len is {}", s.len()); // borrow of moved value: `s`
+}
 
- fn take_ownership(a: String) {
-   // some code working on a
- } // Compiler will add memory clean up code for a here
+fn take_ownership(a: String) {
+  // some code working on a
+} // Compiler will add memory clean up code for a here
 \end{code}
 
 Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in Listing \ref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the memory. When \textit{main} calls \textit{take\_ownership} the compiler registers a transfer of the memory owner, thus making the call on line 5 invalid. On the upside, the cleanup code is correctly inserted on line 10.
 
 \begin{code}{Function taking borrow}{fn-borrow}
- fn main() {
-   let s = String::from("string");
-   take_borrow(&s);
+fn main() {
+  let s = String::from("string");
+  take_borrow(&s);
 
-   println!("String len is {}", s.len());
- } // Compiler will add memory clean up code for s here
+  println!("String len is {}", s.len());
+} // Compiler will add memory clean up code for s here
 
- fn take_borrow(a: &String) {
-   a.push_str("suffix"); // cannot borrow a as mutable
- }
+fn take_borrow(a: &String) {
+  a.push_str("suffix"); // cannot borrow a as mutable
+}
 \end{code}
 
 The solution is the second form of ownership, borrowing. As seen in Listing \ref{lst:fn-borrow}, borrow makes the function \textit{take\_borrow} only take temporary control of the memory. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Borrowing is activated with an ampersand (\textit{\&}) before the type and in the call.
@@ -115,16 +115,16 @@ The solution is the second form of ownership, borrowing. As seen in Listing \ref
 But in Rust, all variable are immutable by default. So trying to change the underlying memory in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9.
 
 \begin{code}{Function taking mutable borrow}{fn-mut-borrow}
- fn main() {
-   let mut s = String::from("string");
-   take_borrow(&mut s);
+fn main() {
+  let mut s = String::from("string");
+  take_borrow(&mut s);
 
-   println!("String len is {}", s.len());
- } // Compiler will add memory clean up code for s here
+  println!("String len is {}", s.len());
+} // Compiler will add memory clean up code for s here
 
- fn take_borrow(a: &mut String) {
-   a.push_str("suffix");
- }
+fn take_borrow(a: &mut String) {
+  a.push_str("suffix");
+}
 \end{code}
 
 Being unable to change the variable naturally leads to the third and last ownership form, mutable borrows. As seen in Listing \ref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type and call. Mutable ownership one the other hand just need \textit{mut} when the variable is declared.

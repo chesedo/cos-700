@@ -95,7 +95,6 @@ lookForAlignDelims:
 # or commands, put them in here; for example, you might just want 
 # to use a space " " or maybe a double tab "\t\t"
 indentRules:
-   code: " "
    anotherenvironment: "\t\t\t\t"
    chapter: " "
    section: " "
@@ -121,6 +120,7 @@ noIndentBlock:
 # the *current* level of indentation they just won't
 # get any *additional*.
 noAdditionalIndent:
+    code: 1
     myexample: 1
     mydefinition: 1
     problem: 1
