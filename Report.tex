@@ -9,6 +9,7 @@
 \usepackage{mdframed}
 \usepackage{url}
 
+\usepackage{fancyref}
 \usepackage{minted}
 
 \newenvironment{code}[3][h]
@@ -22,6 +23,10 @@
     xleftmargin=21pt
     ]{rust}}
  {\end{minted}\end{listing}}
+
+\newcommand*{\fancyreflstlabelprefix}{lst}
+\frefformat{vario}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1#3}
+\Frefformat{vario}{\fancyreflstlabelprefix}{Listing\fancyrefdefaultspacing#1#3}
 
 \title
 {
@@ -78,7 +83,7 @@ Moving happens when one variable is assigned to another. The compiler's state ma
 } // Compiler will add memory clean up code for t here
 \end{code}
 
-In listing \ref{lst:moved}, on line 2 a new on heap memory object is created and assigned to variable \textit{s}. Line 3 has the memory from \textit{s} assigned to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the memory from \textit{s} to \textit{t}.
+In \fref{lst:moved}, on line 2 a new on heap memory object is created and assigned to variable \textit{s}. Line 3 has the memory from \textit{s} assigned to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the memory from \textit{s} to \textit{t}.
 
 When trying to use the memory on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved. In fact any reference to \textit{s} after line 3 will always give a compiler error.
 
@@ -97,7 +102,7 @@ fn take_ownership(a: String) {
 } // Compiler will add memory clean up code for a here
 \end{code}
 
-Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in Listing \ref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the memory. When \textit{main} calls \textit{take\_ownership} the compiler registers a transfer of the memory owner, thus making the call on line 5 invalid. On the upside, the cleanup code is correctly inserted on line 10.
+Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the memory. When \textit{main} calls \textit{take\_ownership} the compiler registers a transfer of the memory owner, thus making the call on line 5 invalid. On the upside, the cleanup code is correctly inserted on line 10.
 
 \begin{code}{Function taking borrow}{fn-borrow}
 fn main() {
@@ -112,7 +117,7 @@ fn take_borrow(a: &String) {
 }
 \end{code}
 
-The solution is the second form of ownership, borrowing. As seen in Listing \ref{lst:fn-borrow}, borrow makes the function \textit{take\_borrow} only take temporary control of the memory. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Borrowing is activated with an ampersand (\textit{\&}) before the type and in the call.
+The solution is the second form of ownership, borrowing. As seen in \fref{lst:fn-borrow}, borrow makes the function \textit{take\_borrow} only take temporary control of the memory. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Borrowing is activated with an ampersand (\textit{\&}) before the type and in the call.
 
 But in Rust, all variable are immutable by default. So trying to change the underlying memory in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9.
 
@@ -129,7 +134,7 @@ fn take_borrow(a: &mut String) {
 }
 \end{code}
 
-Being unable to change the variable naturally leads to the third and last ownership form, mutable borrows. As seen in Listing \ref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type and call. Mutable ownership one the other hand just need \textit{mut} when the variable is declared.
+Being unable to change the variable naturally leads to the third and last ownership form, mutable borrows. As seen in \fref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type and call. Mutable ownership one the other hand just need \textit{mut} when the variable is declared.
 
 The three ownership forms - moving, borrowing and mutable borrowing - put some constraints on the code of each variable type and their calls:
 \begin{itemize}
