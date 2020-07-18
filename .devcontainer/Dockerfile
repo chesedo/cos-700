@@ -3,11 +3,14 @@
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #-------------------------------------------------------------------------------------------------------------
 
+# Update the VARIANT arg in devcontainer.json to pick an Ubuntu version: 20.04, 18.04
 # To fully customize the contents of this image, use the following Dockerfile instead:
-# https://github.com/microsoft/vscode-dev-containers/tree/v0.122.1/containers/alpine-3.10-git/.devcontainer/Dockerfile
-FROM mcr.microsoft.com/vscode/devcontainers/base:0-alpine3.10
+# https://github.com/microsoft/vscode-dev-containers/tree/v0.122.1/containers/ubuntu/.devcontainer/base.Dockerfile
+# ARG VARIANT="20.04"
+# FROM mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu${VARIANT}
 
-# ** [Optional] Uncomment this section to install additional packages. **
-#
-# RUN apk update \
-#     && apk add --no-cache <your-package-list-here>
+FROM tianon/latex
+
+RUN apt-get update \
+    && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends git python-pygments

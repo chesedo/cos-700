@@ -3,5 +3,9 @@ Report.fdb_latexmk
 Report.fls
 Report.log
 Report.pdf
+Report.bbl
+Report.blg
+Report.dvi
+Report.synctex.gz
 
 _minted-Report/
