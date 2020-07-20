@@ -12,7 +12,7 @@
 \usepackage{fancyref}
 \usepackage{minted}
 
-\newenvironment{code}[3][h]
+\newenvironment{code}[3][ht]
  {\VerbatimEnvironment
   \begin{listing}[#1]
   \caption{#2}\label{lst:#3}
@@ -65,14 +65,15 @@
 % So far not needed for selected patterns
 
 \section{Rust}
-Rust is a new language created by Mozilla with the aim on being memory safe yet performant. Traditionally, most languages that are memory safe will make use of a garbage collector which slows performance. Languages that perform well uses memory management which is not memory safe.
+Rust is a new language created by Mozilla with the aim on being memory safe yet have low level like performance \cite{klabnik_2019_01}. Traditionally, languages that are memory safe will make use of a garbage collector which slows performance \cite{hertz_05_01}. Garbage collector languages include C\# \cite{robinson_04_01}, Java \cite{gosling_96_01}, Python \cite{martelli_06_01}, Golang \cite{tsoukalos_18_01} and Javascript \cite{flanagan_06_01}. Languages that perform well use manual memory management which is not memory safe when the programmer is not carefull. Dangling pointers \cite{caballero_12_01}, memory leaks \cite{wilson_92_01} and double freeing \cite{sharp_13_01} in languages like C and C++ are prime examples of manual memory management problems \cite{konrad_18_01}. To achieve both memory safety and performance, Rust uses a less popular model known as ownership.
 
 \subsection{Ownership}
-To achieve both memory safety and performance, Rust uses a less popular method known as ownership. In the ownership method the compiler keeps track of which variable owns a piece of memory. Each memory piece can only be owned by one variable at a time. When the variable goes out of scope, the compiler inserts memory cleanup code at the end of the block scope. Ownership is manifested in three forms - moving, borrowing and mutable borrowing. These three are explained next.
+In the ownership model the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data. Each data piece can only be owned by one variable at a time. The owning variable is called the \textit{owner}. \cite{klabnik_2019_01}
+
+A variable also has a scope. The scope start at the variable declaration and ends at the closing curly bracket for the code block the variable is in. When the owner goes out of scope, Rust returns the memory by calling the \textit{drop} method at the end of the scope. Ownership is manifested in two forms -- moving and borrowing. These two forms are explained next. \cite{klabnik_2019_01}
 
 \subsubsection{Moving}
-Moving happens when one variable is assigned to another. The compiler's state machine moves ownership of the underlying memory to the new variable from the initial variable.
-% rewrite
+Moving happens when one variable is assigned to another. The compiler's analysis moves ownership of the data to the new variable from the initial variable. The initial variable is also invalidated at this point \cite{klabnik_2019_01}. An analogy example would be to give a book to a friend. The friend can do anything from anotating to burning the book as they feel fit.
 
 \begin{code}{Example of ownership transfer}{moved}
 {
@@ -80,14 +81,14 @@ Moving happens when one variable is assigned to another. The compiler's state ma
   let t = s;
 
   println!("String len is {}", s.len()); // borrow of moved value: `s`
-} // Compiler will add memory clean up code for t here
+} // Compiler will 'drop' t here
 \end{code}
 
-In \fref{lst:moved}, on line 2 a new on heap memory object is created and assigned to variable \textit{s}. Line 3 has the memory from \textit{s} assigned to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the memory from \textit{s} to \textit{t}.
+In \fref{lst:moved}, on line 2, a heap data object is created and assigned to variable \textit{s}. Line 3 assigns \textit{s} to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
-When trying to use the memory on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved. In fact any reference to \textit{s} after line 3 will always give a compiler error.
+When trying to use the data on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved. In fact any reference to \textit{s} after line 3 will always give a compiler error.
 
-Finally, the scope of \textit{t} ends on line 6. Since the compiler is able to guarantee \textit{t} is the only variable using the underlying memory, the compiler can therefore safely insert the memory cleanup code for the heap object on line 6.
+Finally, the scope of \textit{t} ends on line 6. Since the compiler is able to guarantee \textit{t} is the only variable owning the data, the compiler can free the memory on line 6.
 
 \begin{code}{Function taking ownership}{fn-move}
 fn main() {
@@ -99,10 +100,14 @@ fn main() {
 
 fn take_ownership(a: String) {
   // some code working on a
-} // Compiler will add memory clean up code for a here
+} // Compiler will 'drop' a here
 \end{code}
 
-Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the memory. When \textit{main} calls \textit{take\_ownership} the compiler registers a transfer of the memory owner, thus making the call on line 5 invalid. On the upside, the cleanup code is correctly inserted on line 10.
+Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the heap data which results in memory cleanup code correctly being inserted at the end of its scope on line 10. When \textit{main} calls \textit{take\_ownership} the \textit{a} becomes the new owner of \textit{s}'s data, thus making the call on line 5 invalid. When taking ownership like this is not desired the second form of ownership, borrowing, should be used instead.
+
+\subsubsection{Borrowing}
+
+Borrowing has a new variable take a references to data rather than becoming its new owner \cite{klabnik_2019_01}. It is analogous to borrowing a book from a friend where a promise is made that the book will be returned to its owner once done with it.
 
 \begin{code}{Function taking borrow}{fn-borrow}
 fn main() {
@@ -110,16 +115,19 @@ fn main() {
   take_borrow(&s);
 
   println!("String len is {}", s.len());
-} // Compiler will add memory clean up code for s here
+} // Compiler will 'drop' s here
 
 fn take_borrow(a: &String) {
   a.push_str("suffix"); // cannot borrow a as mutable
-}
+} // a is borrowed and wiil therefore not be dropped
 \end{code}
 
-The solution is the second form of ownership, borrowing. As seen in \fref{lst:fn-borrow}, borrow makes the function \textit{take\_borrow} only take temporary control of the memory. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Borrowing is activated with an ampersand (\textit{\&}) before the type and in the call.
+As seen in \fref{lst:fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data. References are activated with an ampersand (\textit{\&}) before the type. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Having references as function parameters is called borrowing \cite{klabnik_2019_01}. The ampersand is also used in the call argument to signal that the called function will borrow the data.
 
-But in Rust, all variable are immutable by default. So trying to change the underlying memory in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9.
+But in Rust, all variable are immutable by default. So trying to change the data in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9. This is much the same as the borrowed book. One would not make highlights and notes in a book that is borrowed, unless if explicit permission was given to do so by the owner.
+
+\subsection{Immutable by default}
+Mutable borrows are an explixit indication that a function / variable is allowed to change the data.
 
 \begin{code}{Function taking mutable borrow}{fn-mut-borrow}
 fn main() {
@@ -134,21 +142,21 @@ fn take_borrow(a: &mut String) {
 }
 \end{code}
 
-Being unable to change the variable naturally leads to the third and last ownership form, mutable borrows. As seen in \fref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type and call. Mutable ownership one the other hand just need \textit{mut} when the variable is declared.
+As seen in \fref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type. Again, it is also used in the call to make it explicit that the function will modify the data. Variables -- on the stack or heap -- also need to be declared \textit{mut} to be able to use them as mutable. \cite{klabnik_2019_01}
 
-The three ownership forms - moving, borrowing and mutable borrowing - put some constraints on the code of each variable type and their calls:
+The two ownership forms - moving and borrowing - together with mutables put some constraints on the code of each variable type and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
   \item Moving will always invalidate the variable.
-  \item Borrowed variables cannot be mutated. But more than one function can borrow the memory at the same time.
+  \item Borrowed variables cannot be mutated. But more than one function can borrow the data at the same time in parallel and concurrent code.
   \item Mutable borrowing does allow mutations. But only one function can hold a mutable borrow at a time and no other immutable borrows can exist.
 \end{itemize}
 
 The constraints will always be enforced by the compiler, thus requiring all code to meet them.
 
-% Not OOP
-%% Structs
-%% No constructors
-%% Composition over inheritance
+\subsection{Not OOP}
+\subsubsection{Structs}
+\subsubsection{Associate methods}
+\subsubsection{Composition over inheritance}
 
 % Traits
 %% Bounds
