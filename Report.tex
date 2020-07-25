@@ -9,6 +9,8 @@
 \usepackage{mdframed}
 \usepackage{url}
 
+\usepackage{keyval}
+
 \usepackage{fancyref}
 \usepackage{minted}
 
@@ -23,6 +25,33 @@
     xleftmargin=21pt
     ]{rust}}
  {\end{minted}\end{listing}}
+
+\makeatletter
+
+\define@key{embed}{pos}{\def\e@pos{#1}}
+\define@key{embed}{firstline}{\def\e@firstline{#1}}
+\define@key{embed}{lastline}{\def\e@lastline{#1}}
+
+\setkeys{embed}{pos=ht,firstline=1,lastline=-1}
+  
+\newcommand{\embed}[3][]
+ {\begingroup
+  \setkeys{embed}{#1}
+  \begin{listing}[ht]
+  \caption{#2}\label{lst:#3}
+  \inputminted[
+    autogobble,
+    breaklines,
+    linenos,
+    firstline={\e@firstline},
+    lastline={\e@lastline},
+    firstnumber=1,
+    xleftmargin=21pt
+    ]{rust}{Code/#3/src/main.rs}
+  \end{listing}
+  \endgroup}
+
+\makeatother
 
 \newcommand*{\fancyreflstlabelprefix}{lst}
 \frefformat{vario}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1#3}
@@ -75,74 +104,34 @@ A variable also has a scope. The scope start at the variable declaration and end
 \subsubsection{Moving}
 Moving happens when one variable is assigned to another. The compiler's analysis moves ownership of the data to the new variable from the initial variable. The initial variable is also invalidated at this point \cite{klabnik_2019_01}. An analogy example would be to give a book to a friend. The friend can do anything from anotating to burning the book as they feel fit.
 
-\begin{code}{Example of ownership transfer}{moved}
-{
-  let s = String::from("string");
-  let t = s;
+\embed[firstline=2,lastline=7]{Example of ownership transfer}{Rust/moved}
 
-  println!("String len is {}", s.len()); // borrow of moved value: `s`
-} // Compiler will 'drop' t here
-\end{code}
-
-In \fref{lst:moved}, on line 2, a heap data object is created and assigned to variable \textit{s}. Line 3 assigns \textit{s} to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
+In \fref{lst:Rust/moved}, on line 2, a heap data object is created and assigned to variable \textit{s}. Line 3 assigns \textit{s} to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
 When trying to use the data on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved. In fact any reference to \textit{s} after line 3 will always give a compiler error.
 
 Finally, the scope of \textit{t} ends on line 6. Since the compiler is able to guarantee \textit{t} is the only variable owning the data, the compiler can free the memory on line 6.
 
-\begin{code}{Function taking ownership}{fn-move}
-fn main() {
-  let s = String::from("string");
-  take_ownership(s);
+\embed{Function taking ownership}{Rust/fn-move}
 
-  println!("String len is {}", s.len()); // borrow of moved value: `s`
-}
-
-fn take_ownership(a: String) {
-  // some code working on a
-} // Compiler will 'drop' a here
-\end{code}
-
-Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:fn-move}. The \textit{take\_ownership} function takes ownership of the heap data which results in memory cleanup code correctly being inserted at the end of its scope on line 10. When \textit{main} calls \textit{take\_ownership} the \textit{a} becomes the new owner of \textit{s}'s data, thus making the call on line 5 invalid. When taking ownership like this is not desired the second form of ownership, borrowing, should be used instead.
+Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:Rust/fn-move}. The \textit{take\_ownership} function takes ownership of the heap data which results in memory cleanup code correctly being inserted at the end of its scope on line 10. When \textit{main} calls \textit{take\_ownership} the \textit{a} becomes the new owner of \textit{s}'s data, thus making the call on line 5 invalid. When taking ownership like this is not desired the second form of ownership, borrowing, should be used instead.
 
 \subsubsection{Borrowing}
 
 Borrowing has a new variable take a references to data rather than becoming its new owner \cite{klabnik_2019_01}. It is analogous to borrowing a book from a friend where a promise is made that the book will be returned to its owner once done with it.
 
-\begin{code}{Function taking borrow}{fn-borrow}
-fn main() {
-  let s = String::from("string");
-  take_borrow(&s);
+\embed{Function taking borrow}{Rust/fn-borrow}
 
-  println!("String len is {}", s.len());
-} // Compiler will 'drop' s here
-
-fn take_borrow(a: &String) {
-  a.push_str("suffix"); // cannot borrow a as mutable
-} // a is borrowed and wiil therefore not be dropped
-\end{code}
-
-As seen in \fref{lst:fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data. References are activated with an ampersand (\textit{\&}) before the type. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Having references as function parameters is called borrowing \cite{klabnik_2019_01}. The ampersand is also used in the call argument to signal that the called function will borrow the data.
+As seen in \fref{lst:Rust/fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data. References are activated with an ampersand (\textit{\&}) before the type. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Having references as function parameters is called borrowing \cite{klabnik_2019_01}. The ampersand is also used in the call argument to signal that the called function will borrow the data.
 
 But in Rust, all variable are immutable by default. So trying to change the data in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9. This is much the same as the borrowed book. One would not make highlights and notes in a book that is borrowed, unless if explicit permission was given to do so by the owner.
 
 \subsection{Immutable by default}
 Mutable borrows are an explixit indication that a function / variable is allowed to change the data.
 
-\begin{code}{Function taking mutable borrow}{fn-mut-borrow}
-fn main() {
-  let mut s = String::from("string");
-  take_borrow(&mut s);
+\embed{Function taking mutable borrow}{Rust/fn-mut-borrow}
 
-  println!("String len is {}", s.len());
-} // Compiler will add memory clean up code for s here
-
-fn take_borrow(a: &mut String) {
-  a.push_str("suffix");
-}
-\end{code}
-
-As seen in \fref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type. Again, it is also used in the call to make it explicit that the function will modify the data. Variables -- on the stack or heap -- also need to be declared \textit{mut} to be able to use them as mutable. \cite{klabnik_2019_01}
+As seen in \fref{lst:Rust/fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type. Again, it is also used in the call to make it explicit that the function will modify the data. Variables -- on the stack or heap -- also need to be declared \textit{mut} to be able to use them as mutable. \cite{klabnik_2019_01}
 
 The two ownership forms - moving and borrowing - together with mutables put some constraints on the code of each variable type and their calls: \cite{klabnik_2019_01}
 \begin{itemize}

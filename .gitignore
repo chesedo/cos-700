@@ -9,3 +9,5 @@ Report.dvi
 Report.synctex.gz
 
 _minted-Report/
+
+target/
