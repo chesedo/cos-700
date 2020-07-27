@@ -37,7 +37,7 @@
 \newcommand{\embed}[3][]
  {\begingroup
   \setkeys{embed}{#1}
-  \begin{listing}[ht]
+  \expandafter\listing\expandafter[\e@pos]
   \caption{#2}\label{lst:#3}
   \inputminted[
     autogobble,
@@ -48,7 +48,7 @@
     firstnumber=1,
     xleftmargin=21pt
     ]{rust}{Code/#3/src/main.rs}
-  \end{listing}
+  \endlisting
   \endgroup}
 
 \makeatother
