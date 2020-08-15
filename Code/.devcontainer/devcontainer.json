@@ -8,6 +8,8 @@
         "--security-opt",
         "seccomp=unconfined"
     ],
+    "workspaceMount": "source=cos700-project,target=/workspace,type=volume",
+    "workspaceFolder": "/workspace/Code",
     // Set *default* container specific settings.json values on container create.
     "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
