@@ -13,4 +13,4 @@ FROM tianon/latex
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends git python-pygments openssh-client
+    && apt-get -y install --no-install-recommends git python-pygments openssh-client hunspell-en-za

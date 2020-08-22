@@ -13,6 +13,7 @@
     },
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
-        "James-Yu.latex-workshop"
+        "James-Yu.latex-workshop",
+        "ban.spellright"
     ]
 }

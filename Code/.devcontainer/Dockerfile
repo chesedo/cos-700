@@ -28,6 +28,9 @@ RUN apt-get update \
     && rustup update 2>&1 \
     && rustup component add rls rust-analysis rust-src rustfmt clippy 2>&1 \
     #
+    # Install en-za dictionary
+    && apt-get install -y hunspell-en-za \
+    #
     # Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.
     && groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
