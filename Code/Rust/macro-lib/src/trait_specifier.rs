@@ -3,7 +3,7 @@ use syn::{Token, Type};
 
 /// Type that holds an abstract type and how it will map to a concrete type.
 /// An acceptable stream will have the following form:
-/// ```
+/// ```text
 /// trait => concrete
 /// ```
 #[derive(Eq, PartialEq, Debug)]

@@ -1,17 +1,19 @@
 //! A generic token list to parse items seperated by a comma
 
+use proc_macro2::TokenStream;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
+use syn::Type;
 
 /// Holds a set of `T` items seperated by a comma. It will be able to parse string of the following format:
-/// ```
+/// ```text
 /// T1, T2, T3
 /// ```
 ///
 /// T can be any parsable token or set of common tokens.
 #[derive(Eq, PartialEq, Debug)]
-struct TokenList<T: Parse> {
+pub struct TokenList<T: Parse> {
     types: Punctuated<T, Comma>,
 }
 
@@ -25,10 +27,33 @@ impl<T: Parse> Parse for TokenList<T> {
     }
 }
 
+impl TokenList<Type> {
+    pub fn to_factory_bounds(&self, factory_name: &Type) -> TokenStream {
+        let types = self.types.iter();
+
+        quote! {
+            #(#factory_name<#types>)+*
+        }
+    }
+
+    pub fn to_abstract_factory(&self, abstract_name: &Type, factory_name: &Type) -> TokenStream {
+        let bounds = self.to_factory_bounds(factory_name);
+
+        quote! {
+            trait #abstract_name: #bounds {}
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::trait_specifier::TraitSpecifier;
+    use std::{
+        fmt::Display,
+        io::Write,
+        process::{Command, Stdio},
+    };
     use syn::{parse_str, Type};
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
@@ -101,4 +126,51 @@ mod tests {
         Ok(())
     }
 
+    #[test]
+    fn to_factory_bounds() -> Result {
+        let list: TokenList<Type> = parse_str("IButton, IWindow")?;
+        let bounds = &list.to_factory_bounds(&parse_str("Factory")?);
+
+        assert_eq!(
+            reformat(&quote! {trait Test: #bounds {}}),
+            "trait Test: Factory<IButton> + Factory<IWindow> {}\n"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn to_abstract_factory() -> Result {
+        let list: TokenList<Type> = parse_str("IButton, IWindow")?;
+
+        assert_eq!(
+            reformat(
+                &list.to_abstract_factory(&parse_str("UiFactory")?, &parse_str("ElementFactory")?)
+            ),
+            "trait UiFactory: ElementFactory<IButton> + ElementFactory<IWindow> {}\n"
+        );
+
+        Ok(())
+    }
+
+    fn reformat(text: &dyn Display) -> String {
+        let mut rustfmt = Command::new("rustfmt")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .expect("Failed to create command");
+        {
+            let stdin = rustfmt
+                .stdin
+                .as_mut()
+                .expect("Failed to create input stream");
+            stdin
+                .write_all(text.to_string().as_bytes())
+                .expect("Failed to write to input stream");
+        }
+        let output = rustfmt
+            .wait_with_output()
+            .expect("Format command did not end");
+        String::from_utf8(output.stdout).expect("Failed to convert output to string")
+    }
 }
