@@ -1,0 +1,20 @@
+[package]
+name = "macro-patterns"
+version = "0.1.0"
+authors = ["Pieter <github@chesedo.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+macro-lib = { path = "../macro-lib" }
+
+syn = "1.0.31"
+proc-macro2 = "1.0"
+
+[dev-dependencies]
+macro-test-helpers = { path = "../macro-test-helpers" }
+pretty_assertions = "0.6"

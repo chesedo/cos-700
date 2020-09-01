@@ -48,6 +48,8 @@ name = "macro-patterns"
 version = "0.1.0"
 dependencies = [
  "macro-lib",
+ "macro-test-helpers",
+ "pretty_assertions",
  "proc-macro2",
  "syn",
 ]
