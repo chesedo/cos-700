@@ -27,6 +27,9 @@ RUN apt-get update \
     # Install Rust components
     && rustup update 2>&1 \
     && rustup component add rls rust-analysis rust-src rustfmt clippy 2>&1 \
+    # Install cargo expand
+    && rustup install nightly \
+    && cargo install cargo-expand \
     #
     # Install en-za dictionary
     && apt-get install -y hunspell-en-za \
