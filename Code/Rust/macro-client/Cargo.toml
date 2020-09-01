@@ -1,0 +1,13 @@
+[package]
+name = "macro-client"
+version = "0.1.0"
+authors = ["Pieter <github@chesedo.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+macro-patterns = { path = "../macro-patterns" }
+
+[dev-dependencies]
+macro-test-helpers = { path = "../macro-test-helpers" }
