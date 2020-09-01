@@ -1,0 +1,8 @@
+[workspace]
+
+members = [
+    "macro-client",
+    "macro-lib",
+    "macro-patterns",
+    "macro-test-helpers",
+]
