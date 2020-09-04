@@ -4,40 +4,61 @@ trait Element {
     fn name(&self) -> &str;
 }
 
-struct Button {}
+mod button {
+    use super::Element;
 
-impl Element for Button {
-    fn name(&self) -> &str {
-        "Button"
+    pub trait IButton: Element {
+        fn click(&self);
+    }
+
+    pub struct KdeButton {}
+
+    impl Element for KdeButton {
+        fn name(&self) -> &str {
+            "KDE Button"
+        }
+    }
+
+    impl IButton for KdeButton {
+        fn click(&self) {
+            unimplemented!()
+        }
     }
 }
 
-struct Window {}
+mod window {
+    use super::*;
 
-impl Element for Window {
-    fn name(&self) -> &str {
-        "Window"
+    pub struct Window {}
+
+    impl Element for Window {
+        fn name(&self) -> &str {
+            "Window"
+        }
     }
 }
 
-trait Factory<T: Element> {
-    fn create(&self) -> T;
+use button::{IButton, KdeButton};
+use window::Window;
+
+trait Factory<T: Element + ?Sized> {
+    fn create(&self) -> Box<T>;
 }
 
-trait Gui: Factory<Button> + Factory<Window> {}
+trait Gui: Factory<dyn IButton> + Factory<Window> {}
 
 struct KDE {}
 
 impl Gui for KDE {}
 
-impl Factory<Button> for KDE {
-    fn create(&self) -> Button {
-        Button {}
+impl Factory<dyn IButton> for KDE {
+    fn create(&self) -> Box<dyn IButton> {
+        Box::new(KdeButton {})
     }
 }
 impl Factory<Window> for KDE {
-    fn create(&self) -> Window {
-        Window {}
+    fn create(&self) -> Box<Window> {
+        Box::new(Window {})
     }
 }
 
@@ -48,15 +69,15 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Button = factory.create();
+        let actual: Box<dyn IButton> = factory.create();
 
-        assert_eq!(actual.name(), "Button");
+        assert_eq!(actual.name(), "KDE Button");
     }
 
     #[test]
     fn window_factory() {
         let factory = KDE {};
-        let actual: Window = factory.create();
+        let actual: Box<Window> = factory.create();
 
         assert_eq!(actual.name(), "Window");
     }
