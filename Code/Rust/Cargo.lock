@@ -31,6 +31,7 @@ version = "0.1.0"
 dependencies = [
  "macro-patterns",
  "macro-test-helpers",
+ "pretty_assertions",
 ]
 
 [[package]]

@@ -18,15 +18,16 @@ macro_rules! abstract_factory_r {
 
 #[cfg(test)]
 mod tests {
-    use macro_test_helpers::expand;
+    use macro_test_helpers::{expand, expand_cli};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn abstract_factory() {
-        expand("abstract_factory");
+        expand!("abstract_factory");
     }
 
     #[test]
     fn abstract_factory_r() {
-        expand("abstract_factory_r");
+        expand!("abstract_factory_r");
     }
 }

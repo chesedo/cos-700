@@ -1,6 +1,7 @@
+#[allow(unused_imports)]
 use macro_patterns::abstract_factory;
 
-trait Element {
+pub trait Element {
     fn name(&self) -> &str;
 }
 

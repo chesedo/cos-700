@@ -49,12 +49,9 @@ impl TokenList<Type> {
 mod tests {
     use super::*;
     use crate::trait_specifier::TraitSpecifier;
-    use std::{
-        fmt::Display,
-        io::Write,
-        process::{Command, Stdio},
-    };
     use syn::{parse_str, Type};
+
+    use macro_test_helpers::reformat;
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -151,26 +148,5 @@ mod tests {
         );
 
         Ok(())
-    }
-
-    fn reformat(text: &dyn Display) -> String {
-        let mut rustfmt = Command::new("rustfmt")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .expect("Failed to create command");
-        {
-            let stdin = rustfmt
-                .stdin
-                .as_mut()
-                .expect("Failed to create input stream");
-            stdin
-                .write_all(text.to_string().as_bytes())
-                .expect("Failed to write to input stream");
-        }
-        let output = rustfmt
-            .wait_with_output()
-            .expect("Format command did not end");
-        String::from_utf8(output.stdout).expect("Failed to convert output to string")
     }
 }

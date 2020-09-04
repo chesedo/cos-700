@@ -11,3 +11,4 @@ macro-patterns = { path = "../macro-patterns" }
 
 [dev-dependencies]
 macro-test-helpers = { path = "../macro-test-helpers" }
+pretty_assertions = "0.6"

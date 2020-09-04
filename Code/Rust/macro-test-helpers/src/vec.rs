@@ -10,6 +10,7 @@ macro_rules! vec {
     };
 }
 
-fn Values() -> Vec<i32> {
+#[allow(dead_code)]
+fn values() -> Vec<i32> {
     vec![1, 2, 3]
 }

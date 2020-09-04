@@ -1,4 +1,5 @@
-fn Values() -> Vec<i32> {
+#[allow(dead_code)]
+fn values() -> Vec<i32> {
     {
         let mut temp_vec = Vec::new();
         temp_vec.push(1);

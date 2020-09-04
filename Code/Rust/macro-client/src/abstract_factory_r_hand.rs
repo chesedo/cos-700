@@ -1,9 +1,10 @@
+#[allow(unused_imports)]
 use crate::abstract_factory_r;
 
 trait Factory<T: Element + ?Sized> {
     fn create(&self) -> Box<T>;
 }
-trait Element {
+pub trait Element {
     fn name(&self) -> &str;
 }
 

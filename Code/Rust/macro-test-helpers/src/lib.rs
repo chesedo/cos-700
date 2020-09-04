@@ -1,4 +1,3 @@
-use pretty_assertions::assert_eq;
 use std::{
     fmt::Display,
     io::Write,
@@ -42,7 +41,7 @@ pub fn reformat(text: &dyn Display) -> String {
 }
 
 /// Calls `cargo expand` on a module and returns the output as a vector of lines
-fn expand_cli(module: &str) -> Vec<String> {
+pub fn expand_cli(module: &str) -> Vec<String> {
     let output = Command::new("cargo")
         .arg("expand")
         .arg(module)
@@ -61,13 +60,25 @@ fn expand_cli(module: &str) -> Vec<String> {
 }
 
 /// Expands a modules and check that it equals some expected string
-pub fn expand_eq(module: &str, expected: &str) {
-    assert_eq!(expand_cli(module), expected.lines().collect::<Vec<&str>>());
+#[macro_export]
+macro_rules! expand_eq {
+    ($module:tt, $expected:tt) => {
+        assert_eq!(
+            expand_cli($module),
+            $expected.lines().collect::<Vec<&str>>()
+        );
+    };
 }
 
 /// Checks that an expanded module equals the expanse of some `[module]_hand`
-pub fn expand(module: &str) {
-    assert_eq!(expand_cli(module), expand_cli(&format!("{}_hand", module)));
+#[macro_export]
+macro_rules! expand {
+    ($module:tt) => {
+        assert_eq!(
+            expand_cli($module),
+            expand_cli(&format!("{}_hand", $module))
+        );
+    };
 }
 
 #[cfg(test)]
@@ -85,9 +96,10 @@ mod tests {
 
     #[test]
     fn expand_eq_print() {
-        expand_eq(
+        expand_eq!(
             "print",
-            r#"fn test() {
+            r#"#[allow(dead_code)]
+fn test() {
     ::std::io::_print(::core::fmt::Arguments::new_v1(
         &["Test"],
         &match () {
@@ -95,12 +107,12 @@ mod tests {
         },
     ));
 }
-"#,
+"#
         );
     }
 
     #[test]
     fn expand_vec() {
-        expand("vec");
+        expand!("vec");
     }
 }
