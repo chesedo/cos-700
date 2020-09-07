@@ -1,10 +1,13 @@
 #[allow(unused_imports)]
-use crate::abstract_factory_r;
+use crate::{abstract_factory_r, concrete_factory_r};
 
 trait Factory<T: Element + ?Sized> {
-    fn create(&self) -> Box<T>;
+    fn create(&self, name: String) -> Box<T>;
 }
 pub trait Element {
+    fn new(name: String) -> Self
+    where
+        Self: Sized;
     fn name(&self) -> &str;
 }
 
@@ -15,11 +18,16 @@ mod button {
         fn click(&self);
     }
 
-    pub struct KdeButton {}
+    pub struct KdeButton {
+        name: String,
+    }
 
     impl Element for KdeButton {
+        fn new(name: String) -> Self {
+            KdeButton { name }
+        }
         fn name(&self) -> &str {
-            "KDE Button"
+            &self.name
         }
     }
 
@@ -33,11 +41,16 @@ mod button {
 mod window {
     use super::Element;
 
-    pub struct Window {}
+    pub struct Window {
+        name: String,
+    }
 
     impl Element for Window {
+        fn new(name: String) -> Self {
+            Window { name }
+        }
         fn name(&self) -> &str {
-            "Window"
+            &self.name
         }
     }
 }
@@ -57,13 +70,13 @@ struct KDE {}
 impl Gui for KDE {}
 
 impl Factory<dyn IButton> for KDE {
-    fn create(&self) -> Box<dyn IButton> {
-        Box::new(KdeButton {})
+    fn create(&self, name: String) -> Box<dyn IButton> {
+        Box::new(KdeButton::new(name))
     }
 }
 impl Factory<Window> for KDE {
-    fn create(&self) -> Box<Window> {
-        Box::new(Window {})
+    fn create(&self, name: String) -> Box<Window> {
+        Box::new(Window::new(name))
     }
 }
 
@@ -74,16 +87,16 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create();
+        let actual: Box<dyn IButton> = factory.create(String::from("Some button"));
 
-        assert_eq!(actual.name(), "KDE Button");
+        assert_eq!(actual.name(), "Some button");
     }
 
     #[test]
     fn window_factory() {
         let factory = KDE {};
-        let actual: Box<Window> = factory.create();
+        let actual: Box<Window> = factory.create(String::from("First window"));
 
-        assert_eq!(actual.name(), "Window");
+        assert_eq!(actual.name(), "First window");
     }
 }

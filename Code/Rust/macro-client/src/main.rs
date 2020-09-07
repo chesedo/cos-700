@@ -16,6 +16,15 @@ macro_rules! abstract_factory_r {
     };
 }
 
+/// Call the local factory! macro rule for each trait to concrete mapping seperated by a comma
+/// So each mapping is `trait => concrete_impelmentation`
+#[macro_export]
+macro_rules! concrete_factory_r {
+    ($($traits:ty => $concretes:ident),+) => {
+        $(factory!($traits, $concretes);)*
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use macro_test_helpers::{expand, expand_cli};
