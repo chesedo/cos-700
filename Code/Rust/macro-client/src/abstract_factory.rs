@@ -1,46 +1,10 @@
 #[allow(unused_imports)]
 use macro_patterns::abstract_factory;
 
-pub trait Element {
-    fn name(&self) -> &str;
-}
-
-mod button {
-    use super::Element;
-
-    pub trait IButton: Element {
-        fn click(&self);
-    }
-
-    pub struct KdeButton {}
-
-    impl Element for KdeButton {
-        fn name(&self) -> &str {
-            "KDE Button"
-        }
-    }
-
-    impl IButton for KdeButton {
-        fn click(&self) {
-            unimplemented!()
-        }
-    }
-}
-
-mod window {
-    use super::*;
-
-    pub struct Window {}
-
-    impl Element for Window {
-        fn name(&self) -> &str {
-            "Window"
-        }
-    }
-}
-
-use button::{IButton, KdeButton};
-use window::Window;
+use crate::gui::{
+    elements::{Element, IButton, Window},
+    kde::KdeButton,
+};
 
 trait Factory<T: Element + ?Sized> {
     fn create(&self) -> Box<T>;
@@ -54,12 +18,12 @@ impl Gui for KDE {}
 
 impl Factory<dyn IButton> for KDE {
     fn create(&self) -> Box<dyn IButton> {
-        Box::new(KdeButton {})
+        Box::new(KdeButton::new(String::from("KDE Button")))
     }
 }
 impl Factory<Window> for KDE {
     fn create(&self) -> Box<Window> {
-        Box::new(Window {})
+        Box::new(Window::new(String::from("Window")))
     }
 }
 

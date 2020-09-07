@@ -3,6 +3,8 @@ mod abstract_factory_hand;
 mod abstract_factory_r;
 mod abstract_factory_r_hand;
 
+mod gui;
+
 fn main() {}
 
 /// Makes a trait `t` be a subtriat for each factory `f` having one generic type for each type in `types`
