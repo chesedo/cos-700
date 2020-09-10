@@ -6,11 +6,11 @@ use crate::gui::{
     kde::KdeButton,
 };
 
-trait Factory<T: Element + ?Sized> {
+pub trait Factory<T: Element + ?Sized> {
     fn create(&self) -> Box<T>;
 }
 
-abstract_factory!(Gui, Factory, dyn IButton, Window);
+abstract_factory!(pub Gui, Factory, dyn IButton, Window);
 
 struct KDE {}
 
