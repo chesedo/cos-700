@@ -7,10 +7,11 @@ use syn::{ItemTrait, Token, Type, Visibility};
 /// Holds tokens for AbstractFactory functional macro inputs
 /// Expects an input in the following format
 /// ```text
-/// trait_identifier, some_abstract_factory_trait, type_1, type_2, ... , type_n
+/// [visibility] trait_identifier, some_abstract_factory_trait, type_1, type_2, ... , type_n
 /// ```
 #[derive(Eq, PartialEq, Debug)]
 pub struct AbstractFactoryFunction {
+    vis: Visibility,
     trait_ident: Type,
     first_sep: Token![,],
     factory_trait: Type,
@@ -21,6 +22,7 @@ pub struct AbstractFactoryFunction {
 impl Parse for AbstractFactoryFunction {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(AbstractFactoryFunction {
+            vis: input.parse()?,
             trait_ident: input.parse()?,
             first_sep: input.parse()?,
             factory_trait: input.parse()?,
@@ -56,7 +58,7 @@ impl Parse for AbstractFactoryAttribute {
 pub fn abstract_factory_function(input: &AbstractFactoryFunction) -> TokenStream {
     input
         .types
-        .to_abstract_factory(&input.trait_ident, &input.factory_trait)
+        .to_abstract_factory(&input.vis, &input.trait_ident, &input.factory_trait)
 }
 
 /// Expands a trait definition together with an [AbstractFactoryAttribute](struct.AbstractFactoryAttribute.html) to a TokenStream
@@ -95,6 +97,7 @@ mod tests {
             assert_eq!(
                 actual,
                 AbstractFactoryFunction {
+                    vis: parse_str("")?,
                     trait_ident: parse_str("Gui")?,
                     first_sep: Default::default(),
                     factory_trait: parse_str("Factory")?,
@@ -115,6 +118,7 @@ mod tests {
         #[test]
         fn expand() -> Result {
             let actual = abstract_factory_function(&AbstractFactoryFunction {
+                vis: parse_str("pub")?,
                 trait_ident: parse_str("Gui")?,
                 first_sep: Default::default(),
                 factory_trait: parse_str("Factory")?,
@@ -123,6 +127,7 @@ mod tests {
             });
             assert_eq!(
                 reformat(&actual),
+                "pub trait Gui: Factory<u32> + Factory<i64> {}\n"
             );
 
             Ok(())

@@ -13,8 +13,8 @@ fn main() {}
 /// Cannot be broken down further since macro rules cannot appear in the where clause
 #[macro_export]
 macro_rules! abstract_factory_r {
-    ($t:ident, $f:ident, $($types:ty),+) => {
-        trait $t
+    ($v:vis $t:ident, $f:ident, $($types:ty),+) => {
+        $v trait $t
         where
         $(Self: $f<$types>),* {}
     };

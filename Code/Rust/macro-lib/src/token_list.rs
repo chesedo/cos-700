@@ -50,13 +50,14 @@ impl TokenList<Type> {
 
     pub fn to_abstract_factory(
         &self,
+        vis: &Visibility,
         abstract_name: &Type,
         factory_name: &Type,
     ) -> TokenStream {
         let bounds = self.to_factory_bounds(factory_name);
 
         quote! {
-            trait #abstract_name: #bounds {}
+            #vis trait #abstract_name: #bounds {}
         }
     }
 }
@@ -170,9 +171,11 @@ mod tests {
         let list: TokenList<Type> = parse_str("IButton, IWindow")?;
 
         assert_eq!(
-            reformat(
-                &list.to_abstract_factory(&parse_str("UiFactory")?, &parse_str("ElementFactory")?)
-            ),
+            reformat(&list.to_abstract_factory(
+                &parse_str("")?,
+                &parse_str("UiFactory")?,
+                &parse_str("ElementFactory")?
+            )),
             "trait UiFactory: ElementFactory<IButton> + ElementFactory<IWindow> {}\n"
         );
 
