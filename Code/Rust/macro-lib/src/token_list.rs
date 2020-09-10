@@ -1,10 +1,11 @@
 //! A generic token list to parse items seperated by a comma
 
 use proc_macro2::TokenStream;
+use quote::quote;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::Type;
+use syn::{parse_quote, Token, Type, TypeParamBound, Visibility};
 
 /// Holds a set of `T` items seperated by a comma. It will be able to parse string of the following format:
 /// ```text
@@ -36,7 +37,22 @@ impl TokenList<Type> {
         }
     }
 
-    pub fn to_abstract_factory(&self, abstract_name: &Type, factory_name: &Type) -> TokenStream {
+    pub fn to_type_param_bounds(
+        &self,
+        factory_name: &Type,
+    ) -> Punctuated<TypeParamBound, Token![+]> {
+        let types = self.types.iter();
+
+        parse_quote! {
+            #(#factory_name<#types>)+*
+        }
+    }
+
+    pub fn to_abstract_factory(
+        &self,
+        abstract_name: &Type,
+        factory_name: &Type,
+    ) -> TokenStream {
         let bounds = self.to_factory_bounds(factory_name);
 
         quote! {
@@ -127,6 +143,19 @@ mod tests {
     fn to_factory_bounds() -> Result {
         let list: TokenList<Type> = parse_str("IButton, IWindow")?;
         let bounds = &list.to_factory_bounds(&parse_str("Factory")?);
+
+        assert_eq!(
+            reformat(&quote! {trait Test: #bounds {}}),
+            "trait Test: Factory<IButton> + Factory<IWindow> {}\n"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn to_type_param_bounds() -> Result {
+        let list: TokenList<Type> = parse_str("IButton, IWindow")?;
+        let bounds = &list.to_type_param_bounds(&parse_str("Factory")?);
 
         assert_eq!(
             reformat(&quote! {trait Test: #bounds {}}),
