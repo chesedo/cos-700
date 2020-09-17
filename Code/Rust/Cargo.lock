@@ -39,6 +39,7 @@ name = "macro-lib"
 version = "0.1.0"
 dependencies = [
  "macro-test-helpers",
+ "pretty_assertions",
  "proc-macro2",
  "quote",
  "syn",

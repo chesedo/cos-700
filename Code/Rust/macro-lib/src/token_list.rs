@@ -1,5 +1,6 @@
 //! A generic token list to parse items seperated by a comma
 
+use crate::token_stream_utils::Interpolate;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::parse::{Parse, ParseStream, Result};
@@ -62,13 +63,26 @@ impl TokenList<Type> {
     }
 }
 
+/// Make a token list interpolatible if it holds interpolatible types
+impl<T: Parse + Interpolate> Interpolate for TokenList<T> {
+    fn interpolate(&self, stream: TokenStream) -> TokenStream {
+        self.types
+            .iter()
+            .fold(TokenStream::new(), |mut implementations, t| {
+                implementations.extend(t.interpolate(stream.clone()));
+                implementations
+            })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::token_stream_utils::{CONCRETE, TRAIT};
     use crate::trait_specifier::TraitSpecifier;
-    use syn::{parse_str, Type};
-
     use macro_test_helpers::reformat;
+    use pretty_assertions::assert_eq;
+    use syn::{parse_str, Type};
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -177,6 +191,27 @@ mod tests {
                 &parse_str("ElementFactory")?
             )),
             "trait UiFactory: ElementFactory<IButton> + ElementFactory<IWindow> {}\n"
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn interpolate() -> Result {
+        let traits: TokenList<TraitSpecifier> =
+            parse_str("IButton => BigButton, IWindow => MinimalWindow")?;
+
+        let input = quote! {
+            let _: #TRAIT = #CONCRETE{};
+        };
+        let expected = quote! {
+            let _: IButton = BigButton{};
+            let _: IWindow = MinimalWindow{};
+        };
+
+        assert_eq!(
+            format!("{}", traits.interpolate(input)),
+            format!("{}", expected)
         );
 
         Ok(())
