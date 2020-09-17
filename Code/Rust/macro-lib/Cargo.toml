@@ -11,4 +11,6 @@ syn = { version = "1.0.31", features = ["extra-traits"] }
 quote = "1.0"
 proc-macro2 = "1.0"
 
+[dev-dependencies]
 macro-test-helpers = { path = "../macro-test-helpers" }
+pretty_assertions = "0.6"

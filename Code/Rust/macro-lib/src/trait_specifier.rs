@@ -1,3 +1,7 @@
+use crate::token_stream_utils::{interpolate, Interpolate, CONCRETE, TRAIT};
+use proc_macro2::TokenStream;
+use quote::ToTokens;
+use std::collections::HashMap;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::{Token, Type};
 
@@ -24,9 +28,23 @@ impl Parse for TraitSpecifier {
     }
 }
 
+impl Interpolate for TraitSpecifier {
+    fn interpolate(&self, stream: TokenStream) -> TokenStream {
+        let mut replacements: HashMap<_, &dyn ToTokens> = HashMap::new();
+
+        replacements.insert(TRAIT, &self.abstract_trait);
+        replacements.insert(CONCRETE, &self.concrete);
+
+        interpolate(stream, &replacements)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use macro_test_helpers::reformat;
+    use pretty_assertions::assert_eq;
+    use quote::quote;
     use syn::parse_str;
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
@@ -60,5 +78,32 @@ mod tests {
     #[should_panic(expected = "unexpected end of input")]
     fn missing_concrete() {
         parse_str::<TraitSpecifier>("abstract_trait => ").unwrap();
+    }
+
+    #[test]
+    fn interpolate() -> Result {
+        let input = quote! {
+            impl Factory<#TRAIT> for Gnome {
+                fn create(&self) -> #CONCRETE {
+                    #CONCRETE{}
+                }
+            }
+        };
+        let expected = quote! {
+            impl Factory<abstract_trait> for Gnome {
+                fn create(&self) -> concrete {
+                    concrete{}
+                }
+            }
+        };
+        let specifier = TraitSpecifier {
+            abstract_trait: parse_str("abstract_trait")?,
+            arrow_token: Default::default(),
+            concrete: parse_str("concrete")?,
+        };
+
+        assert_eq!(reformat(&specifier.interpolate(input)), reformat(&expected));
+
+        Ok(())
     }
 }
