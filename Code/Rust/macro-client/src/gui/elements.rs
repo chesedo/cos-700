@@ -9,6 +9,10 @@ pub trait IButton: Element {
     fn click(&self);
 }
 
+pub trait IInput: Element {
+    fn get_input(&self) -> String;
+}
+
 pub struct Window {
     name: String,
 }

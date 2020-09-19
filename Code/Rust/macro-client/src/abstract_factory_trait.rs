@@ -1,17 +1,17 @@
 #[allow(unused_imports)]
-use macro_patterns::abstract_factory_trait;
+use macro_patterns::{abstract_factory_trait, interpolate_traits};
 use std::fmt::{Display, Formatter, Result};
 
 use crate::gui::{
-    elements::{Element, IButton, Window},
-    kde::KdeButton,
+    elements::{Element, IButton, IInput, Window},
+    kde::{Input, KdeButton},
 };
 
 pub trait Factory<T: Element + ?Sized> {
-    fn create(&self) -> Box<T>;
+    fn create(&self, name: String) -> Box<T>;
 }
 
-#[abstract_factory_trait(Factory, dyn IButton, Window)]
+#[abstract_factory_trait(Factory, dyn IButton, dyn IInput, Window)]
 pub trait Gui: Display {}
 
 struct KDE {}
@@ -24,14 +24,20 @@ impl Display for KDE {
     }
 }
 
-impl Factory<dyn IButton> for KDE {
-    fn create(&self) -> Box<dyn IButton> {
-        Box::new(KdeButton::new(String::from("KDE Button")))
+#[interpolate_traits(
+    IButton => KdeButton,
+    IInput => Input,
+)]
+impl Factory<dyn TRAIT> for KDE {
+    fn create(&self, name: String) -> Box<dyn TRAIT> {
+        Box::new(CONCRETE::new(name))
     }
 }
-impl Factory<Window> for KDE {
-    fn create(&self) -> Box<Window> {
-        Box::new(Window::new(String::from("Window")))
+
+#[interpolate_traits(Window => Window)]
+impl Factory<TRAIT> for KDE {
+    fn create(&self, name: String) -> Box<TRAIT> {
+        Box::new(CONCRETE::new(name))
     }
 }
 
@@ -42,15 +48,15 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create();
+        let actual: Box<dyn IButton> = factory.create(String::from("Button"));
 
-        assert_eq!(actual.name(), "KDE Button");
+        assert_eq!(actual.name(), "Button");
     }
 
     #[test]
     fn window_factory() {
         let factory = KDE {};
-        let actual: Box<Window> = factory.create();
+        let actual: Box<Window> = factory.create(String::from("Window"));
 
         assert_eq!(actual.name(), "Window");
     }

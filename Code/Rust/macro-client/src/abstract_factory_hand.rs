@@ -41,8 +41,8 @@ mod tests {
 
     #[test]
     fn window_factory() {
-        let factory = KDE {};
-        let actual: Box<Window> = factory.create();
+        let factory: &dyn Factory<Window> = &KDE {};
+        let actual = factory.create();
 
         assert_eq!(actual.name(), "Window");
     }

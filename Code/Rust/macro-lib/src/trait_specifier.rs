@@ -1,4 +1,4 @@
-use crate::token_stream_utils::{interpolate, Interpolate, CONCRETE, TRAIT};
+use crate::token_stream_utils::{interpolate, Interpolate};
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use std::collections::HashMap;
@@ -32,8 +32,8 @@ impl Interpolate for TraitSpecifier {
     fn interpolate(&self, stream: TokenStream) -> TokenStream {
         let mut replacements: HashMap<_, &dyn ToTokens> = HashMap::new();
 
-        replacements.insert(TRAIT, &self.abstract_trait);
-        replacements.insert(CONCRETE, &self.concrete);
+        replacements.insert("TRAIT", &self.abstract_trait);
+        replacements.insert("CONCRETE", &self.concrete);
 
         interpolate(stream, &replacements)
     }
@@ -83,9 +83,9 @@ mod tests {
     #[test]
     fn interpolate() -> Result {
         let input = quote! {
-            impl Factory<#TRAIT> for Gnome {
-                fn create(&self) -> #CONCRETE {
-                    #CONCRETE{}
+            impl Factory<TRAIT> for Gnome {
+                fn create(&self) -> CONCRETE {
+                    CONCRETE{}
                 }
             }
         };

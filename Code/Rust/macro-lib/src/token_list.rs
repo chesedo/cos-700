@@ -78,7 +78,6 @@ impl<T: Parse + Interpolate> Interpolate for TokenList<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::token_stream_utils::{CONCRETE, TRAIT};
     use crate::trait_specifier::TraitSpecifier;
     use macro_test_helpers::reformat;
     use pretty_assertions::assert_eq;
@@ -202,7 +201,7 @@ mod tests {
             parse_str("IButton => BigButton, IWindow => MinimalWindow")?;
 
         let input = quote! {
-            let _: #TRAIT = #CONCRETE{};
+            let _: TRAIT = CONCRETE{};
         };
         let expected = quote! {
             let _: IButton = BigButton{};
