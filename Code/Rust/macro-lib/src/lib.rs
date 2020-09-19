@@ -1,3 +1,3 @@
 pub mod token_list;
-mod token_stream_utils;
-mod trait_specifier;
+pub mod token_stream_utils;
+pub mod trait_specifier;
