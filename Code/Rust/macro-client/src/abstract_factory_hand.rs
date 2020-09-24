@@ -34,9 +34,12 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create();
+        let mut actual: Box<dyn IButton> = factory.create();
 
-        assert_eq!(actual.name(), "KDE Button");
+        actual.set_text(String::from("Close document"));
+
+        assert_eq!(actual.get_name(), "KDE Button");
+        assert_eq!(actual.get_text(), "Close document");
     }
 
     #[test]
@@ -44,6 +47,6 @@ mod tests {
         let factory: &dyn Factory<Window> = &KDE {};
         let actual = factory.create();
 
-        assert_eq!(actual.name(), "Window");
+        assert_eq!(actual.get_name(), "Window");
     }
 }

@@ -40,7 +40,7 @@ mod tests {
         let factory = KDE {};
         let actual: Box<dyn IButton> = factory.create();
 
-        assert_eq!(actual.name(), "KDE Button");
+        assert_eq!(actual.get_name(), "KDE Button");
     }
 
     #[test]
@@ -48,6 +48,6 @@ mod tests {
         let factory = KDE {};
         let actual: Box<Window> = factory.create();
 
-        assert_eq!(actual.name(), "Window");
+        assert_eq!(actual.get_name(), "Window");
     }
 }

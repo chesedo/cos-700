@@ -37,7 +37,7 @@ mod tests {
         let factory = KDE {};
         let actual: Box<dyn IButton> = factory.create(String::from("Close Button"));
 
-        assert_eq!(actual.name(), "Close Button");
+        assert_eq!(actual.get_name(), "Close Button");
     }
 
     #[test]
@@ -45,6 +45,6 @@ mod tests {
         let factory = KDE {};
         let actual: Box<Window> = factory.create(String::from("Main Window"));
 
-        assert_eq!(actual.name(), "Main Window");
+        assert_eq!(actual.get_name(), "Main Window");
     }
 }
