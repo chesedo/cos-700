@@ -5,6 +5,8 @@ mod abstract_factory_r_hand;
 mod abstract_factory_trait;
 mod abstract_factory_trait_hand;
 
+mod visitor_hand;
+
 mod gui;
 
 fn main() {}
