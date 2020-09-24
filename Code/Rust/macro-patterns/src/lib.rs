@@ -10,7 +10,7 @@ use syn::{parse_macro_input, ItemTrait};
 
 use abstract_factory::{
     abstract_factory_attribute, abstract_factory_function, AbstractFactoryAttribute,
-    AbstractFactoryFunction,
+    AbstractFactoryFunction, ConcreteFactoryFunction,
 };
 
 #[proc_macro]
@@ -18,6 +18,13 @@ pub fn abstract_factory(tokens: TokenStream) -> TokenStream {
     let input = parse_macro_input!(tokens as AbstractFactoryFunction);
 
     abstract_factory_function(&input).into()
+}
+
+#[proc_macro]
+pub fn concrete_factory(tokens: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(tokens as ConcreteFactoryFunction);
+
+    input.traits.interpolate(input.implementation).into()
 }
 
 #[proc_macro_attribute]

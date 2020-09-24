@@ -1,8 +1,9 @@
 use macro_lib::token_list::TokenList;
+use macro_lib::trait_specifier::TraitSpecifier;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::parse::{Parse, ParseStream, Result};
-use syn::{ItemTrait, Token, Type, Visibility};
+use syn::{parenthesized, token, ItemTrait, Token, Type, Visibility};
 
 /// Holds tokens for AbstractFactory functional macro inputs
 /// Expects an input in the following format
@@ -28,6 +29,35 @@ impl Parse for AbstractFactoryFunction {
             factory_trait: input.parse()?,
             second_sep: input.parse()?,
             types: input.parse()?,
+        })
+    }
+}
+
+/// Holds tokens for ConcreteFactory functional macro inputs
+/// Expects an input in the following format
+/// ```text
+/// (trait1 => concrete1, trait2 => concrete2, ...), stream_of_tokens_to_replace
+/// ```
+///
+/// Each `TRAIT` and `CONCRETE` token it the passed in stream will be replaced
+/// with a `trait => concrete` set.
+#[derive(Debug)]
+pub struct ConcreteFactoryFunction {
+    paren_token: token::Paren,
+    pub traits: TokenList<TraitSpecifier>,
+    comma: Token![,],
+    pub implementation: TokenStream,
+}
+
+impl Parse for ConcreteFactoryFunction {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let traits_content;
+
+        Ok(ConcreteFactoryFunction {
+            paren_token: parenthesized!(traits_content in input),
+            traits: traits_content.call(TokenList::parse)?,
+            comma: input.parse()?,
+            implementation: input.parse()?,
         })
     }
 }
@@ -128,6 +158,28 @@ mod tests {
             assert_eq!(
                 reformat(&actual),
                 "pub trait Gui: Factory<u32> + Factory<i64> {}\n"
+            );
+
+            Ok(())
+        }
+    }
+
+    mod concrete_factory_function {
+        use super::*;
+        use pretty_assertions::assert_eq;
+
+        #[test]
+        fn parse() -> Result {
+            let actual: ConcreteFactoryFunction =
+                parse_str("(IButton => Button, IInput => Input), const _: TRAIT = CONCRETE{};")?;
+
+            assert_eq!(
+                actual.traits,
+                parse_str("IButton => Button, IInput => Input")?
+            );
+            assert_eq!(
+                reformat(&actual.implementation),
+                "const _: TRAIT = CONCRETE {};\n"
             );
 
             Ok(())

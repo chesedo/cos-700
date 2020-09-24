@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use macro_patterns::abstract_factory;
+use macro_patterns::{abstract_factory, concrete_factory};
 
 use crate::gui::{
     elements::{Element, IButton, Window},

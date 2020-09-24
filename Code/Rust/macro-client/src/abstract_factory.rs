@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use macro_patterns::abstract_factory;
+use macro_patterns::{abstract_factory, concrete_factory};
 
 use crate::gui::{
     elements::{Element, IButton, Window},
@@ -16,11 +16,15 @@ struct KDE {}
 
 impl Gui for KDE {}
 
-impl Factory<dyn IButton> for KDE {
-    fn create(&self) -> Box<dyn IButton> {
-        Box::new(KdeButton::new(String::from("KDE Button")))
+concrete_factory!(
+    (IButton => KdeButton),
+    impl Factory<dyn TRAIT> for KDE {
+        fn create(&self) -> Box<dyn TRAIT> {
+            Box::new(CONCRETE::new(String::from("KDE Button")))
+        }
     }
-}
+);
+
 impl Factory<Window> for KDE {
     fn create(&self) -> Box<Window> {
         Box::new(Window::new(String::from("Window")))
