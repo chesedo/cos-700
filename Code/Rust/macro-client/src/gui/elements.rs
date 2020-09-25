@@ -1,3 +1,10 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::sync::{Arc, RwLock};
+
+pub type Wrap<T> = Rc<RefCell<T>>;
+pub type AWrap<T> = Arc<RwLock<T>>;
+
 pub trait Element {
     fn new(name: String) -> Self
     where
@@ -18,18 +25,18 @@ pub trait IInput: Element {
 }
 
 pub enum Child {
-    Button(Box<dyn IButton>),
-    Input(Box<dyn IInput>),
+    Button(AWrap<dyn IButton>),
+    Input(AWrap<dyn IInput>),
 }
 
-impl From<Box<dyn IButton>> for Child {
-    fn from(button: Box<dyn IButton>) -> Self {
+impl From<AWrap<dyn IButton>> for Child {
+    fn from(button: AWrap<dyn IButton>) -> Self {
         Child::Button(button)
     }
 }
 
-impl From<Box<dyn IInput>> for Child {
-    fn from(input: Box<dyn IInput>) -> Self {
+impl From<AWrap<dyn IInput>> for Child {
+    fn from(input: AWrap<dyn IInput>) -> Self {
         Child::Input(input)
     }
 }

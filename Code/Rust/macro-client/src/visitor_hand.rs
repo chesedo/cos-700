@@ -1,5 +1,6 @@
 use crate::gui::elements::{Child, Element, IButton, IInput, Window};
 use std::fmt;
+use std::ops::Deref;
 
 pub trait Visitor {
     fn visit_element(&mut self, element: &dyn Element) {
@@ -16,19 +17,19 @@ pub trait Visitor {
     }
 }
 
-pub fn visit_element<V>(visitor: &mut V, element: &dyn Element)
+pub fn visit_element<V>(_visitor: &mut V, _element: &dyn Element)
 where
     V: Visitor + ?Sized,
 {
 }
 
-pub fn visit_button<V>(visitor: &mut V, button: &dyn IButton)
+pub fn visit_button<V>(_visitor: &mut V, _button: &dyn IButton)
 where
     V: Visitor + ?Sized,
 {
 }
 
-pub fn visit_input<V>(visitor: &mut V, input: &dyn IInput)
+pub fn visit_input<V>(_visitor: &mut V, _input: &dyn IInput)
 where
     V: Visitor + ?Sized,
 {
@@ -40,8 +41,8 @@ where
 {
     window.get_children().iter().for_each(|child| {
         match child {
-            Child::Button(button) => visitor.visit_button(button.as_ref()),
-            Child::Input(input) => visitor.visit_input(input.as_ref()),
+            Child::Button(button) => visitor.visit_button(button.read().unwrap().deref()),
+            Child::Input(input) => visitor.visit_input(input.read().unwrap().deref()),
         };
     });
 }
@@ -110,8 +111,9 @@ impl Visitor for VisitorName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::gui::elements::Child;
+    use crate::gui::elements::{AWrap, Child};
     use crate::gui::kde::{Input, KdeButton};
+    use std::sync::{Arc, RwLock};
 
     #[test]
     fn visit_button() {
@@ -127,13 +129,15 @@ mod tests {
     #[test]
     fn visit_window() {
         let mut window = Window::new(String::from("Holding window"));
-        let button: Box<dyn IButton> = Box::new(KdeButton::new(String::from("Some Button")));
-        let mut input: Box<dyn IInput> = Box::new(Input::new(String::from("Some Input")));
-
-        input.set_input(String::from("John Doe"));
+        let button: AWrap<dyn IButton> =
+            Arc::new(RwLock::new(KdeButton::new(String::from("Some Button"))));
+        let input: AWrap<dyn IInput> =
+            Arc::new(RwLock::new(Input::new(String::from("Some Input"))));
 
         window.add_child(Child::from(button));
-        window.add_child(Child::from(input));
+        window.add_child(Child::from(input.clone()));
+
+        input.write().unwrap().set_input(String::from("John Doe"));
 
         let mut visitor = VisitorName::new();
 
