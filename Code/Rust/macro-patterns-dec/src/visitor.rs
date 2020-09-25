@@ -28,8 +28,8 @@ macro_rules! visitor_trait_fn {
     };
     ($name:ident, $type:ty) => {
         paste::paste! {
-            fn [<visit_ $name:lower>](&mut self, [<$name:lower>]: $type) {
-                [<visit_ $name:lower>](self, [<$name:lower>])
+            fn [<visit_ $name:snake>](&mut self, [<$name:snake>]: $type) {
+                [<visit_ $name:snake>](self, [<$name:snake>])
             }
         }
     };
@@ -45,7 +45,7 @@ macro_rules! visitor_fn_helper {
     };
     ($name:ident, $type:ty) => {
         paste::paste! {
-            pub fn [<visit_ $name:lower>]<V>(_visitor: &mut V, [<_ $name:lower>]: $type)
+            pub fn [<visit_ $name:snake>]<V>(_visitor: &mut V, [<_ $name:snake>]: $type)
             where
                 V: Visitor + ?Sized,
             { }
@@ -65,7 +65,7 @@ macro_rules! visitor_visitable {
         paste::paste! {
             impl Visitable for $type {
                 fn apply(&self, visitor: &mut dyn Visitor) {
-                    visitor.[<visit_ $name:lower>](self);
+                    visitor.[<visit_ $name:snake>](self);
                 }
             }
         }
