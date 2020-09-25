@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! visitor {
     ($($types:tt),+) => {
-        visitor!($($types,)+)
+        visitor!($($types,)+);
     };
     ($($types:tt,)+) => {
         pub trait Visitor {
@@ -20,6 +20,15 @@ macro_rules! visitor {
 
 #[macro_export]
 macro_rules! visitor_trait_fn {
+    // Factor out template cases
+    ((&dyn $type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_trait_fn!((&dyn $type));
+    };
+    ((&$type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_trait_fn!((&$type));
+    };
+
+    // Handle minimal cases
     ((& dyn$type:ident)) => {
         $crate::visitor_trait_fn!($type, &dyn $type);
     };
@@ -37,6 +46,7 @@ macro_rules! visitor_trait_fn {
 
 #[macro_export]
 macro_rules! visitor_fn_helper {
+    // Cases without a custom template
     ((&dyn $type:ident)) => {
         $crate::visitor_fn_helper!($type, &dyn $type);
     };
@@ -51,10 +61,37 @@ macro_rules! visitor_fn_helper {
             { }
         }
     };
+
+    // Cases with a custom template
+    ((&dyn $type:tt[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_fn_helper!($type, &dyn $type, $tmpl);
+    };
+    ((&$type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_fn_helper!($type, &$type, $tmpl);
+    };
+    ($name:ident, $type:ty, $tmpl:ident) => {
+        paste::paste! {
+            pub fn [<visit_ $name:snake>]<V>(visitor: &mut V, [< $name:snake>]: $type)
+            where
+                V: Visitor + ?Sized,
+            {
+                $tmpl!([<$name:snake>]);
+            }
+        }
+    };
 }
 
 #[macro_export]
 macro_rules! visitor_visitable {
+    // Factor out template options
+    ((&dyn $type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_visitable!((&dyn $type));
+    };
+    ((&$type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_visitable!((&$type));
+    };
+
+    // Handle minimal cases
     ((&dyn $type:ident)) => {
         $crate::visitor_visitable!($type, dyn $type);
     };
