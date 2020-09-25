@@ -13,30 +13,30 @@ pub trait Element: Send + Sync {
     fn set_name(&mut self, name: String);
 }
 
-pub trait IButton: Element {
+pub trait Button: Element {
     fn click(&self);
     fn get_text(&self) -> &str;
     fn set_text(&mut self, text: String);
 }
 
-pub trait IInput: Element {
+pub trait Input: Element {
     fn get_input(&self) -> String;
     fn set_input(&mut self, input: String);
 }
 
 pub enum Child {
-    Button(AWrap<dyn IButton>),
-    Input(AWrap<dyn IInput>),
+    Button(AWrap<dyn Button>),
+    Input(AWrap<dyn Input>),
 }
 
-impl From<AWrap<dyn IButton>> for Child {
-    fn from(button: AWrap<dyn IButton>) -> Self {
+impl From<AWrap<dyn Button>> for Child {
+    fn from(button: AWrap<dyn Button>) -> Self {
         Child::Button(button)
     }
 }
 
-impl From<AWrap<dyn IInput>> for Child {
-    fn from(input: AWrap<dyn IInput>) -> Self {
+impl From<AWrap<dyn Input>> for Child {
+    fn from(input: AWrap<dyn Input>) -> Self {
         Child::Input(input)
     }
 }

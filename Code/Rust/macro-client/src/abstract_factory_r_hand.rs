@@ -2,7 +2,7 @@
 use crate::{abstract_factory_r, traits_expansion};
 
 use crate::gui::{
-    elements::{Element, IButton, Window},
+    elements::{Button, Element, Window},
     kde::KdeButton,
 };
 
@@ -12,7 +12,7 @@ pub trait Factory<T: Element + ?Sized> {
 
 pub trait Gui
 where
-    Self: Factory<dyn IButton>,
+    Self: Factory<dyn Button>,
     Self: Factory<Window>,
 {
 }
@@ -21,8 +21,8 @@ struct KDE {}
 
 impl Gui for KDE {}
 
-impl Factory<dyn IButton> for KDE {
-    fn create(&self, name: String) -> Box<dyn IButton> {
+impl Factory<dyn Button> for KDE {
+    fn create(&self, name: String) -> Box<dyn Button> {
         Box::new(KdeButton::new(name))
     }
 }
@@ -39,7 +39,7 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create(String::from("Some button"));
+        let actual: Box<dyn Button> = factory.create(String::from("Some button"));
 
         assert_eq!(actual.get_name(), "Some button");
     }

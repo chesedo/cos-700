@@ -3,15 +3,15 @@ use macro_patterns::{abstract_factory_trait, interpolate_traits};
 use std::fmt::{Display, Formatter, Result};
 
 use crate::gui::{
-    elements::{Element, IButton, IInput, Window},
-    kde::{Input, KdeButton},
+    elements::{Button, Element, Input, Window},
+    kde,
 };
 
 pub trait Factory<T: Element + ?Sized> {
     fn create(&self, name: String) -> Box<T>;
 }
 
-#[abstract_factory_trait(Factory, dyn IButton, dyn IInput, Window)]
+#[abstract_factory_trait(Factory, dyn Button, dyn Input, Window)]
 pub trait Gui: Display {}
 
 struct KDE {}
@@ -25,8 +25,8 @@ impl Display for KDE {
 }
 
 #[interpolate_traits(
-    IButton => KdeButton,
-    IInput => Input,
+    Button => kde::KdeButton,
+    Input => kde::Input,
 )]
 impl Factory<dyn TRAIT> for KDE {
     fn create(&self, name: String) -> Box<dyn TRAIT> {
@@ -48,7 +48,7 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create(String::from("Button"));
+        let actual: Box<dyn Button> = factory.create(String::from("Button"));
 
         assert_eq!(actual.get_name(), "Button");
     }

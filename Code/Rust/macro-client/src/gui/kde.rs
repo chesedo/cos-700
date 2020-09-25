@@ -1,11 +1,11 @@
-use super::elements::{Element, IButton, IInput};
+use super::elements;
 
 pub struct KdeButton {
     name: String,
     text: String,
 }
 
-impl Element for KdeButton {
+impl elements::Element for KdeButton {
     fn new(name: String) -> Self {
         KdeButton {
             name,
@@ -20,7 +20,7 @@ impl Element for KdeButton {
     }
 }
 
-impl IButton for KdeButton {
+impl elements::Button for KdeButton {
     fn click(&self) {
         unimplemented!()
     }
@@ -37,7 +37,7 @@ pub struct Input {
     input: String,
 }
 
-impl Element for Input {
+impl elements::Element for Input {
     fn new(name: String) -> Self {
         Input {
             name,
@@ -52,7 +52,7 @@ impl Element for Input {
     }
 }
 
-impl IInput for Input {
+impl elements::Input for Input {
     fn get_input(&self) -> String {
         self.input.to_owned()
     }

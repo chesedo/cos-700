@@ -3,15 +3,15 @@ use macro_patterns::{abstract_factory_trait, interpolate_traits};
 use std::fmt::{Display, Formatter, Result};
 
 use crate::gui::{
-    elements::{Element, IButton, IInput, Window},
-    kde::{Input, KdeButton},
+    elements::{Button, Element, Input, Window},
+    kde,
 };
 
 pub trait Factory<T: Element + ?Sized> {
     fn create(&self, name: String) -> Box<T>;
 }
 
-pub trait Gui: Display + Factory<dyn IButton> + Factory<dyn IInput> + Factory<Window> {}
+pub trait Gui: Display + Factory<dyn Button> + Factory<dyn Input> + Factory<Window> {}
 
 struct KDE {}
 
@@ -23,14 +23,14 @@ impl Display for KDE {
     }
 }
 
-impl Factory<dyn IButton> for KDE {
-    fn create(&self, name: String) -> Box<dyn IButton> {
-        Box::new(KdeButton::new(name))
+impl Factory<dyn Button> for KDE {
+    fn create(&self, name: String) -> Box<dyn Button> {
+        Box::new(kde::KdeButton::new(name))
     }
 }
-impl Factory<dyn IInput> for KDE {
-    fn create(&self, name: String) -> Box<dyn IInput> {
-        Box::new(Input::new(name))
+impl Factory<dyn Input> for KDE {
+    fn create(&self, name: String) -> Box<dyn Input> {
+        Box::new(kde::Input::new(name))
     }
 }
 impl Factory<Window> for KDE {
@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let actual: Box<dyn IButton> = factory.create(String::from("Button"));
+        let actual: Box<dyn Button> = factory.create(String::from("Button"));
 
         assert_eq!(actual.get_name(), "Button");
     }

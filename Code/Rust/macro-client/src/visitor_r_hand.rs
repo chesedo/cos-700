@@ -1,7 +1,6 @@
 #[allow(unused_imports)]
-use crate::gui::elements::{Child, Element, IButton, IInput, Window};
-use crate::traits_expansion;
-use paste::paste;
+use crate::gui::elements::{Button, Child, Element, Input, Window};
+use macro_patterns_dec::visitor;
 use std::fmt;
 use std::ops::Deref;
 
@@ -9,10 +8,10 @@ pub trait Visitor {
     fn visit_element(&mut self, element: &dyn Element) {
         visit_element(self, element)
     }
-    fn visit_button(&mut self, button: &dyn IButton) {
+    fn visit_button(&mut self, button: &dyn Button) {
         visit_button(self, button)
     }
-    fn visit_input(&mut self, input: &dyn IInput) {
+    fn visit_input(&mut self, input: &dyn Input) {
         visit_input(self, input)
     }
     fn visit_window(&mut self, window: &Window) {
@@ -26,13 +25,13 @@ where
 {
 }
 
-pub fn visit_button<V>(_visitor: &mut V, _button: &dyn IButton)
+pub fn visit_button<V>(_visitor: &mut V, _button: &dyn Button)
 where
     V: Visitor + ?Sized,
 {
 }
 
-pub fn visit_input<V>(_visitor: &mut V, _input: &dyn IInput)
+pub fn visit_input<V>(_visitor: &mut V, _input: &dyn Input)
 where
     V: Visitor + ?Sized,
 {
@@ -58,27 +57,27 @@ trait Visitable {
     fn apply(&self, visitor: &mut dyn Visitor);
 }
 
-impl Visitable for Window {
-    fn apply(&self, visitor: &mut dyn Visitor) {
-        visitor.visit_window(self);
-    }
-}
-
 impl Visitable for dyn Element {
     fn apply(&self, visitor: &mut dyn Visitor) {
         visitor.visit_element(self);
     }
 }
 
-impl Visitable for dyn IButton {
+impl Visitable for dyn Button {
     fn apply(&self, visitor: &mut dyn Visitor) {
         visitor.visit_button(self);
     }
 }
 
-impl Visitable for dyn IInput {
+impl Visitable for dyn Input {
     fn apply(&self, visitor: &mut dyn Visitor) {
         visitor.visit_input(self);
+    }
+}
+
+impl Visitable for Window {
+    fn apply(&self, visitor: &mut dyn Visitor) {
+        visitor.visit_window(self);
     }
 }
 
@@ -99,11 +98,11 @@ impl fmt::Display for VisitorName {
 }
 
 impl Visitor for VisitorName {
-    fn visit_button(&mut self, button: &dyn IButton) {
+    fn visit_button(&mut self, button: &dyn Button) {
         self.names.push(button.get_name().to_string());
     }
 
-    fn visit_input(&mut self, input: &dyn IInput) {
+    fn visit_input(&mut self, input: &dyn Input) {
         self.names
             .push(format!("{} ({})", input.get_name(), input.get_input()));
     }
@@ -119,7 +118,7 @@ impl Visitor for VisitorName {
 mod tests {
     use super::*;
     use crate::gui::elements::{AWrap, Child};
-    use crate::gui::kde::{Input, KdeButton};
+    use crate::gui::kde;
     use std::sync::{Arc, RwLock};
     use std::thread;
 
@@ -127,7 +126,7 @@ mod tests {
 
     #[test]
     fn visit_button() {
-        let button: &dyn IButton = &KdeButton::new(String::from("Some Button"));
+        let button: &dyn Button = &kde::KdeButton::new(String::from("Some Button"));
 
         let mut visitor = VisitorName::new();
 
@@ -139,10 +138,11 @@ mod tests {
     #[test]
     fn visit_window() -> Result {
         let window = Arc::new(RwLock::new(Window::new(String::from("Holding window"))));
-        let button: AWrap<dyn IButton> =
-            Arc::new(RwLock::new(KdeButton::new(String::from("Some Button"))));
-        let input: AWrap<dyn IInput> =
-            Arc::new(RwLock::new(Input::new(String::from("Some Input"))));
+        let button: AWrap<dyn Button> = Arc::new(RwLock::new(kde::KdeButton::new(String::from(
+            "Some Button",
+        ))));
+        let input: AWrap<dyn Input> =
+            Arc::new(RwLock::new(kde::Input::new(String::from("Some Input"))));
 
         window
             .write()

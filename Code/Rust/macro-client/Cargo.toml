@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 macro-patterns = { path = "../macro-patterns" }
+macro-patterns-dec = { path = "../macro-patterns-dec" }
 paste = "1.0"
 
 [dev-dependencies]

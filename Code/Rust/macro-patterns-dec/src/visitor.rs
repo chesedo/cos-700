@@ -94,7 +94,7 @@ macro_rules! visitor_fn_helper {
             where
                 V: Visitor + ?Sized,
             {
-                $tmpl!([<$name:snake>]);
+                $tmpl!([<$name:snake>], visitor);
             }
         }
     };

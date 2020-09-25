@@ -2,7 +2,7 @@
 use macro_patterns::{abstract_factory, concrete_factory};
 
 use crate::gui::{
-    elements::{Element, IButton, Window},
+    elements::{Button, Element, Window},
     kde::KdeButton,
 };
 
@@ -10,14 +10,14 @@ pub trait Factory<T: Element + ?Sized> {
     fn create(&self) -> Box<T>;
 }
 
-pub trait Gui: Factory<dyn IButton> + Factory<Window> {}
+pub trait Gui: Factory<dyn Button> + Factory<Window> {}
 
 struct KDE {}
 
 impl Gui for KDE {}
 
-impl Factory<dyn IButton> for KDE {
-    fn create(&self) -> Box<dyn IButton> {
+impl Factory<dyn Button> for KDE {
+    fn create(&self) -> Box<dyn Button> {
         Box::new(KdeButton::new(String::from("KDE Button")))
     }
 }
@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn button_factory() {
         let factory = KDE {};
-        let mut actual: Box<dyn IButton> = factory.create();
+        let mut actual: Box<dyn Button> = factory.create();
 
         actual.set_text(String::from("Close document"));
 

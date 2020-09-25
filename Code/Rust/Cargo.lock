@@ -527,6 +527,7 @@ name = "macro-client"
 version = "0.1.0"
 dependencies = [
  "macro-patterns",
+ "macro-patterns-dec",
  "macro-test-helpers",
  "paste",
  "pretty_assertions",
