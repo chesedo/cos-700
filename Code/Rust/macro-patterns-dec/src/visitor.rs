@@ -1,5 +1,8 @@
 #[macro_export]
 macro_rules! visitor {
+    ($($types:tt),+) => {
+        visitor!($($types,)+)
+    };
     ($($types:tt,)+) => {
         pub trait Visitor {
             $(visitor_trait_fn!($types);)*
