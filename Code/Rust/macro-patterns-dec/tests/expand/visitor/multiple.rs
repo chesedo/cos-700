@@ -7,6 +7,6 @@ visitor!(
     (&dyn SelectBox),
     (&dyn RadioButton),
     (&dyn Checkbox),
-    (Window),
-    (Group),
+    (&Window),
+    (&Group),
 );

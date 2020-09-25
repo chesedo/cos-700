@@ -18,6 +18,12 @@ pub trait Visitor {
     fn visit_checkbox(&mut self, checkbox: &dyn Checkbox) {
         visit_checkbox(self, checkbox)
     }
+    fn visit_window(&mut self, window: &Window) {
+        visit_window(self, window)
+    }
+    fn visit_group(&mut self, group: &Group) {
+        visit_group(self, group)
+    }
 }
 pub fn visit_input<V>(_visitor: &mut V, _input: &dyn Input)
 where
@@ -45,6 +51,16 @@ where
 {
 }
 pub fn visit_checkbox<V>(_visitor: &mut V, _checkbox: &dyn Checkbox)
+where
+    V: Visitor + ?Sized,
+{
+}
+pub fn visit_window<V>(_visitor: &mut V, _window: &Window)
+where
+    V: Visitor + ?Sized,
+{
+}
+pub fn visit_group<V>(_visitor: &mut V, _group: &Group)
 where
     V: Visitor + ?Sized,
 {
@@ -80,5 +96,15 @@ impl Visitable for dyn RadioButton {
 impl Visitable for dyn Checkbox {
     fn apply(&self, visitor: &mut dyn Visitor) {
         visitor.visit_checkbox(self);
+    }
+}
+impl Visitable for Window {
+    fn apply(&self, visitor: &mut dyn Visitor) {
+        visitor.visit_window(self);
+    }
+}
+impl Visitable for Group {
+    fn apply(&self, visitor: &mut dyn Visitor) {
+        visitor.visit_group(self);
     }
 }
