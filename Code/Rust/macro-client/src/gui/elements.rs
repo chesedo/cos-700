@@ -5,7 +5,7 @@ use std::sync::{Arc, RwLock};
 pub type Wrap<T> = Rc<RefCell<T>>;
 pub type AWrap<T> = Arc<RwLock<T>>;
 
-pub trait Element {
+pub trait Element: Send + Sync {
     fn new(name: String) -> Self
     where
         Self: Sized;
@@ -62,8 +62,10 @@ impl Element for Window {
 }
 
 impl Window {
-    pub fn add_child(&mut self, child: Child) {
+    pub fn add_child(&mut self, child: Child) -> &mut Self {
         self.children.push(child);
+
+        self
     }
     pub fn get_children(&self) -> &[Child] {
         &self.children
