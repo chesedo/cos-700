@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{abstract_factory_r, concrete_factory_r};
+use crate::{abstract_factory_r, traits_expansion};
 
 use crate::gui::{
     elements::{Element, IButton, Window},
@@ -16,7 +16,7 @@ struct KDE {}
 
 impl Gui for KDE {}
 
-macro_rules! factory {
+macro_rules! trait_expand {
     ($trait:ty, $concrete:ident) => {
         impl Factory<$trait> for KDE {
             fn create(&self, name: String) -> Box<$trait> {
@@ -26,7 +26,7 @@ macro_rules! factory {
     };
 }
 
-concrete_factory_r!(dyn IButton => KdeButton, Window => Window);
+traits_expansion!(dyn IButton => KdeButton, Window => Window);
 
 #[cfg(test)]
 mod tests {

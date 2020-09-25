@@ -22,12 +22,12 @@ macro_rules! abstract_factory_r {
     };
 }
 
-/// Call the local factory! macro rule for each trait to concrete mapping seperated by a comma
+/// Call the local trait_expand! macro rule for each trait to concrete mapping seperated by a comma
 /// So each mapping is `trait => concrete_impelmentation`
 #[macro_export]
-macro_rules! concrete_factory_r {
+macro_rules! traits_expansion {
     ($($traits:ty => $concretes:ident),+) => {
-        $(factory!($traits, $concretes);)*
+        $(trait_expand!($traits, $concretes);)*
     };
 }
 

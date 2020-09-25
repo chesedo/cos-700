@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{abstract_factory_r, concrete_factory_r};
+use crate::{abstract_factory_r, traits_expansion};
 
 use crate::gui::{
     elements::{Element, IButton, Window},
