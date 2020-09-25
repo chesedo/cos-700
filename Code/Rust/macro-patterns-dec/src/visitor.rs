@@ -9,6 +9,12 @@ macro_rules! visitor {
         }
 
         $($crate::visitor_fn_helper!($types);)*
+
+        trait Visitable {
+            fn apply(&self, visitor: &mut dyn Visitor);
+        }
+
+        $($crate::visitor_visitable!($types);)*
     };
 }
 
@@ -43,6 +49,25 @@ macro_rules! visitor_fn_helper {
             where
                 V: Visitor + ?Sized,
             { }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! visitor_visitable {
+    ((&dyn $type:ident)) => {
+        $crate::visitor_visitable!($type, dyn $type);
+    };
+    ((&$type:ident)) => {
+        $crate::visitor_visitable!($type, $type);
+    };
+    ($name:ident, $type:ty) => {
+        paste::paste! {
+            impl Visitable for $type {
+                fn apply(&self, visitor: &mut dyn Visitor) {
+                    visitor.[<visit_ $name:lower>](self);
+                }
+            }
         }
     };
 }

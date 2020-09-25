@@ -9,3 +9,11 @@ where
     V: Visitor + ?Sized,
 {
 }
+trait Visitable {
+    fn apply(&self, visitor: &mut dyn Visitor);
+}
+impl Visitable for dyn Input {
+    fn apply(&self, visitor: &mut dyn Visitor) {
+        visitor.visit_input(self);
+    }
+}
