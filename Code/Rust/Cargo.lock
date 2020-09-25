@@ -275,6 +275,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "diff"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e25ea47919b1560c4e3b7fe0aaab9becf5b84a10325ddf7db0f0ba5e1026499"
+
+[[package]]
 name = "difference"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -416,6 +422,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "glob"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
+
+[[package]]
 name = "globset"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -544,11 +556,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "macro-patterns-dec"
+version = "0.1.0"
+dependencies = [
+ "macrotest",
+]
+
+[[package]]
 name = "macro-test-helpers"
 version = "0.1.0"
 dependencies = [
  "cargo-expand",
  "pretty_assertions",
+]
+
+[[package]]
+name = "macrotest"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9cf981db0eb147d326a97b6fece73a875524f9e68fd44a453caaa91676c34901"
+dependencies = [
+ "diff",
+ "glob",
+ "rand",
+ "serde",
+ "serde_json",
+ "toml",
 ]
 
 [[package]]

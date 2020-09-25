@@ -4,5 +4,6 @@ members = [
     "macro-client",
     "macro-lib",
     "macro-patterns",
+    "macro-patterns-dec",
     "macro-test-helpers",
 ]
