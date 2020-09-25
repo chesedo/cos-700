@@ -5,20 +5,20 @@ macro_rules! visitor {
     };
     ($($types:tt,)+) => {
         pub trait Visitor {
-            $(visitor_trait_fn!($types);)*
+            $($crate::visitor_trait_fn!($types);)*
         }
 
-        $(visitor_fn_helper!($types);)*
+        $($crate::visitor_fn_helper!($types);)*
     };
 }
 
 #[macro_export]
 macro_rules! visitor_trait_fn {
     ((& dyn$type:ident)) => {
-        visitor_trait_fn!($type, &dyn $type);
+        $crate::visitor_trait_fn!($type, &dyn $type);
     };
     ((&$type:ident)) => {
-        visitor_trait_fn!($type, &$type);
+        $crate::visitor_trait_fn!($type, &$type);
     };
     ($name:ident, $type:ty) => {
         paste::paste! {
@@ -32,16 +32,16 @@ macro_rules! visitor_trait_fn {
 #[macro_export]
 macro_rules! visitor_fn_helper {
     ((&dyn $type:ident)) => {
-        visitor_fn_helper!($type, &dyn $type);
+        $crate::visitor_fn_helper!($type, &dyn $type);
     };
     ((&$type:ident)) => {
-        visitor_fn_helper!($type, &$type);
+        $crate::visitor_fn_helper!($type, &$type);
     };
     ($name:ident, $type:ty) => {
         paste::paste! {
             pub fn [<visit_ $name:lower>]<V>(_visitor: &mut V, [<_ $name:lower>]: $type)
-        where
-            V: Visitor + ?Sized,
+            where
+                V: Visitor + ?Sized,
             { }
         }
     };

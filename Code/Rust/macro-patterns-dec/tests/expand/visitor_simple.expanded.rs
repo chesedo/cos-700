@@ -1,4 +1,4 @@
-use macro_patterns_dec::{visitor, visitor_fn_helper, visitor_trait_fn};
+use macro_patterns_dec::visitor;
 pub trait Visitor {
     fn visit_input(&mut self, input: &dyn Input) {
         visit_input(self, input)
