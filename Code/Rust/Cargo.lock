@@ -516,6 +516,7 @@ version = "0.1.0"
 dependencies = [
  "macro-patterns",
  "macro-test-helpers",
+ "paste",
  "pretty_assertions",
 ]
 
@@ -593,6 +594,12 @@ checksum = "53cdc5b785b7a58c5aad8216b3dfa114df64b0b06ae6e1501cef91df2fbdf8f9"
 dependencies = [
  "winapi",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0520af26d4cf99643dbbe093a61507922b57232d9978d8491fdc8f7b44573c8c"
 
 [[package]]
 name = "path_abs"
