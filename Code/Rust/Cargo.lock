@@ -560,6 +560,7 @@ name = "macro-patterns-dec"
 version = "0.1.0"
 dependencies = [
  "macrotest",
+ "paste",
 ]
 
 [[package]]

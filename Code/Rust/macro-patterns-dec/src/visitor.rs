@@ -14,20 +14,35 @@ macro_rules! visitor {
 
 #[macro_export]
 macro_rules! visitor_trait_fn {
-    (($type:ty)) => {
-        fn visit_input(&mut self, input: $type) {
-            visit_input(self, input)
+    ((& dyn$type:ident)) => {
+        visitor_trait_fn!($type, &dyn $type);
+    };
+    ((&$type:ident)) => {
+        visitor_trait_fn!($type, &$type);
+    };
+    ($name:ident, $type:ty) => {
+        paste::paste! {
+            fn [<visit_ $name:lower>](&mut self, [<$name:lower>]: $type) {
+                [<visit_ $name:lower>](self, [<$name:lower>])
+            }
         }
     };
 }
 
 #[macro_export]
 macro_rules! visitor_fn_helper {
-    (($type:ty)) => {
-        pub fn visit_input<V>(_visitor: &mut V, _input: $type)
+    ((&dyn $type:ident)) => {
+        visitor_fn_helper!($type, &dyn $type);
+    };
+    ((&$type:ident)) => {
+        visitor_fn_helper!($type, &$type);
+    };
+    ($name:ident, $type:ty) => {
+        paste::paste! {
+            pub fn [<visit_ $name:lower>]<V>(_visitor: &mut V, [<_ $name:lower>]: $type)
         where
             V: Visitor + ?Sized,
-        {
+            { }
         }
     };
 }
