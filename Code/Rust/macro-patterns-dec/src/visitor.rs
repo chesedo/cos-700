@@ -5,16 +5,16 @@ macro_rules! visitor {
     };
     ($($types:tt,)+) => {
         pub trait Visitor {
-            $($crate::visitor_trait_fn!($types);)*
+            $($crate::visitor_trait_fn!($types);)+
         }
 
-        $($crate::visitor_fn_helper!($types);)*
+        $($crate::visitor_fn_helper!($types);)+
 
         trait Visitable {
             fn apply(&self, visitor: &mut dyn Visitor);
         }
 
-        $($crate::visitor_visitable!($types);)*
+        $($crate::visitor_visitable!($types);)+
     };
 }
 
