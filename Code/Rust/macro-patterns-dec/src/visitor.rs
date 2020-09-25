@@ -42,6 +42,25 @@ macro_rules! visitor_trait_fn {
             }
         }
     };
+
+    // Handle no helpers / default cases
+    ((&dyn $type:ident[ helper_fn = false ])) => {
+        $crate::visitor_trait_fn!((&dyn $type, no_default));
+    };
+    ((&$type:ident[ helper_fn = false ])) => {
+        $crate::visitor_trait_fn!((&$type, no_default));
+    };
+    ((& dyn$type:ident, no_default)) => {
+        $crate::visitor_trait_fn!($type, &dyn $type, no_default);
+    };
+    ((&$type:ident, no_default)) => {
+        $crate::visitor_trait_fn!($type, &$type, no_default);
+    };
+    ($name:ident, $type:ty, no_default) => {
+        paste::paste! {
+            fn [<visit_ $name:snake>](&mut self, [<$name:snake>]: $type);
+        }
+    };
 }
 
 #[macro_export]
@@ -79,6 +98,10 @@ macro_rules! visitor_fn_helper {
             }
         }
     };
+
+    // Handle no helpers cases - ie do nothing
+    ((&dyn $type:ident[ helper_fn = false ])) => {};
+    ((&$type:ident[ helper_fn = false ])) => {};
 }
 
 #[macro_export]
@@ -88,6 +111,14 @@ macro_rules! visitor_visitable {
         $crate::visitor_visitable!((&dyn $type));
     };
     ((&$type:ident[ helper_tmpl = $tmpl:ident ])) => {
+        $crate::visitor_visitable!((&$type));
+    };
+
+    // Factor out no helper / defauld options
+    ((&dyn $type:ident[ helper_fn = false ])) => {
+        $crate::visitor_visitable!((&dyn $type));
+    };
+    ((&$type:ident[ helper_fn = false ])) => {
         $crate::visitor_visitable!((&$type));
     };
 
