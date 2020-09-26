@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{abstract_factory_r, traits_expansion};
+use macro_patterns_dec::{abstract_factory, concrete_factory};
 
 use crate::gui::{
     elements::{Button, Element, Window},
@@ -10,12 +10,7 @@ pub trait Factory<T: Element + ?Sized> {
     fn create(&self, name: String) -> Box<T>;
 }
 
-pub trait Gui
-where
-    Self: Factory<dyn Button>,
-    Self: Factory<Window>,
-{
-}
+pub trait Gui: Factory<dyn Button> + Factory<Window> {}
 
 struct KDE {}
 
@@ -23,12 +18,12 @@ impl Gui for KDE {}
 
 impl Factory<dyn Button> for KDE {
     fn create(&self, name: String) -> Box<dyn Button> {
-        Box::new(KdeButton::new(name))
+        Box::new(<KdeButton>::new(name))
     }
 }
 impl Factory<Window> for KDE {
     fn create(&self, name: String) -> Box<Window> {
-        Box::new(Window::new(name))
+        Box::new(<Window>::new(name))
     }
 }
 

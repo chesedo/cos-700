@@ -12,17 +12,6 @@ mod gui;
 
 fn main() {}
 
-/// Makes a trait `t` be a subtriat for each factory `f` having one generic type for each type in `types`
-/// Cannot be broken down further since macro rules cannot appear in the where clause
-#[macro_export]
-macro_rules! abstract_factory_r {
-    ($v:vis $t:ident, $f:ident, $($types:ty),+) => {
-        $v trait $t
-        where
-        $(Self: $f<$types>),* {}
-    };
-}
-
 /// Call the local trait_expand! macro rule for each trait to concrete mapping seperated by a comma - allows a trailing comma
 /// So each mapping is `trait => concrete_impelmentation`
 #[macro_export]

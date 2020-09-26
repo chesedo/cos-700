@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::{abstract_factory_r, traits_expansion};
+use macro_patterns_dec::{abstract_factory, concrete_factory};
 
 use crate::gui::{
     elements::{Button, Element, Window},
@@ -10,23 +10,33 @@ pub trait Factory<T: Element + ?Sized> {
     fn create(&self, name: String) -> Box<T>;
 }
 
-abstract_factory_r!(pub Gui, Factory, dyn Button, Window);
+abstract_factory!(
+    pub trait Gui: Factory<T> {
+     dyn Button,
+     Window,
+    }
+);
 
 struct KDE {}
 
 impl Gui for KDE {}
 
-macro_rules! trait_expand {
-    ($trait:ty, $concrete:ident) => {
-        impl Factory<$trait> for KDE {
-            fn create(&self, name: String) -> Box<$trait> {
-                Box::new($concrete::new(name))
-            }
+macro_rules! create_named {
+    ($concrete:ty: $trait:ty) => {
+        fn create(&self, name: String) -> Box<$trait> {
+            Box::new(<$concrete>::new(name))
         }
     };
 }
 
-traits_expansion!(dyn Button => KdeButton, Window => Window);
+concrete_factory!(
+    create_named(
+        impl Factory<T> for KDE {
+            KdeButton: dyn Button,
+            Window: Window,
+        }
+    )
+);
 
 #[cfg(test)]
 mod tests {
