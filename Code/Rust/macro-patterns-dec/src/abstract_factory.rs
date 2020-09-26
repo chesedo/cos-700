@@ -6,8 +6,7 @@ macro_rules! abstract_factory {
         $crate::abstract_factory!($v $t: $f<T>, ($($types,)+));
     };
     ($v:vis $t:ident: $f:ident<T>, ($($types:ty,)+)) => {
-        $v trait $t
-        where
-        $(Self: $f<$types>),* {}
+        $v trait $t: $($f<$types> +)*
+        {}
     };
 }
