@@ -10,3 +10,12 @@ macro_rules! abstract_factory {
         {}
     };
 }
+
+#[macro_export]
+macro_rules! concrete_factory {
+    ($tmpl:ident(impl $trait:ident<T> for $struct:ty {$($concrete:ident: $abstract:ty,)+})) => {
+        $(impl $trait<$abstract> for $struct {
+            $tmpl!($concrete: $abstract);
+        })+
+    };
+}
