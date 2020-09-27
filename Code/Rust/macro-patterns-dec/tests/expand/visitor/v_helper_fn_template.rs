@@ -12,6 +12,9 @@ macro_rules! children_walker {
 }
 
 visitor!(
-    (&Window[ helper_tmpl = children_walker ]),
-    (&dyn Group[ helper_tmpl = children_walker ]),
+    #[helper_tmpl = children_walker]
+    Window,
+
+    #[helper_tmpl = children_walker]
+    dyn Group,
 );

@@ -18,10 +18,12 @@ macro_rules! children_walker {
 }
 
 visitor!(
-    (&dyn Element),
-    (&dyn Button),
-    (&dyn Input),
-    (&Window[helper_tmpl = children_walker]),
+    dyn Element,
+    dyn Button,
+    dyn Input,
+
+    #[helper_tmpl = children_walker]
+    Window,
 );
 
 struct VisitorName {
