@@ -94,50 +94,87 @@
 % So far not needed for selected patterns
 
 \section{Rust}
-Rust is a relatively new language created by Mozilla with the aim on being memory safe yet have low level like performance \cite{klabnik_2019_01}. Traditionally, languages that are memory safe will make use of a garbage collector which slows performance \cite{hertz_05_01}. Garbage collector languages include C\# \cite{robinson_04_01}, Java \cite{gosling_96_01}, Python \cite{martelli_06_01}, Golang \cite{tsoukalos_18_01} and Javascript \cite{flanagan_06_01}. Languages that perform well use manual memory management which is not memory safe when the programmer is not carefull. Dangling pointers \cite{caballero_12_01}, memory leaks \cite{wilson_92_01} and double freeing \cite{sharp_13_01} in languages like C and C++ are prime examples of manual memory management problems \cite{konrad_18_01}. Few languages have both memory safety and performance, but Rust is able to achieve both by using a less popular model known as ownership.
+Rust is a relatively new language created by Mozilla with the aim on being memory safe yet have low level like performance \cite{klabnik_2019_01}.
+Traditionally, languages that are memory safe will make use of a garbage collector which slows performance \cite{hertz_05_01}.
+Garbage collector languages include C\# \cite{robinson_04_01}, Java \cite{gosling_96_01}, Python \cite{martelli_06_01}, Golang \cite{tsoukalos_18_01} and Javascript \cite{flanagan_06_01}.
+Languages that perform well use manual memory management which is not memory safe when the programmer is not carefull.
+Dangling pointers \cite{caballero_12_01}, memory leaks \cite{wilson_92_01} and double freeing \cite{sharp_13_01} in languages like C and C++ are prime examples of manual memory management problems \cite{konrad_18_01}.
+Few languages have both memory safety and performance, but Rust is able to achieve both by using a less popular model known as ownership.
 
 \subsection{Ownership}
-In the ownership model the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data. Each data piece can only be owned by one variable at a time. The owning variable is called the \textit{owner}. \cite{klabnik_2019_01}
+In the ownership model the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data.
+Each data piece can only be owned by one variable at a time.
+The owning variable is called the \textit{owner}.
+\cite{klabnik_2019_01}
 
-A variable also has a scope. The scope start at the variable declaration and ends at the closing curly bracket for the code block the variable is in. When the owner goes out of scope, Rust returns the memory by calling the \textit{drop} method at the end of the scope. Ownership is manifested in two forms -- moving and borrowing. These two forms are explained next. \cite{klabnik_2019_01}
+A variable also has a scope.
+The scope start at the variable declaration and ends at the closing curly bracket for the code block the variable is in.
+When the owner goes out of scope, Rust returns the memory by calling the \textit{drop} method at the end of the scope.
+Ownership is manifested in two forms -- moving and borrowing.
+These two forms are explained next.
+\cite{klabnik_2019_01}
 
 \subsubsection{Moving}
-Moving happens when one variable is assigned to another. The compiler's analysis moves ownership of the data to the new variable from the initial variable. The initial variable is also invalidated at this point \cite{klabnik_2019_01}. An analogy example would be to give a book to a friend. The friend can do anything from anotating to burning the book as they feel fit.
+Moving happens when one variable is assigned to another.
+The compiler's analysis moves ownership of the data to the new variable from the initial variable.
+The initial variable is also invalidated at this point \cite{klabnik_2019_01}.
+An analogy example would be to give a book to a friend.
+The friend can do anything from anotating to burning the book as they feel fit.
 
 \embed[firstline=2,lastline=7]{Example of ownership transfer}{Rust/moved}
 
-In \fref{lst:Rust/moved}, on line 2, a heap data object is created and assigned to variable \textit{s}. Line 3 assigns \textit{s} to \textit{t}. But, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
+In \fref{lst:Rust/moved}, on line 2, a heap data object is created and assigned to variable \textit{s}.
+Line 3 assigns \textit{s} to \textit{t}.
+But, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
-When trying to use the data on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved. In fact any reference to \textit{s} after line 3 will always give a compiler error.
+When trying to use the data on line 5, via \textit{s}, the compiler therefore throws an error saying that \textit{s} was moved.
+In fact any reference to \textit{s} after line 3 will always give a compiler error.
 
-Finally, the scope of \textit{t} ends on line 6. Since the compiler is able to guarantee \textit{t} is the only variable owning the data, the compiler can free the memory on line 6.
+Finally, the scope of \textit{t} ends on line 6.
+Since the compiler is able to guarantee \textit{t} is the only variable owning the data, the compiler can free the memory on line 6.
 
 \embed{Function taking ownership}{Rust/fn-move}
 
-Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:Rust/fn-move}. The \textit{take\_ownership} function takes ownership of the heap data which results in memory cleanup code correctly being inserted at the end of \textit{take\_ownership} scope on line 10. When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, thus making the call on line 5 invalid. When taking ownership like this is not desired the second form of ownership, borrowing, should be used instead.
+Having ownership moving makes great memory guarantees within a function, but is annoying when calling another function as seen in \fref{lst:Rust/fn-move}.
+The \textit{take\_ownership} function takes ownership of the heap data which results in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope on line 10.
+When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, thus making the call on line 5 invalid.
+When taking ownership like this is not desired the second form of ownership, borrowing, should be used instead.
 
 \subsubsection{Borrowing}
 
-Borrowing has a new variable take a references to data rather than becoming its new owner \cite{klabnik_2019_01}. It is analogous to borrowing a book from a friend where a promise is made that the book will be returned to its owner once done with it.
+Borrowing has a new variable take a references to data rather than becoming its new owner \cite{klabnik_2019_01}.
+It is analogous to borrowing a book from a friend where a promise is made that the book will be returned to its owner once done with it.
 
 \embed{Function taking borrow}{Rust/fn-borrow}
 
-As seen in \fref{lst:Rust/fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data. References are activated with an ampersand (\textit{\&}) before the type. Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted. Having references as function parameters is called borrowing \cite{klabnik_2019_01}. The ampersand is also used in the call argument to signal that the called function will borrow the data.
+As seen in \fref{lst:Rust/fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data.
+References are activated with an ampersand (\textit{\&}) before the type.
+Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted.
+Having references as function parameters is called borrowing \cite{klabnik_2019_01}.
+The ampersand is also used in the call argument to signal that the called function will borrow the data.
 
-But in Rust, all variables are immutable by default \cite{klabnik_2019_01}. So trying to change the data in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9. This is much the same as the borrowed book. One would not make highlights and notes in a book that is borrowed, unless if explicit permission was given to do so by the owner.
+But in Rust, all variables are immutable by default \cite{klabnik_2019_01}.
+So trying to change the data in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9.
+This is much the same as the borrowed book.
+One would not make highlights and notes in a book that is borrowed, unless if explicit permission was given to do so by the owner.
 
 \subsection{Immutable by default}
 Mutable borrows are an explixit indication that a function / variable is allowed to change the data.
 
 \embed{Function taking mutable borrow}{Rust/fn-mut-borrow}
 
-As seen in \fref{lst:Rust/fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type. Again, it is also used in the call to make it explicit that the function will modify the data. Variables -- on the stack or heap -- also need to be declared \textit{mut} to be able to use them as mutable. \cite{klabnik_2019_01}
+As seen in \fref{lst:Rust/fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type.
+Again, it is also used in the call to make it explicit that the function will modify the data.
+Variables -- on the stack or heap -- also need to be declared \textit{mut} to be able to use them as mutable.
+\cite{klabnik_2019_01}
 
 The two ownership forms - moving and borrowing - together with mutables put some constraints on the code of each variable type and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
   \item Moving will always invalidate the variable.
-  \item Borrowed variables cannot be mutated. But more than one function can borrow the data at the same time in parallel and concurrent code.
-  \item Mutable borrowing does allow mutations. But only one function can hold a mutable borrow at a time and no other immutable borrows can exist.
+  \item Borrowed variables cannot be mutated.
+        But more than one function can borrow the data at the same time in parallel and concurrent code.
+  \item Mutable borrowing does allow mutations.
+        But only one function can hold a mutable borrow at a time and no other immutable borrows can exist.
 \end{itemize}
 
 The constraints will always be enforced by the compiler, thus requiring all code to meet them.
