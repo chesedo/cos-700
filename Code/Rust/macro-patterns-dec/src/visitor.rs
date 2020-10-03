@@ -4,14 +4,14 @@ macro_rules! visitor {
     // https://github.com/rust-lang/rust/issues/49629
     (
         $(
-            $(#[$($attr:tt)+])*
+            $(#$attr:tt)*
             $($types:ident)+,
         )+
     ) => {
         pub trait Visitor {
             $(
                 $crate::visitor_trait_fn!(
-                    $(#[$($attr)+])*
+                    $(#$attr)*
                     $($types)+
                 );
             )+
@@ -19,7 +19,7 @@ macro_rules! visitor {
 
         $(
             $crate::visitor_fn_helper!(
-                $(#[$($attr)+])*
+                $(#$attr)*
                 $($types)+
             );
         )+
@@ -45,12 +45,12 @@ macro_rules! visitor_trait_fn {
     };
 
     (
-        #[$($_attr_head:tt)+]
-        $(#[$($attr_tail:tt)+])*
+        #$_attr_head:tt
+        $(#$attr_tail:tt)*
         $($types:ident)+
     ) => {
         $crate::visitor_trait_fn!(
-            $(#[$($attr_tail)+])*
+            $(#$attr_tail)*
             $($types)+
         );
     };
@@ -107,12 +107,12 @@ macro_rules! visitor_fn_helper {
     };
 
     (
-        #[$($_attr_head:tt)+]
-        $(#[$($attr_tail:tt)+])*
+        #$_attr_head:tt
+        $(#$attr_tail:tt)*
         $($types:ident)+
     ) => {
-        $crate::visitor_fn_helpe!(
-            $(#[$($attr_tail)+])*
+        $crate::visitor_fn_helper!(
+            $(#$attr_tail)*
             $($types)+
         );
     };
@@ -182,4 +182,34 @@ macro_rules! visitor_visitable {
             }
         }
     };
+}
+
+#[cfg(test)]
+mod test {
+    //! Just to test if compilation is successful
+
+    use std::fmt::{Debug, Display};
+    use std::string::ToString;
+
+    macro_rules! custom_template {
+        ($var_name:ident, $visitor_name:ident) => {
+            $visitor_name.visit_debug($var_name);
+        };
+    }
+
+    visitor!(
+        u32,
+
+        #[helper_fn = false]
+        i32,
+
+        dyn Display,
+
+        #[helper_tmpl = custom_template]
+        dyn Debug,
+
+        #[helper_tmpl = custom_template]
+        #[helper_fn = false]
+        dyn ToString,
+    );
 }
