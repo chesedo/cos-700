@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
+#[allow(dead_code)]
 pub type Wrap<T> = Rc<RefCell<T>>;
 pub type AWrap<T> = Arc<RwLock<T>>;
 

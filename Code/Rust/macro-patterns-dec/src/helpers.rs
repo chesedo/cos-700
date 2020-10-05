@@ -32,6 +32,7 @@ mod test {
     macro_rules! template {
         ($name:ident, $type:ty) => {
             paste::paste! {
+                #[allow(dead_code)]
                 struct [<Test $name>] {
                     $name: $type,
                 }
@@ -39,11 +40,11 @@ mod test {
         };
     }
     macro_rules! make_struct {
-        ($type:ty) => {
-            expand_trim_dyn!($crate::template, $type);
+        ($($type:ident)+) => {
+            expand_trim_dyn!($crate::template, $($type)+);
         };
     }
 
     make_struct!(str);
-    expand_trim_dyn!(template, dyn Display);
+    make_struct!(dyn Display);
 }

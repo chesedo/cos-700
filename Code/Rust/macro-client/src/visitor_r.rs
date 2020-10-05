@@ -1,5 +1,5 @@
-#[allow(unused_imports)]
 use crate::gui::elements::{Button, Child, Element, Input, Window};
+#[allow(unused_imports)]
 use macro_patterns_dec::visitor;
 use std::fmt;
 use std::ops::Deref;
@@ -31,6 +31,7 @@ struct VisitorName {
 }
 
 impl VisitorName {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         VisitorName { names: Vec::new() }
     }
