@@ -29,7 +29,7 @@ macro_rules! visitor {
         }
 
         $(
-            $crate::visitor_visitable!($($types)+);
+            $crate::expand_trim_dyn!($crate::visitor_visitable_impl, $($types)+);
         )+
     };
 }
@@ -39,50 +39,39 @@ macro_rules! visitor_trait_fn {
     // Unstack attributes and redirect
     (
         #[helper_fn = false]
-        $($types:ident)+
+        $($type:ident)+
     ) => {
-        $crate::visitor_trait_fn!(__no_default, $($types)+);
+        $crate::expand_trim_dyn!($crate::visitor_trait_fn_no_default, $($type)+);
     };
 
     (
         #$_attr_head:tt
         $(#$attr_tail:tt)*
-        $($types:ident)+
+        $($type:ident)+
     ) => {
         $crate::visitor_trait_fn!(
             $(#$attr_tail)*
-            $($types)+
+            $($type)+
         );
     };
 
-    // Handle no helpers / default case
-    (__no_default, dyn $type:ty) => {
-        paste::paste! {
-            $crate::visitor_trait_fn!(__no_default, [<$type:snake>], dyn $type);
-        }
+    // Handle default case
+    ($($type:ident)+) => {
+        $crate::expand_trim_dyn!($crate::visitor_trait_fn_default, $($type)+);
     };
-    (__no_default, $type:ty) => {
-        paste::paste! {
-            $crate::visitor_trait_fn!(__no_default, [<$type:snake>], $type);
-        }
-    };
-    (__no_default, $name:ident, $type:ty) => {
+}
+
+#[macro_export]
+macro_rules! visitor_trait_fn_no_default {
+    ($name:ident, $type:ty) => {
         paste::paste! {
             fn [<visit_ $name>](&mut self, $name: &$type);
         }
     };
+}
 
-    // Handle default case
-    (dyn $type:ty) => {
-        paste::paste! {
-            $crate::visitor_trait_fn!([<$type:snake>], dyn $type);
-        }
-    };
-    ($type:ty) => {
-        paste::paste! {
-            $crate::visitor_trait_fn!([<$type:snake>], $type);
-        }
-    };
+#[macro_export]
+macro_rules! visitor_trait_fn_default {
     ($name:ident, $type:ty) => {
         paste::paste! {
             fn [<visit_ $name>](&mut self, $name: &$type) {
@@ -97,38 +86,35 @@ macro_rules! visitor_fn_helper {
     // Unstack attributes and redirect
     (
         #[helper_fn = false]
-        $($types:ident)+
+        $($type:ident)+
     ) => {};
     (
         #[helper_tmpl = $tmpl:ident]
-        $($types:ident)+
+        $($type:ident)+
     ) => {
-        $crate::visitor_fn_helper!(__tmpl, $tmpl, $($types)+);
+        $crate::expand_trim_dyn!($crate::visitor_fn_helper_custom, $($type)+, $tmpl);
     };
 
     (
         #$_attr_head:tt
         $(#$attr_tail:tt)*
-        $($types:ident)+
+        $($type:ident)+
     ) => {
         $crate::visitor_fn_helper!(
             $(#$attr_tail)*
-            $($types)+
+            $($type)+
         );
     };
 
-    // Handle case with custom template
-    (__tmpl, $tmpl:ident, dyn $type:ty) => {
-        paste::paste! {
-            $crate::visitor_fn_helper!(__tmpl, $tmpl, [<$type:snake>], dyn $type);
-        }
+    // Handle default case
+    ($($type:ident)+) => {
+        $crate::expand_trim_dyn!($crate::visitor_fn_helper_empty, $($type)+);
     };
-    (__tmpl, $tmpl:ident, $type:ty) => {
-        paste::paste! {
-            $crate::visitor_fn_helper!(__tmpl, $tmpl, [<$type:snake>], $type);
-        }
-    };
-    (__tmpl, $tmpl:ident, $name:ident, $type:ty) => {
+}
+
+#[macro_export]
+macro_rules! visitor_fn_helper_custom {
+    ($name:ident, $type:ty, $tmpl:path) => {
         paste::paste! {
             pub fn [<visit_ $name>]<V>(visitor: &mut V, $name: &$type)
             where
@@ -138,21 +124,13 @@ macro_rules! visitor_fn_helper {
             }
         }
     };
+}
 
-    // Handle default case
-    (dyn $type:ty) => {
-        paste::paste! {
-            $crate::visitor_fn_helper!([<_ $type:snake>], dyn $type);
-        }
-    };
-    ($type:ty) => {
-        paste::paste! {
-            $crate::visitor_fn_helper!([<_ $type:snake>], $type);
-        }
-    };
+#[macro_export]
+macro_rules! visitor_fn_helper_empty {
     ($name:ident, $type:ty) => {
         paste::paste! {
-            pub fn [<visit $name>]<V>(_visitor: &mut V, $name: &$type)
+            pub fn [<visit_ $name>]<V>(_visitor: &mut V, [<_ $name>]: &$type)
             where
                 V: Visitor + ?Sized,
             { }
@@ -161,18 +139,7 @@ macro_rules! visitor_fn_helper {
 }
 
 #[macro_export]
-macro_rules! visitor_visitable {
-    // Has no special cases
-    (dyn $type:ty) => {
-        paste::paste! {
-            $crate::visitor_visitable!([<$type:snake>], dyn $type);
-        }
-    };
-    ($type:ty) => {
-        paste::paste! {
-            $crate::visitor_visitable!([<$type:snake>], $type);
-        }
-    };
+macro_rules! visitor_visitable_impl {
     ($name:ident, $type:ty) => {
         paste::paste! {
             impl Visitable for $type {
