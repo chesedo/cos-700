@@ -184,14 +184,9 @@ The constraints will always be enforced by the compiler, thus requiring all code
 Meeting these constraints also requires some shift in thinking at times.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language.
 
-% https://joshleeb.com/blog/rust-traits-trait-objects/
-% Box<Trait> is owned; &Trait is a reference.
-
-% macro rules: Hygiene and token list
-
 \subsection{Not quite OOP}
 No single definition exists to qualify a language as Object-Oriented \cite{meyer_97_01,stefik_85_01,gamma_94_01,klabnik_2019_01}.
-Three definitions will be explored to understand Rust better.
+Three Object-Oriented definitions will be explored to understand Rust better.
 These three are Objects as Data and their Behaviour, Encapsulation, and Inheritance.
 
 \subsubsection{Objects as Data and their Behaviour}
@@ -200,7 +195,7 @@ An object, in turn, holds both data and procedures operating on the data \cite{m
 Rust meets the data with their operations requirement by holding the data in \textit{struct}s and having the operations defined in \textit{impl} blocks \cite{klabnik_2019_01}.
 
 \paragraph{Struct}
-A \textit{struct} is the same as a \textit{struct} in C and other C like languages.
+A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C like languages \cite{robinson_04_01, savitch_15_01, malik_09_01}.
 Structs are used to define objects with named data pieces, as shown in \fref{lst:Rust/oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
@@ -266,6 +261,11 @@ Rust \textit{trait}s cause it to meet both requirements allowing Rust to impleme
 % Sized
 % - Because stack is default
 %% Opting out
+
+% https://joshleeb.com/blog/rust-traits-trait-objects/
+% Box<Trait> is owned; &Trait is a reference.
+
+% macro rules: Hygiene and token list
 
 % Generics
 %% Associate types

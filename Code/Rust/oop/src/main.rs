@@ -1,4 +1,4 @@
-struct Foo {
+pub struct Foo {
     pub name: String,
     age: u8,
     gender: Gender,
@@ -31,6 +31,16 @@ fn main() {
     bar.have_burial();
 
     println!("Bar was {} years old", bar.get_age()); // borrow of moved value: 'bar'
+}
+
+impl Foo {
+    pub fn be_born(name: String) -> Self {
+        Foo {
+            name,
+            age: 0,
+            gender: Gender:Female,
+        }
+    }
 }
 
 enum Gender {
