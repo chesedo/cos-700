@@ -199,7 +199,7 @@ A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} 
 Structs are used to define objects with named data pieces, as shown in \fref{lst:Rust/oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
-\embed[lastline=44]{Example of a Struct}{Rust/oop}
+\embed[lastline=44,pos=p!]{Example of a Struct}{Rust/oop}
 
 \paragraph{Methods}
 The operations to perform on a struct are defined in an \textit{impl} block, as seen in lines 7 - 19 in \fref{lst:Rust/oop}.
@@ -252,18 +252,89 @@ They also define two principles for Object-Oriented design \cite{gamma_94_01}.
         Not having inheritance causes Rust code to use composition naturally.
 \end{itemize}
 
-Rust \textit{trait}s cause it to meet both requirements allowing Rust to implement the Gang of Four design patterns.
+Rust \textit{traits} cause it to meet both requirements allowing Rust to implement the Gang of Four design patterns.
 
-% Traits
-%% Bounds
-%% Defaults
+\subsection{Traits}
+\textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
+In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
+\textit{Traits}, thus, allow the definition of abstract behavior as seen in \fref{lst:Rust/traits}, lines 1 to 7.
 
-% Sized
-% - Because stack is default
-%% Opting out
+\embed[firstline=3,lastline=35,pos=p!]{Working with traits}{Rust/traits}
 
-% https://joshleeb.com/blog/rust-traits-trait-objects/
-% Box<Trait> is owned; &Trait is a reference.
+The compiler uses \textit{traits} at compile time to guarantee an object implements a set of methods using \textit{trait bounds}.
+Line 9 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
+Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
+In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
+
+More complex trait bounds can be constructed as shown on line 13.
+Here \textit{T} (\textit{first}) has to implement the traits: \textit{Show} to be able to call the \textit{show()} method on \textit{first}; \textit{Display} to be able to pass it to \textit{println!}; \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
+Trait bounds this complex become hard to read, so Rust offers an alternative syntax for placing trait bounds on generics as seen in lines 19 to 22.
+
+Traits are implemented using the \textit{impl} keyword followed by the trait name as seen on line 29.
+The \textit{Show} trait has a default implementation for \textit{show\_size}, thus \textit{Tester} does not need to implement it.
+Therefore, \textit{Tester} chooses to only implement the \textit{show} method.
+
+Generics and trait are a good match since the result in static dispatch function calls.
+
+\subsubsection{Static Dispatch}
+When Rust sees generics on a function or type, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01} to create a new function or type at compile time for each concrete object passed into the generic placeholders.
+Thus, at compile-time, the compiler knows exactly which version of the expanded function to call.
+Knowing which function to call at compile-time is known as \textit{compile-time binding} \cite{malik_09_01} or \textit{static dispatch} \cite{klabnik_2019_01, alexandrescu_01_01}.
+Using just \textit{trait objects} - rather than generics - will result in dynamic dispatch.
+
+\subsubsection{Dynamic Dispatch}
+Dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01} happens when the compiler cannot determine which method to call because the \textit{self} object is not fixed.
+Instead, at runtime, pointers inside the trait objects are used to determine which method to call \cite{klabnik_2019_01}.
+Hence why it is also known as \textit{run-time binding} \cite{malik_09_01}.
+
+\Fref{lst:Rust/traits-dyn-dispatch} shows \textit{work} with dynamic dispatch rather than generics.
+
+\embed[firstline=5,lastline=7]{Dynamic Dispatch with \textit{dyn}}{Rust/traits-dyn-dispatch}
+
+Three changes need to be made to the function signature.
+\begin{itemize}
+  \item The generic \textit{T} is removed and replaced with \textit{Show}.
+  \item The \textit{dyn} keyword is added to the type to explicitly indicate dynamic dispatch will take place \cite{klabnik_2019_01}.
+  \item Borrowing now takes place.
+\end{itemize}
+
+The static dispatch generic trait examples can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch.
+The special \textit{Sized} trait is the cause of the error.
+
+\subsubsection{Sized trait}
+Rust keeps all local variables and function arguments on the stack.
+Having values on the stack requires their size to be known at compile-time.
+A special trait called \textit{Sized} is used by the compiler to make sure this requirement is met. \cite{klabnik_2019_01}
+
+The size of an object is influenced by the data it holds.
+Also, any object can choose to implement \textit{Show}.
+Ownership will want to pass each object on the stack, but each object will need a different stack size only known at run-time.
+But, pointers have a fixed size.
+Therefore, putting the dynamic object behind any kind of pointer means the stack size will be fixed.
+
+\begin{notebox}
+  \textit{Sized} is a special Rust trait.
+  It is the only trait automatically added as a trait bound on all generics.
+  For this reason, a special syntax is needed when the programmer wants to opt-out of the \textit{Sized} trait bound.
+  The syntax in question is the \textit{?Sized} trait bound. \cite{klabnik_2019_01}
+\end{notebox}
+
+Rust offers many pointer options: \cite{klabnik_2019_01}
+\begin{itemize}
+  \item A reference - also called a borrow.
+  \item The \textit{Box$<$T$>$} used to hold heap objects.
+        \textit{Box} differs from a reference since \textit{Box} owns its \textit{T} \footnote{https://joshleeb.com/blog/rust-traits-trait-objects/}.
+  \item The \textit{Rc$<$T$>$} reference counting pointer that is essentially a run-time immutable borrow.
+        When the reference count reaches zero, the \textit{T} is dropped.
+  \item The special \textit{RefCell$<$T$>$} which exposes mutable access behind an immutable object using the \textit{Interior Mutablility Pattern}.
+  \item The combined \textit{Rc$<$RefCell$<$T$>$$>$} - the reference counting pointer allows multiple objects to exist, while the \textit{RefCell} allows mutable access to each existing object.
+  \item \textit{Arc$<$T$>$} - the thread safe version of \textit{Rc}.
+  \item \textit{Mutex$<$T$>$} - a thread safe version of \textit{RefCell}.
+        But a lock needs to be acquired first.
+  \item \textit{RwLock$<$T$>$} - like \textit{Mutex}, but distiguishes between a reader and writer.
+  \item Finally, \textit{Arc$<$RwLock$<$T$>$$>$} which will be used by our Abstract Factory.
+        It will hold \textit{T}s which can be used in multiple threads using \textit{Arc}, while \textit{RwLock} will guarantee only one writer.
+\end{itemize}
 
 % macro rules: Hygiene and token list
 
