@@ -8,6 +8,18 @@ Report.blg
 Report.dvi
 Report.synctex.gz
 
+*.log
+*.1
+
+*.4ct
+*.4tc
+*.css
+*.html
+*.idv
+*.lg
+*.tmp
+*.xref
+
 _minted-Report/
 
 target/
