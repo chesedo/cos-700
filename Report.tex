@@ -89,16 +89,16 @@
 \section{Introduction}
 
 \section{Design Patterns}
-Software design is an activity focusing on the design and implementation of software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
+Software design focuses on the design and implementation of software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
 There should be no surprise to see some problems repeating themselves with time \cite{keshvari_11_01}.
 The solutions to these problems are the same each time.
 But a novice designer facing any of these repeated problems for the first time will try to solve them from first principles \cite{gamma_94_01, sonnentag_98_01}.
 When the solution proves flawed or misunderstood some weeks later, a small improvement will be made to the solution \cite{zhu_05_01, ieee_1016-2009}.
 These improvements are repeated until all the flaws are removed from the solution \cite{stephens_15_01, satzinger_15_01}.
 
-On the other hand, seasoned designers create good designs from their own or their colleague's past experiences \cite{sonnentag_98_01}.
+On the other hand, seasoned designers create good designs from their own or their colleagues' past experiences \cite{sonnentag_98_01}.
 These solutions are easy to find in mature libraries and projects \cite{gamma_94_01}.
-But novices are unlikely to get exposure to these projects \cite{zhu_05_01} or are just overwhelmed by their size \cite{hu_18_01}.
+However, novices are unlikely to get exposure to these projects \cite{zhu_05_01} or are just overwhelmed by their size \cite{hu_18_01}.
 Having exposure to these projects will allow novices to jump to the good design directly.
 Thus, saving time on the iteration process \cite{satzinger_15_01}.
 
@@ -108,7 +108,7 @@ The Gang of Four took some of the repeated designs in projects and documented th
 
 % TODO: consider GoF abbrivation
 
-Each pattern is documented with a name, the problem it is solving, the solution and consequences of using the pattern.
+Each pattern is documented with a name, the problem it is solving, the solution and consequences of using it.
 Thus, each pattern is an explicit specification for the solution's design while the name becomes a vocabulary encapsulating the specification \cite{gamma_94_01, bulajic_12_01}.
 This report will focus on only two of the patterns presented by the Gang of Four: Abstract Factory and Visitor.
 
@@ -158,7 +158,7 @@ Problems three and four both need to control the instantiation of a family of pr
 Therefore, a class dedicated to products creation will be needed.
 Problem four needs this class to be abstract to swap one family for another - hence why this class is called \textit{Abstract Factory}.
 
-So far we have the design in \fref{fig:AbstractFactoryInterface}.
+So far, we have the design in \fref{fig:AbstractFactoryInterface}.
 
 \begin{figure}[h]
   \centering
@@ -181,33 +181,33 @@ The same mapping can be seen for a glossy family in \fref{fig:GlossyFactory}.
 Since both concrete designs have the same interface, swapping the one for the other is non-trivial.
 
 \subsubsection{Consequences}
-Thus, the \textit{Abstract Factory} pattern makes it easy to group a family of related products and to swap one family for another.
+Thus, the \textit{Abstract Factory} pattern makes it easy to group a family of related products and swap one family for another.
 By having client code only work against the abstractions, the \textit{Abstract Factory} pattern also isolated the concrete implementations from the client code.
 
-But, adding a new abstract product to the family creates a drawback.
+However, adding a new abstract product to the family creates a drawback.
 Each concrete family will have to add its own concrete form of the product too.
-Thus, the number of classes that need to change is \(n + 1\) where \(n\) is the number of families \cite{bulajic_12_01}.
+Thus, the number of classes that need to change is \(n + 1\), where \(n\) is the number of families \cite{bulajic_12_01}.
 
 % Adding new products is hard [gamma, buljic]
 %% bulajic proposes db & Fowler quote (p1416)
 
 \subsection{Visitor}
 Performing an operation on a set of objects can be quite difficult.
-The \textit{Visitor} design patterns proposes a solution to three problems \cite{gamma_94_01}.
+The \textit{Visitor} design pattern proposes a solution to three problems \cite{gamma_94_01}.
 
 \subsubsection{Problems}
 For the first problem, imagine classes all with different interfaces.
 But, an operation needs to be performed against each concrete class.
 For example, a button and a scroller have different interfaces.
-Yet, both have to be drawn.
-Or a need might exist to read both aloud for the screen-reader.
+However, both have to be drawn.
+Alternatively, a need might exist to read both aloud for the screen-reader.
 
 Doing unrelated operations with the classes is a second problem.
 For a study, a company might want to know the average screen surface area of its GUI elements.
 This is unrelated to a GUI library.
-Adding surface area methods to GUI classes will just pollute the classes.
+Adding surface area methods to GUI classes will pollute the classes.
 
-Lastly, for the third problem, the classes may rarely change but the operations performed on them change often.
+Lastly, the classes may rarely change as a third problem, but the operations performed on them change often.
 Coming back to the study, a week later finding the most common element color might be needed.
 No new elements were added to the GUI library.
 Only the need for a new operation exists.
@@ -218,7 +218,7 @@ Thus, creating a new class which knows how to perform only a single operation.
 The new class will need to visit each of the classes in the problem space.
 This class is called \textit{Visitor} and solves problems one and two.
 
-But problem three adds a new dimension.
+However, problem three adds a new dimension.
 Creating a new operation means creating a new visitor type.
 Since they are both visiting the same classes, they are both the same in an abstract sense.
 It is only their implementations that differ.
@@ -234,14 +234,15 @@ In the \textit{accept} method, each class can call the visitor operation corresp
 
 \subsubsection{Consequences}
 New operations (\textit{Visitors}) can easily be added without touching the classes.
-Related operations are now also isolated to each visitor, thus the classes are not polluted with unrelated methods.
+Related operations are now also isolated to each visitor.
+Thus the classes are not polluted with unrelated methods.
 Visitors also store the state information they need rather than passing it to each function.
 
 % TODO: have state information in the diagram (color counter?) as an example
 
-But, there are two problems.
+However, there are two problems.
 First, adding a new class means updating all the visitors with a method for it.
-Second, it is assumed each class exposes enough information through its public interface for visitors to perform their needed operations.
+Second, it is assumed that each class exposes enough information through its public interface for visitors to perform their needed operations.
 
 \section{Metaprogramming}
 % So far not needed for selected patterns
