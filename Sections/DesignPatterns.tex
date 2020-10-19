@@ -1,0 +1,167 @@
+\section{Design Patterns}
+Software design focuses on the design and implementation of software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
+There should be no surprise to see some problems repeating themselves with time \cite{keshvari_11_01}.
+The solutions to these problems are the same each time.
+But a novice designer facing any of these repeated problems for the first time will try to solve them from first principles \cite{gamma_94_01, sonnentag_98_01}.
+When the solution proves flawed or misunderstood some weeks later, a small improvement will be made to the solution \cite{zhu_05_01, ieee_1016-2009}.
+These improvements are repeated until all the flaws are removed from the solution \cite{stephens_15_01, satzinger_15_01}.
+
+On the other hand, seasoned designers create good designs from their own or their colleagues' past experiences \cite{sonnentag_98_01}.
+These solutions are easy to find in mature libraries and projects \cite{gamma_94_01}.
+However, novices are unlikely to get exposure to these projects \cite{zhu_05_01} or are just overwhelmed by their size \cite{hu_18_01}.
+Having exposure to these projects will allow novices to jump to the good design directly.
+Thus, saving time on the iteration process \cite{satzinger_15_01}.
+
+But rather than taking novices to the projects, it might be possible to take the designs to the novices \cite{kim_03_01}.
+This is exactly what happened in the 90s.
+The Gang of Four took some of the repeated designs in projects and documented them in ``Design Patterns: Elements of Reusable Object-Oriented Software'' \cite{gamma_94_01}.
+
+% TODO: consider GoF abbrivation
+
+Each pattern is documented with a name, the problem it is solving, the solution and consequences of using it.
+Thus, each pattern is an explicit specification for the solution's design while the name becomes a vocabulary encapsulating the specification \cite{gamma_94_01, bulajic_12_01}.
+This report will focus on only two of the patterns presented by the Gang of Four: Abstract Factory and Visitor.
+
+% Maintenance if hard - "design for change" (anticipate type of change)
+
+% Elements (p3)
+%% Name
+%% Problem
+%% Solution
+%% Consequences
+
+\subsection{Abstract Factory}
+During the instantiation of classes, four independent sets of problems might exist.
+The Abstract Factory design pattern proposes to be a solution to these four problems. \cite{gamma_94_01}
+
+\subsubsection{Problems}
+The first problem is when the instantiation and representation of classes need to be separate from the application code.
+Keeping data structures in a standard library and not the application code is an example of the first problem.
+It can be argued that using Abstract Factory for this problem might be over-engineering the solution \cite{kerievsky_05_01}.
+
+A second problem is the reverse of the first.
+When a designer wants to create a library of objects but only expose their interface and not their implementation.
+In a GUI library, only exposing the operations on a button and not the fact that the button is blue or glossy is an example of hiding the implementation.
+
+The designer wanting to have a family of related objects to be used together is the third possible problem.
+Forcing the glossy button to appear with the glossy scroller is an example of wanting the object families together.
+
+Lastly, wanting to swap a family of products for another family of products is the fourth possible problem.
+This is, swapping all the glossy GUI items to the flat blue items for the entire application by changing one line will be nice.
+
+For this report, we will only focus on problems two to fourth.
+
+\subsubsection{Solution}
+Problems two and four requires each product to have an abstract definition - called \textit{Abstract Product}.
+Doing so will hide the implementation for problem two - nothing that follows is really needed for problem two.
+Meanwhile, for problem four, all the application code will operate against the interface for a button and scroller and not their concrete implementations.
+Thus, swapping from the glossy to the blue elements will not require any additional code changes at the method calls.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{AbstractFactory.1}
+	\caption{Interfaces needed for Abstract Factory}
+	\label{fig:AbstractFactoryInterface}
+\end{figure}
+
+Problems three and four both need to control the instantiation of a family of products.
+Therefore, a class dedicated to products creation will be needed.
+Problem four needs this class to be abstract to swap one family for another - hence why this class is called \textit{Abstract Factory}.
+
+So far, we have the design in \fref{fig:AbstractFactoryInterface}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{BlueFactory.1}
+	\caption{Concrete BlueFactory}
+	\label{fig:BlueFactory}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{GlossyFactory.1}
+	\caption{Concrete GlossyFactory}
+	\label{fig:GlossyFactory}
+\end{figure}
+
+Problem three does not need \textit{AbstractFactory} to be abstract.
+Only problem four needs the abstraction to be able to swap one family for another.
+\Fref{fig:BlueFactory} shows how the concrete blue GUI family maps to all the abstractions.
+The same mapping can be seen for a glossy family in \fref{fig:GlossyFactory}.
+Since both concrete designs have the same interface, swapping the one for the other is non-trivial.
+
+\subsubsection{Consequences}
+Thus, the \textit{Abstract Factory} pattern makes it easy to group a family of related products and swap one family for another.
+By having client code only work against the abstractions, the \textit{Abstract Factory} pattern also isolated the concrete implementations from the client code.
+
+However, adding a new abstract product to the family creates a drawback.
+Each concrete family will have to add its own concrete form of the product too.
+Thus, the number of classes needing to change is \(n + 1\), where \(n\) is the number of families \cite{bulajic_12_01}.
+
+% Adding new products is hard [gamma, buljic]
+%% bulajic proposes db & Fowler quote (p1416)
+
+\subsection{Visitor}
+Performing an operation on a set of objects can be quite difficult.
+The \textit{Visitor} design pattern proposes a solution to three problems \cite{gamma_94_01}.
+
+\subsubsection{Problems}
+For the first problem, imagine classes all with different interfaces.
+But, an operation needs to be performed against each concrete class.
+For example, a button and a scroller have different interfaces.
+However, both have to be drawn.
+Alternatively, a need might exist to read both aloud for the screen-reader.
+
+Doing unrelated operations with the classes is a second problem.
+For a study, a company might want to know the average screen surface area of its GUI elements.
+This is unrelated to a GUI library.
+Adding surface area methods to GUI classes will pollute the classes.
+
+Lastly, the classes may rarely change as a third problem, but the operations performed on them change often.
+Coming back to the study, a week later finding the most common element color might be needed.
+No new elements were added to the GUI library.
+Only the need for a new operation exists.
+
+\subsubsection{Solution}
+The solution is to look outside the classes.
+Thus, creating a new class which knows how to perform only a single operation.
+The new class will need to visit each of the classes in the problem space.
+This class is called \textit{Visitor} and solves problems one and two.
+
+However, problem three adds a new dimension.
+Creating a new operation means creating a new visitor type.
+Since they are both visiting the same classes, they are both the same in an abstract sense.
+It is only their implementations that differ.
+Thus, having an \textit{Abstract Visitor} to represent both is needed.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{AbstractVisitor.1}
+	\caption{Interfaces needed for Abstract Visitor}
+	\label{fig:AbstractVisitorInterface}
+\end{figure}
+
+\textit{Abstract Visitor} will have a method for each class it needs to visit as seen in \fref{fig:AbstractVisitorInterface}.
+Requiring the client to remember the method corresponding to each class will not be ideal when the classes reach more than 30.
+It is also not ideal for generic pieces of code since the method names are not the same.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{VisitorAccept.1}
+	\caption{Accept on elements to visit}
+	\label{fig:VisitorAccept}
+\end{figure}
+
+To solve this, each class has a method to \textit{accept} a visitor as seen in \fref{fig:VisitorAccept}.
+This method calls for another abstraction called \textit{Element} with the \textit{accept} method.
+In the \textit{accept} method, each class can call the visitor operation corresponding to it.
+
+\subsubsection{Consequences}
+New operations (\textit{Visitors}) can easily be added without touching the classes.
+Related operations are now also isolated to each visitor.
+Thus the classes are not polluted with unrelated methods.
+Visitors also store the state information they need rather than passing it to each function as seen in \textit{NameVisitor}.
+
+However, there are two problems.
+First, adding a new class means updating all the visitors with a method for it.
+Second, it is assumed that each class exposes enough information through its public interface for visitors to perform their needed operations.
