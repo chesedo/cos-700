@@ -224,11 +224,25 @@ Since they are both visiting the same classes, they are both the same in an abst
 It is only their implementations that differ.
 Thus, having an \textit{Abstract Visitor} to represent both is needed.
 
-\textit{Abstract Visitor} will have a method for each class it needs to visit as seen in [to be made].
+\begin{figure}[h]
+  \centering
+  \includegraphics{AbstractVisitor.1}
+  \caption{Interfaces needed for Abstract Visitor}
+  \label{fig:AbstractVisitorInterface}
+\end{figure}
+
+\textit{Abstract Visitor} will have a method for each class it needs to visit as seen in \fref{fig:AbstractVisitorInterface}.
 Requiring the client to remember the method corresponding to each class will not be ideal when the classes reach more than 30.
 It is also not ideal for generic pieces of code since the method names are not the same.
 
-To solve this, each class has a method to \textit{accept} a visitor.
+\begin{figure}[h]
+  \centering
+  \includegraphics{VisitorAccept.1}
+  \caption{Accept on elements to visit}
+  \label{fig:VisitorAccept}
+\end{figure}
+
+To solve this, each class has a method to \textit{accept} a visitor as seen in \fref{fig:VisitorAccept}.
 This method calls for another abstraction called \textit{Element} with the \textit{accept} method.
 In the \textit{accept} method, each class can call the visitor operation corresponding to it.
 
@@ -236,9 +250,7 @@ In the \textit{accept} method, each class can call the visitor operation corresp
 New operations (\textit{Visitors}) can easily be added without touching the classes.
 Related operations are now also isolated to each visitor.
 Thus the classes are not polluted with unrelated methods.
-Visitors also store the state information they need rather than passing it to each function.
-
-% TODO: have state information in the diagram (color counter?) as an example
+Visitors also store the state information they need rather than passing it to each function as seen in \textit{NameVisitor}.
 
 However, there are two problems.
 First, adding a new class means updating all the visitors with a method for it.
