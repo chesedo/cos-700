@@ -3,6 +3,8 @@ input metauml;
 beginfig(1);
     Interface.Element("Element")
               ("+Accept(v:Visitor)");
+    classStereotypes.Element("<<interface>>");
+    Element.info.foreColor := white;
 
     Class.Button("Button")()
                     ("+Accept(v:Visitor)");
