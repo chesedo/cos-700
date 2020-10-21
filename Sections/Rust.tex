@@ -29,7 +29,7 @@ The friend can do anything from annotating to burning the book as they feel fit 
 
 \embed[firstline=2,lastline=7]{Example of ownership transfer}{Rust/moved}
 
-In \fref{lst:Rust/moved}, on line 2, a heap data object is created and assigned to variable \textit{s}.
+In \Fref{lst:Rust/moved}, on line 2, a heap data object is created and assigned to variable \textit{s}.
 Line 3 assigns \textit{s} to \textit{t}.
 However, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
@@ -41,7 +41,7 @@ Since the compiler can guarantee \textit{t} is the only variable owning the data
 
 \embed{Function taking ownership}{Rust/fn-move}
 
-Having ownership moving makes excellent memory guarantees within a function; however, it is annoying when calling another function, as seen in \fref{lst:Rust/fn-move}.
+Having ownership moving makes excellent memory guarantees within a function; however, it is annoying when calling another function, as seen in \Fref{lst:Rust/fn-move}.
 The \textit{take\_ownership} function takes ownership of the heap data resulting in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope on line 10.
 When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, making the call on line 5 invalid.
 When taking ownership is not desired, the second form of ownership, borrowing, should be used instead.
@@ -53,7 +53,7 @@ An analogy is borrowing a book from a friend with a promise of returning the boo
 
 \embed{Function taking borrow}{Rust/fn-borrow}
 
-As seen in \fref{lst:Rust/fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data.
+As seen in \Fref{lst:Rust/fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data.
 References are activated with an ampersand (\textit{\&}) before the type.
 Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted.
 Having references as function parameters is called borrowing \cite{klabnik_2019_01}.
@@ -69,7 +69,7 @@ Mutable borrows are an explicit indication that a function/variable is allowed t
 
 \embed{Function taking mutable borrow}{Rust/fn-mut-borrow}
 
-As seen in \fref{lst:Rust/fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type.
+As seen in \Fref{lst:Rust/fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type.
 Again, \textit{mut} is also used in the call to make it explicit the function will modify the data.
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable.
 \cite{klabnik_2019_01}
@@ -99,19 +99,19 @@ Rust meets the data with their operations requirement by holding the data in \te
 
 \paragraph{Struct}
 A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C like languages \cite{robinson_04_01, savitch_15_01, malik_09_01}.
-Structs are used to define objects with named data pieces, as shown in \fref{lst:Rust/oop} lines 1 to 5.
+Structs are used to define objects with named data pieces, as shown in \Fref{lst:Rust/oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
 \embed[lastline=44,pos=p!]{Example of a Struct}{Rust/oop}
 
 \paragraph{Methods}
-The operations to perform on a struct are defined in an \textit{impl} block, as seen in lines 7 - 19 in \fref{lst:Rust/oop}.
+The operations to perform on a struct are defined in an \textit{impl} block, as seen in lines 7 - 19 in \Fref{lst:Rust/oop}.
 Notice how the ownership rules apply to the struct.
 
 The methods \textit{get\_age} and \textit{have\_birthday} will take a borrow of the struct object.
 To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} - also why \textit{bar} needs to be \textit{mut} in \textit{main}.
 The method \textit{have\_burial} moves \textit{self}, thus invalidating any objects of \textit{Foo} after \textit{have\_burial} is called - resulting in a compile error on line 33.
-The same error happened in \fref{lst:Rust/fn-move}.
+The same error happened in \Fref{lst:Rust/fn-move}.
 
 \begin{notebox}
 	Rust does not always use the \textit{return} keyword.
@@ -124,7 +124,7 @@ Encapsulation allows the struct creator to change the internal procedures of the
 Rust also meets the encapsulation definition by using the \textit{pub} keyword.
 
 \paragraph{pub}
-As can be seen in \fref{lst:Rust/oop}, the \textit{Foo} struct and its \textit{name} data member is made public explicitly.
+As can be seen in \Fref{lst:Rust/oop}, the \textit{Foo} struct and its \textit{name} data member is made public explicitly.
 The methods \textit{get\_age} and \textit{have\_birthday} are also made public explicitly.
 All the other data members and methods are private - Rust's default - and unreachable by client code.
 A curious question then is why can \textit{main} access the private variables and methods.
@@ -160,7 +160,7 @@ Rust \textit{traits} cause it to meet both requirements allowing Rust to impleme
 \subsection{Traits}
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
-Thus, \textit{traits} allow the definition of abstract behavior as seen in \fref{lst:Rust/traits}, lines 1 to 7.
+Thus, \textit{traits} allow the definition of abstract behavior as seen in \Fref{lst:Rust/traits}, lines 1 to 7.
 
 \embed[firstline=3,lastline=35,pos=p!]{Working with traits}{Rust/traits}
 
@@ -242,7 +242,7 @@ Rust offers many pointer options: \cite{klabnik_2019_01}
 One more Rust uniqueness is left to be covered. Rust treats enums differently than other languages.
 
 \subsection{Enums}
-In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \fref{lst:Rust/enums}, lines 1 to 3.
+In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \Fref{lst:Rust/enums}, lines 1 to 3.
 The \textit{Option} enum, as defined here, is built into the standard Rust library \cite{klabnik_2019_01} to replace \textit{null} as used in other languages.
 An \textit{Option} can either be \textit{Some} object or \textit{None}.
 This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by checking the ``\textit{null}'' (\textit{None}) option is handled at compile-time.
@@ -269,7 +269,7 @@ Returning from a \textit{match} is quite common, especially with a particular en
 
 \subsubsection{Result enum for error handling}
 While other languages use exceptions to propagate errors up to the caller, Rust uses the \textit{Result} enum instead.
-The definition for \textit{Result} can be seen in \fref{lst:Rust/enum-result} on lines 1 to 4.
+The definition for \textit{Result} can be seen in \Fref{lst:Rust/enum-result} on lines 1 to 4.
 
 \embed[lastline=40,pos=p!]{The \textit{Result} enum}{Rust/enum-result}
 

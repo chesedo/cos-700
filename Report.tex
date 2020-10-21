@@ -11,7 +11,7 @@
 
 \usepackage{keyval}
 
-\usepackage{fancyref}
+\usepackage[plain]{fancyref}
 \usepackage{minted}
 
 \DeclareGraphicsRule{*}{mps}{*}{}
@@ -56,8 +56,8 @@
 \makeatother
 
 \newcommand*{\fancyreflstlabelprefix}{lst}
-\frefformat{vario}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1#3}
-\Frefformat{vario}{\fancyreflstlabelprefix}{Listing\fancyrefdefaultspacing#1#3}
+\frefformat{plain}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1}
+\Frefformat{plain}{\fancyreflstlabelprefix}{Listing\fancyrefdefaultspacing#1}
 
 \newmdenv[linecolor=BlueGreen,frametitle=Note,frametitlebackgroundcolor=BlueGreen!40!]{notebox}
 
