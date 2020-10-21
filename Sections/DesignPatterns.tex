@@ -1,5 +1,5 @@
 \section{Design Patterns}
-Software design focuses on the design and implementation of software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
+Software design focuses on designing and implementationing software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
 There should be no surprise to see some problems repeating themselves with time \cite{keshvari_11_01}.
 The solutions to these problems are the same each time.
 But a novice designer facing any of these repeated problems for the first time will try to solve them from first principles \cite{gamma_94_01, sonnentag_98_01}.
@@ -7,7 +7,7 @@ When the solution proves flawed or misunderstood some weeks later, a small impro
 These improvements are repeated until all the flaws are removed from the solution \cite{stephens_15_01, satzinger_15_01}.
 
 On the other hand, seasoned designers create good designs from their own or their colleagues' past experiences \cite{sonnentag_98_01}.
-These designs do not only focus on the immediate development, but also on the development needed during maintenance \cite{kerievsky_05_01,gamma_94_01}.
+These designs focus do not only on the immediate development but also on the development needed during maintenance \cite{kerievsky_05_01,gamma_94_01}.
 These solutions are easy to find in mature libraries and projects \cite{gamma_94_01}.
 Unfortunately, novices are unlikely to get exposure to these projects \cite{zhu_05_01} or are just overwhelmed by their size \cite{hu_18_01}.
 Having exposure to these projects will allow novices to jump to the good design directly.
@@ -15,11 +15,11 @@ This saves time on the iteration process \cite{satzinger_15_01}.
 
 But rather than taking novices to the projects, it might be possible to take the designs to the novices \cite{kim_03_01}.
 This is exactly what happened in the 90s.
-Gamma et al, which the rest of this report will refer to as the Gang of Four (GoF), took some of the repeated designs in projects and documented them in ``Design Patterns: Elements of Reusable Object-Oriented Software'' \cite{gamma_94_01}.
+Gamma et al., which the rest of this report will refer to as the Gang of Four (GoF), took some of the repeated designs in projects and documented them in ``Design Patterns: Elements of Reusable Object-Oriented Software'' \cite{gamma_94_01}.
 
 Each pattern is documented with a name, the problem it is solving, the solution and consequences of using it.
 Thus, each pattern is an explicit specification for the solution's design while the name becomes a vocabulary encapsulating the specification \cite{gamma_94_01, bulajic_12_01}.
-The GoF also groups the patterns in 3 categories: creational, structural and behavioral.
+The GoF also groups the patterns into 3 categories: creational, structural and behavioral.
 This report will focus on one creational pattern - \textit{Abstract Factory} - and one behavioral pattern - \textit{Visitor}.
 No Structural patterns will be discussed.
 Since the \textit{Factory} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover \textit{Factory} too.
@@ -27,7 +27,7 @@ A discussion of \textit{Factory}, \textit{Abstract Factory} and \textit{Visitor}
 
 \subsection{Factory}
 When an object is created, an isolated function/method may not care which concrete version gets created.
-It may also care about an abstract definition of the object to perform its duties.
+It may care about an abstract definition of the object to perform its duties.
 The Factory design pattern proposes to solve three variants of this problem. \cite{gamma_94_01}
 
 \subsubsection{Problems}
@@ -35,7 +35,7 @@ The first problem is when a function does not have enough information to determi
 The method/function only knows the abstract object it wants.
 An example of this is the button on a confirmation dialog.
 The abstract confirmation process only needs to create a button.
-Whether this is a blue button used during saving or a glossy button used when installing is not the concern of the abstract confirmation process.
+Whether this is a blue button used during saving or a glossy button used when installing is not the abstract confirmation process's concern.
 
 Problem two joins in with problem one.
 Needing to create more than one button means logic to decide on a button to create.
@@ -44,8 +44,8 @@ Imagine the blue button is decommissioned as part of a new facelift in favor of 
 Updating every line instantiating a blue button might just kill the developer of boredom.
 
 Having a superclass delegate the creation responsibility to a subclass is a third problem.
-Since all dialogs tend to follow the same process, the design may call for abstracting the common code into an abstract class.
-The abstract class will take care of opening the dialog, drawing the needed elements on it and destroying it once done.
+Since all dialogs follow the same process, the design may call for abstracting the common code into an abstract class.
+The abstract class will open the dialog, draw the needed elements on it and destroy it once done.
 However, the concrete delete dialog and concrete save dialog will need different buttons.
 The abstract class can then use virtual methods on the concretes to get the correct button for drawing.
 
@@ -67,7 +67,7 @@ The client code will mostly be working with the interfaces in white.
 	\label{fig:FactoryInterface}
 \end{figure}
 
-For problem one, functions can create objects from a \textit{Factory$<$Button$>$} without needing to worry if it is working with the brand or fancy factory.
+For problem one, functions can create objects from a \textit{Factory$<$Button$>$} without worrying if it is working with the brand or fancy factory.
 The instantiation in \textit{BrandFactory} is the only line needing to swap to a red button for problem two.
 The single logic decision point will be the only client code containing the Brand and Fancy factory classes.
 
@@ -160,7 +160,7 @@ This is unrelated to a GUI library.
 Adding surface area methods to GUI classes will pollute the classes.
 
 Lastly, the classes may rarely change as a third problem, but the operations performed on them change often.
-Coming back to the study, a week later finding the most common element color might be needed.
+Coming back to the study, a week later, finding the most common element color might be needed.
 No new elements were added to the GUI library.
 Only the need for a new operation exists.
 
@@ -210,4 +210,4 @@ First, adding a new class means updating all the visitors with a method for it.
 Thus, adding the window element will require an update for each visitor to visit it too.
 Second, it is assumed that each class exposes enough information through its public interface for visitors to perform their needed operations.
 The scroller may not expose its name.
-This will leave the name visitor in the problem of not being able to get the name of scroll elements.
+This will leave the name visitor not being able to get the name of scroll elements.
