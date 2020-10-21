@@ -80,7 +80,7 @@ The two ownership forms - moving and borrowing - together with mutable variables
 	\item Borrowed variables cannot be mutated.
 	      However, more than one function can borrow the data simultaneously in parallel and concurrent code.
 	\item Mutable borrowing does allow mutations.
-	      But only one function can hold a mutable borrow at a time and no other immutable borrows can exist.
+	      But only one function can hold a mutable borrow at a time, and no other immutable borrows can exist.
 \end{itemize}
 
 The constraints will always be enforced by the compiler, thus requiring all code to meet them.
@@ -115,7 +115,7 @@ The same error happened in \Fref{lst:Rust/fn-move}.
 
 \begin{notebox}
 	Rust does not always use the \textit{return} keyword.
-	The missing semi-colon on line 9 is deliberate and the Rust way to say we want to return the age for the Foo instance.
+	The missing semi-colon on line 9 is deliberate, and the Rust way to say we want to return the age for the Foo instance.
 \end{notebox}
 
 \subsubsection{Encapsulation}
@@ -279,12 +279,12 @@ Any calls to \textit{may\_error} have to handle the possible error.
 A few error handling options exist: trying an alternative, panicking, or propagating the error.
 
 \paragraph{Alternative}
-Trying an alternative if quite simple.
+Trying an alternative is quite simple.
 If the \textit{Err} enum is returned, then just run the alternative instead.
 
 \paragraph{Panicking}
 The caller will use a \textit{match pattern} to extract the error and panic as seen on lines 13 to 16.
-However, writing matches all the time for possible errors break the flow of the code.
+However, writing matches all the time for possible errors breaks the flow of the code.
 So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} - yes, Rust enums are like ordinary objects that can have methods.
 
 The helper method \textit{expect}, as seen on line 22, does the exact same as the match on lines 13 to 16.

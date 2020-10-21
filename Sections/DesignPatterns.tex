@@ -17,13 +17,13 @@ But rather than taking novices to the projects, it might be possible to take the
 This is exactly what happened in the 90s.
 Gamma et al., which the rest of this report will refer to as the Gang of Four (GoF), took some of the repeated designs in projects and documented them in ``Design Patterns: Elements of Reusable Object-Oriented Software'' \cite{gamma_94_01}.
 
-Each pattern is documented with a name, the problem it is solving, the solution and consequences of using it.
+Each pattern is documented with a name, the problem it is solving, the solution, and the consequences of using it.
 Thus, each pattern is an explicit specification for the solution's design while the name becomes a vocabulary encapsulating the specification \cite{gamma_94_01, bulajic_12_01}.
-The GoF also groups the patterns into 3 categories: creational, structural and behavioral.
+The GoF also groups the patterns into 3 categories: creational, structural, and behavioral.
 This report will focus on one creational pattern - \textit{Abstract Factory} - and one behavioral pattern - \textit{Visitor}.
 No Structural patterns will be discussed.
 Since the \textit{Factory} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover \textit{Factory} too.
-A discussion of \textit{Factory}, \textit{Abstract Factory} and \textit{Visitor} follows.
+A discussion of \textit{Factory}, \textit{Abstract Factory}, and \textit{Visitor} follows.
 
 \subsection{Factory}
 When an object is created, an isolated function/method may not care which concrete version gets created.
@@ -45,7 +45,7 @@ Updating every line instantiating a blue button might just kill the developer of
 
 Having a superclass delegate the creation responsibility to a subclass is a third problem.
 Since all dialogs follow the same process, the design may call for abstracting the common code into an abstract class.
-The abstract class will open the dialog, draw the needed elements on it and destroy it once done.
+The abstract class will open the dialog, draw the needed elements on it, and destroy it once done.
 However, the concrete delete dialog and concrete save dialog will need different buttons.
 The abstract class can then use virtual methods on the concretes to get the correct button for drawing.
 
