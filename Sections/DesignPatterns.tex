@@ -22,13 +22,13 @@ Thus, each pattern is an explicit specification for the solution's design while 
 The GoF also groups the patterns into 3 categories: creational, structural, and behavioral.
 This report will focus on one creational pattern - \textit{Abstract Factory} - and one behavioral pattern - \textit{Visitor}.
 No Structural patterns will be discussed.
-Since the \textit{Factory} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover \textit{Factory} too.
-A discussion of \textit{Factory}, \textit{Abstract Factory}, and \textit{Visitor} follows.
+Since the \textit{Factory Method} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover \textit{Factory Method} too.
+A discussion of \textit{Factory Method}, \textit{Abstract Factory}, and \textit{Visitor} follows.
 
-\subsection{Factory}
+\subsection{Factory Method}
 When an object is created, an isolated function/method may not care which concrete version gets created.
-It may care about an abstract definition of the object to perform its duties.
-The Factory design pattern proposes to solve three variants of this problem. \cite{gamma_94_01}
+It may only care about an abstract definition of the object to perform its duties.
+The Factory Method design pattern proposes to solve three variants of this problem. \cite{gamma_94_01}
 
 \subsubsection{Problems}
 The first problem is when a function does not have enough information to determine the concrete object it should create.
@@ -37,39 +37,40 @@ An example of this is the button on a confirmation dialog.
 The abstract confirmation process only needs to create a button.
 Whether this is a blue button used during saving or a glossy button used when installing is not the abstract confirmation process's concern.
 
-Problem two joins in with problem one.
+Problem two follows on from problem one.
 Needing to create more than one button means logic to decide on a button to create.
-Duplicating this logic at each instantiation will make maintenance hard.
-Imagine the blue button is decommissioned as part of a new facelift in favor of a red button.
-Updating every line instantiating a blue button might just kill the developer of boredom.
+Duplicating this logic at each instantiation will complicate maintenance.
+Assume that the blue button is decommissioned as part of a new facelift in favor of the red button.
+Updating every line instantiating a blue button will take maintenance time and is error-prone.
 
 Having a superclass delegate the creation responsibility to a subclass is a third problem.
-Since all dialogs follow the same process, the design may call for abstracting the common code into an abstract class.
-The abstract class will open the dialog, draw the needed elements on it, and destroy it once done.
-However, the concrete delete dialog and concrete save dialog will need different buttons.
-The abstract class can then use virtual methods on the concretes to get the correct button for drawing.
+Since all Graphical User Interface (GUI) dialogs follow the same process, the design may call for abstracting the common code into an abstract class.
+The abstract class will create the dialog, draw the needed elements on it, and destroy it once done.
+However, the concrete open dialog and concrete save dialog will need different buttons.
+The abstract class will use virtual methods on the concretes classes to instantiate the correct button for drawing.
 
 \subsubsection{Solution}
 The solution will focus on the first two problems since they relate to Abstract Factory.
 The first problem calls for an abstraction of the product being created.
 This will allow the confirmation process to function against an abstract button and not a blue or glossy one.
 
-Problem two calls for the isolation of a buttons instantiation from the decision logic.
+Problem two calls for the isolation of a button's instantiation from the decision logic.
 This means another abstract class - called \textit{Factory} - to hold the instantiation of a concrete product.
 The logic will decide which concrete Factory to use at a later stage.
-The result is the design in \Fref{fig:FactoryInterface}.
+The result is the design in \Fref{fig:FactoryMethod}.
 The client code will mostly be working with the interfaces in white.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics{Factory.1}
-	\caption{Factory design}
-	\label{fig:FactoryInterface}
+	\includegraphics{FactoryMethod.1}
+	\caption{Factory Method design}
+	\label{fig:FactoryMethod}
 \end{figure}
 
 For problem one, functions can create objects from a \textit{Factory$<$Button$>$} without worrying if it is working with the brand or fancy factory.
 The instantiation in \textit{BrandFactory} is the only line needing to swap to a red button for problem two.
 The single logic decision point will be the only client code containing the Brand and Fancy factory classes.
+No client code will contain the blue or glossy button classes.
 
 \subsubsection{Consequences}
 The client code is no longer bound to a concrete button.
@@ -77,8 +78,8 @@ It now just works with an abstract button.
 Also, the logic to choose a factory appears once in the code.
 
 However, this solution does require a new factory to be created for each button type.
-If a new transparent button is needed next week, then a new opacity factory will be needed.
-Maintenance is still easy since only the single logic point needs to be updated to introduce the new factory.
+If a new transparent button is to be added, then a new opacity factory will be needed.
+Maintenance is not compromised since only the single logic point needs to be updated to introduce the new factory.
 The rest of the client code still does not care that it is now working with a transparent button since the white interfaces did not change.
 
 \subsection{Abstract Factory}
@@ -93,14 +94,14 @@ It can be argued that using Abstract Factory for this problem might be over-engi
 A second problem is the reverse of the first.
 When a designer wants to create a library of objects but only expose their interface and not their implementation.
 In a GUI library, only exposing the operations on a button and not the fact that the button is blue or glossy is an example of hiding the implementation.
-This should remind us of the Factory design just created.
+This should remind us of the Factory Method design just created.
 
 The designer wanting to have a family of related objects to be used together is the third possible problem.
 Forcing the glossy button to appear with the glossy scroller is an example of wanting the object families together.
 
 Lastly, wanting to swap a family of products for another family of products is the fourth possible problem.
 This is, swapping all the glossy GUI items to the flat blue items for the entire application by changing one line will be nice.
-Again, reminding us of the Factory design.
+Again, reminding us of the Factory Method design.
 This time just for more products.
 
 For this report, we will only focus on problems two to fourth.
@@ -108,15 +109,16 @@ For this report, we will only focus on problems two to fourth.
 \subsubsection{Solution}
 Problems two and four requires each product to have an abstract definition - called \textit{Abstract Product}.
 Doing so will hide the implementation for problem two - effectively solving problem two.
-For problem four, all the application code will operate against the interface for a button and scroller and not their concrete implementations.
+For problem four, all the application code will operate against the interface for a button, scroller, and any other product.
+The client code will never operate against concrete implementations.
 Thus, swapping from the glossy to the blue elements will not require any additional code changes at the method calls.
 
 Problems three and four both need to control the instantiation of a family of products.
 Therefore, a class dedicated to products creation will be needed.
 Problem four needs this class to be abstract to swap one family for another - hence it being called \textit{Abstract Factory}.
-Everything presented so far is the same as Factory's.
+Everything presented so far is the same as Factory Method's.
 We now want to create more than one product.
-\Fref{fig:AbstractFactoryInterface} shows the Factory design extended to more than one product.
+\Fref{fig:AbstractFactoryInterface} shows the Factory Method design extended to more than one product.
 
 \begin{figure}[h]
 	\centering

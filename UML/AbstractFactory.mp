@@ -19,8 +19,14 @@ beginfig(1);
     classStereotypes.AbstractFactory("<<interface>>");
 
     % Concrete factories
-    Class.BrandFactory("BrandFactory")()("+ Create(): Button");
-    Class.FancyFactory("FancyFactory")()("+ Create(): Button");
+    Class.BrandFactory("BrandFactory")()
+    ("+ Create(): Button",
+        "+ Create(): Scroller",
+        "+ Create(): ProductN");
+    Class.FancyFactory("FancyFactory")()
+    ("+ Create(): Button",
+        "+ Create(): Scroller",
+        "+ Create(): ProductN");
 
     BrandFactory.info.foreColor := (0.8, 0.8, 1);
     FancyFactory.info.foreColor := (1, 0.8, 0.8);
@@ -96,21 +102,21 @@ beginfig(1);
 
     % Concrete productN links
     path PathProductN;
-    PathProductN = pathVertical(GlossyProductN.ne + (10, 5), ypart(ProductN.e)) -- ProductN.e;
+    PathProductN = pathVertical(GlossyProductN.ne + (15, 5), ypart(ProductN.e)) -- ProductN.e;
     
     link(inheritance)(BlueProductN.n -- BlueProductN.n + (0, 5) -- PathProductN);
     link(inheritance)(GlossyProductN.n -- GlossyProductN.n + (0, 5) -- PathProductN);
 
     % Concrete scroller links
     path PathScroller;
-    PathScroller = pathVertical(GlossyScroller.ne + (25, 5), ypart(Scroller.e)) -- Scroller.e;
+    PathScroller = pathVertical(GlossyScroller.ne + (30, 5), ypart(Scroller.e)) -- Scroller.e;
     
     link(inheritance)(BlueScroller.n -- BlueScroller.n + (0, 5) -- PathScroller);
     link(inheritance)(GlossyScroller.n -- GlossyScroller.n + (0, 5) -- PathScroller);
 
     % Concrete button links
     path PathButton;
-    PathButton = pathVertical(GlossyButton.ne + (40, 5), ypart(Button.e)) -- Button.e;
+    PathButton = pathVertical(GlossyButton.ne + (45, 5), ypart(Button.e)) -- Button.e;
     
     link(inheritance)(BlueButton.n -- BlueButton.n + (0, 5) -- PathButton);
     link(inheritance)(GlossyButton.n -- GlossyButton.n + (0, 5) -- PathButton);
