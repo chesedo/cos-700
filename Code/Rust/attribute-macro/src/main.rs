@@ -6,5 +6,3 @@ pub fn |\colorbox{function}{reflect\_two}|(|\colorbox{input}{attr: TokenStream}|
     item
 }
 
-#[|\colorbox{function}{reflect\_two}|(|\colorbox{input}{multiple => tokens}|)]
-|\colorbox{context}{fn some\_function() \{\}}|

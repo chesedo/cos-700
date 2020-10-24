@@ -5,5 +5,3 @@ use proc_macro::TokenStream;
 pub fn |\colorbox{function}{reflect}|(|\colorbox{input}{input: TokenStream}|) -> |\colorbox{output}{TokenStream}| {
     input
 }
-
-|\colorbox{function}{reflect}|!(|\colorbox{input}{2 + 3, 5}|);

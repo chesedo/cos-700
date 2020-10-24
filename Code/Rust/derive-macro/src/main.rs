@@ -18,7 +18,3 @@ pub fn derive_answer_fn(|\colorbox{context}{tokens: TokenStream}|) -> |\colorbox
 
     output.into()
 }
-
-|\#|(derive(|\colorbox{function}{GetType}|))
-|\colorbox{context}{struct SomeStruct;}|
-|\colorbox{output}{impl GetType for SomeStruct \{ ... \}}|
