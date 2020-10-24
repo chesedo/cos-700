@@ -207,7 +207,7 @@ The special \textit{Sized} trait is the cause of the error.
 \subsubsection{Sized trait}
 Rust keeps all local variables and function arguments on the stack.
 Having values on the stack requires their size to be known at compile-time.
-A special trait called \textit{Sized} is used by the compiler to make sure this requirement is met. \cite{klabnik_2019_01}
+A special trait called \textit{Sized} is used by the compiler to make sure this requirement is met \cite{klabnik_2019_01}.
 
 The size of an object is influenced by the data it holds.
 Also, any object can choose to implement \textit{Show}.
@@ -219,7 +219,7 @@ Therefore, putting the dynamic object behind any pointer means the stack size wi
 	\textit{Sized} is a unique Rust trait.
 	It is the only trait automatically added as a trait bound on all generics.
 	For this reason, a special syntax is needed when the programmer wants to opt-out of the \textit{Sized} trait bound.
-	The syntax in question is the \textit{?Sized} trait bound. \cite{klabnik_2019_01}
+	The syntax in question is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
 \end{notebox}
 
 Rust offers many pointer options: \cite{klabnik_2019_01}
@@ -254,7 +254,7 @@ Line 10 and 11 are each called a \textit{match arm}.
 Line 10 shows how an object can be extracted on an arm and be assigned to a value variable.
 If any of the two arms are missing, the compiler will give an error stating not all the enum options are covered.
 Because matches need to be exhaustive - i.e. all variants need to be covered - in Rust.
-There are two options for getting around the exhaustive check. \cite{klabnik_2019_01}
+There are two options for getting around the exhaustive check \cite{klabnik_2019_01}.
 
 Either adding the \textit{\_} (underscore) catch-all arm to handle the default case for all missing enum options.
 Alternatively, using the \textit{if let} pattern as seen on line 14.

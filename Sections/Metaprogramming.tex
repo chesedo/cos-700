@@ -40,7 +40,7 @@ The output language is called the object language, while the metaprogram is writ
 These two languages can be may be different.
 If they are different, the system is called heterogeneous.
 For a heterogeneous system, the metalanguage can extend the object language with extra features or be a completely new language.
-When they are the same, it is called a homogenous system. \cite{sheard_01_01}
+When they are the same, it is called a homogenous system \cite{sheard_01_01}.
 
 %% Indistinguishable - recommended by spinellis & lilis
 
@@ -86,7 +86,7 @@ They also typically represent their data as an Abstract Syntax Tree (AST).
 
 \paragraph{Multistage Programming}
 Multistage programming allows object code to be generated in stages.
-The generations can either be automatic or require manual annotations. \cite{sheard_01_01, taha_04_01}
+The generations can either be automatic or require manual annotations \cite{sheard_01_01, taha_04_01}.
 
 % NOTE: Continue
 \subsubsection{Metaprogram execution}
@@ -153,7 +153,7 @@ This \textit{quoted} ``string'' is then transformed into the desired data struct
 Thus, it acts as a shortcut for constructing an AST \cite{lilis_15_01}.
 Placeholders are placed in the \textit{quoted} ``string'' to be replaced with variables from the meta program context.
 These placeholders need to be identifiable.
-Thus, the placeholders are preceded by some \textit{unquote} character. \cite{bawden_99_01} \\
+Thus, the placeholders are preceded by some \textit{unquote} character \cite{bawden_99_01}.\\
 
 Having identified all the dimensions, let's identify the elements Rust uses for metaprogramming.
 
@@ -161,7 +161,7 @@ Having identified all the dimensions, let's identify the elements Rust uses for 
 Rust has two metaprogramming functionalities build into the language.
 The first has been with the language for some time and is meant for general metaprogramming.
 The second is a newer addition added in late 2018 \footnote{https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html}.
-It is called \textit{Procedural Macros} and is the only focus of this report. \cite{klabnik_2019_01}
+It is called \textit{Procedural Macros} and is the only focus of this report \cite{klabnik_2019_01}.
 
 The metalanguage for \textit{Procedural Macros} is Rust.
 Thus, \textit{Procedural Macros} are homogenous.
