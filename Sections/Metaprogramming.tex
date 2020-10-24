@@ -1,14 +1,12 @@
 \section{Metaprogramming}
 Metaprogramming is a program that writes another program.
-Like a normal program that operates on data, a metaprogram treats a program as its data \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
+A program operates on data, a metaprogram treats a program as its data \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
+Input to a metaprogram will be referred to as meta-code.
 This makes a metaprogram like any normal program.
-Like a normal program, a metaprogram can be refactored, abstracted, turned into library helpers, and tested \cite{lilis_15_01}.
+A metaprogram can, therfore, be refactored, abstracted, turned into library helpers, and tested \cite{lilis_15_01}.
 Being able to write a program using code opens up many uses.
 
-% TODO: reorder sections to remove this
-\begin{notebox}
-	This report will use the phrase ``meta code'' to refer to a metaprogram's input.
-\end{notebox}
+% TODO: two picture for normal and meta program
 
 % Is a program in itself [lilis]
 % allows code reuse at micro and macro level [savidis]
@@ -17,40 +15,39 @@ Being able to write a program using code opens up many uses.
 There are three main uses for metaprogramming: code optimization, code reuse, and analysis.
 
 \paragraph{Code optimization}
-A metaprogram can be used to make code run faster.
-For example, with a Just-In-Time (JIT) compiler, a metaprogram can optimize blocks of code that are called more often than others \cite{hinsen_13_01} or caching the results of a method's call \cite{seaton_15_01}.
+A metaprogram can be used to make improve the execution speed of the code.
+For example, with a Just-In-Time (JIT) compiler, a metaprogram can optimize blocks of code that are called more often than others \cite{hinsen_13_01} or by caching the results of a method's call \cite{seaton_15_01}.
 Another example is the use of Domain-Specific Languages (DSL). 
 Here a metaprogram has a better understanding of the code and can apply optimizations the compiler might be unaware of - like knowing a value can never be negative \cite{hinsen_13_01}, simplifying an expression \cite{sheard_01_01}, or offloading to the GPU \cite{videau_18_01}.
 
 \paragraph{Code reuse}
-Metaprogramming can also be a code reuse tool.
+Metaprogramming can also be viewed as a code reuse tool.
 Repeated code - like design patterns \cite{lilis_15_01, alexandrescu_01_01} - can be wrapped behind a metaprogram function that will write the reusable code \cite{savidis_19_01, klabnik_2019_01}.
-Complex code can also be translated from a simpler language end-users might understand \cite{hinsen_13_01}.
+Complex code can also be translated from a simpler language that end-users can understand \cite{hinsen_13_01}.
 The generated code can be anything from one-liners to classes \cite{savidis_19_01}.
 
 \paragraph{Analysis}
-Reading a program as input is the last use for a metaprogram.
-After reading a program, the metaprogram can analyze its control flow, check types on a dynamic language, or building a proof theorem \cite{sheard_01_01}.
+Reading a program as input is the last use for metaprogramming.
+After reading a program, the metaprogram can analyze its control flow, check types on a dynamic language, or build a proof theorem \cite{sheard_01_01}.
 
 \subsection{Dimensions}
-Metaprogramming comes in many dimensions.
-This section will briefly focus on the relationship between the metalanguage and the output language, the model used for metaprogramming, when the metaprogram is executed, the location of the meta code, and how the final program is represented.
+Metaprogramming has many dimensions.
+This section will briefly discuss these dimensions by focusing on the relationship between the metalanguage and the object language, the model used for metaprogramming, when the metaprogram is executed, the location of the meta-code, and how the final program is represented.
 % TODO: maybe mention lee et al. here for cite problem
 
-\subsubsection{Relation to the object language}
+\subsubsection{Relationship to the object language}
 Metaprogramming will output code in some language.
 The output language is called the object language, while the metaprogram is written in the metalanguage.
-These two languages can be different or the same.
-When they are the same, it is called a homogenous system.
+These two languages can be may be different.
 If they are different, the system is called heterogeneous.
-For a heterogeneous system, the metalanguage can extend the object language with extra features or be a completely new language. \cite{savidis_19_01, sheard_01_01}
+For a heterogeneous system, the metalanguage can extend the object language with extra features or be a completely new language.
+When they are the same, it is called a homogenous system. \cite{savidis_19_01, sheard_01_01}
 
 %% Indistinguishable - recommended by spinellis & lilis
 
 \subsubsection{Model}
-Programming comes in different models ranging from procedural to functional to Object-oriented.
-There should be no surprise to realize the same is true for metaprogramming.
-These models follow.
+Programming comes in different models such as procedural, functional, and Object-oriented.
+The same is true for metaprogramming that includes the following.
 
 \paragraph{Macro systems}
 % TODO: question how to correctly cite this
@@ -59,49 +56,49 @@ The output can be another macro.
 Thus expansion continues until no more macros are left.
 
 The input can come in two forms.
-First is the \textit{lexical macros}.
-Here the input is just a stream of tokens.
-These tokens can be anything and do not need to be any syntax.
+First is \textit{lexical macros} where the input is a stream of tokens.
+These tokens can be anything and do not need to adhere to a syntax.
 The second form operates on a specific syntax and is called \textit{syntactic macros}.
 
 Parsing the input can be procedural or pattern-based.
 Procedural will use an algorithm to generate the output.
-Patterns, on the other hand, will match an input pattern to its output.
+Patterns will match an input pattern to its output.
 
 \paragraph{Reflection systems}
-Reflection is the process of an object to modify its structure.
+% TODO: expand
+Reflection is the process an object follows to look at itself and then modify its structure accordingly.
 This is commonly done at run-time but can also happen at compile-time \cite{savidis_19_01}.
 
-\paragraph{Metaobject Protocol}
-Rather than modifying an object's structure, Metaobject Protocol (MOP) also modifies an object's behavior.
+\paragraph{Metaobject Protocol (MOP)}
+Rather than modifying an object's structure, MOPs modify an object's behavior.
 This is done by inheriting from a metaclass that can modify its own behavior.
 % TODO: cite
-The modification then affects the subclasses. \cite{lee_95_01, savidis_19_01}
+The modification then affects the subclasses \cite{lee_95_01, savidis_19_01}.
 MOPs can also be used to modify a language's behavior \cite{seaton_15_01}.
 
-\paragraph{Aspect-Oriented Programming}
-Imagine wanting to add logging or performance metrics to all functions in a program.
-Modifying each function will add a responsibility not part of the function's duties.
-Then there is also the cost in time it will take to modify each function.
-Aspect-Oriented Programming will \textit{weave} the extra responsibility - called \textit{advice} - into each function. \cite{savidis_19_01}
+\paragraph{Aspect-Oriented Programming (AOP)}
+Assume you want to add logging or performance metrics to all functions in a program.
+Modifying each function will add a responsibility that does not form part of the function's duties.
+There is also the cost in the time it will take to modify each function.
+AOP will \textit{weave} the extra responsibility - called \textit{advice} - into each function. \cite{savidis_19_01}
 
 \paragraph{Generative Programming}
 Generative programming is like a macro system.
-The difference being that generative code is clearly not meta code to be expanded by the macro system.
+The difference being that generative code is clearly not meta-code to be expanded by the macro system.
 They also typically represent their data as an Abstract Syntax Tree (AST). \cite{savidis_19_01}
 
 \paragraph{Multistage Programming}
-Lastly is the concept of having object code being generated in stages.
-The multistage model does this.
-The generations can be either automatic or require manual annotations. \cite{sheard_01_01, taha_04_01}
+Multistage programming allows object code to be generated in stages.
+The generations can either be automatic or require manual annotations. \cite{sheard_01_01, taha_04_01}
 
+% NOTE: Continue
 \subsubsection{Metaprogram execution}
 Three options exist for when the metaprogram can be executed.
 
 \paragraph{Before compilation}
 The metaprogram can be executed before compilation.
 This offers the option of using any language for the metaprogramming.
-The metaprogram takes a source file with meta code and outputs a file without meta code. \cite{savidis_19_01}
+The metaprogram takes a source file with meta-code and outputs a file without meta-code. \cite{savidis_19_01}
 
 \paragraph{During compilation}
 Running the metaprogram as part of the compilation is another option.
@@ -111,26 +108,26 @@ This means the compiler needs to support metaprogramming, or it needs to have a 
 Lastly, the metaprogram might execute at run-time.
 This will require the language execution system to support dynamic code generation and execution. \cite{savidis_19_01}
 
-\subsubsection{Meta code location}
-The next dimension is the location of the meta code to be used as input to the metaprogram.
+\subsubsection{meta-code location}
+The next dimension is the location of the meta-code to be used as input to the metaprogram.
 Two options exist.
 
 \paragraph{External}
-The meta code can be in an external file and will result in a new file with the object code.
+The meta-code can be in an external file and will result in a new file with the object code.
 % TODO: fourth repeat of 2nd sentence starting with this
 This option is used with the before compilation option and generative model.
 Alternatively, if this option is used with compilation time execution, then the file needs to be passed to the compiler with a flag. \cite{savidis_19_01}
 
 \paragraph{Embedded}
-The meta code can also be embedded with the program to transform.
-This means a source file with a mixture of normal code and meta code.
+The meta-code can also be embedded with the program to transform.
+This means a source file with a mixture of normal code and meta-code.
 Embedded code can have three levels of context-awareness. \cite{savidis_19_01}
 
 \begin{itemize}
-	\item Completely unaware: The meta code only relies on the input passed to it.
+	\item Completely unaware: The meta-code only relies on the input passed to it.
 	      The code immediately after is not available to the metaprogram.
-	\item Local awareness: The meta code relies not only on inputs but also on the code immediately after the meta code.
-	\item Global awareness: The meta code relies on input and is aware of all code in the file.
+	\item Local awareness: The meta-code relies not only on inputs but also on the code immediately after the meta-code.
+	\item Global awareness: The meta-code relies on input and is aware of all code in the file.
 \end{itemize}
 
 \subsubsection{Data representation}
