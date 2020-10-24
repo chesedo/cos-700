@@ -3,7 +3,7 @@ Metaprogramming is a program that writes another program.
 A program operates on data, a metaprogram treats a program as its data \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
 Input to a metaprogram will be referred to as meta-code.
 This makes a metaprogram like any normal program.
-A metaprogram can, therfore, be refactored, abstracted, turned into library helpers, and tested \cite{lilis_15_01}.
+A metaprogram can, therefore, be refactored, abstracted, turned into library helpers, and tested \cite{lilis_15_01}.
 Being able to write a program using code opens up many uses.
 
 % TODO: two picture for normal and meta program
@@ -46,7 +46,7 @@ When they are the same, it is called a homogenous system \cite{sheard_01_01}.
 
 \subsubsection{Model}
 Programming comes in different models such as procedural, functional, and Object-oriented.
-The same is true for metaprogramming that includes the following.
+The same is true for metaprogramming which includes the following.
 
 \paragraph{Macro systems}
 A macro system takes input and expands it to some output.
@@ -94,6 +94,7 @@ Three options exist for when the metaprogram can be executed.
 
 \paragraph{Before compilation}
 The metaprogram can be executed before compilation.
+This offers the option of using any language for metaprogramming.
 The metaprogram takes a source file with meta-code and outputs a file without meta-code.
 
 \paragraph{During compilation}
@@ -105,7 +106,7 @@ Lastly, the metaprogram might execute at run-time.
 This will require the language execution system to support dynamic code generation and execution.
 
 \subsubsection{Meta-code location}
-The next dimension is the location of the meta-code to be used as input to the metaprogram.
+The next dimension is the location of the meta-code.
 Two options exist.
 
 \paragraph{External}
@@ -115,15 +116,15 @@ This option is used with the before compilation option and generative model.
 Alternatively, if this option is used with compilation time execution, then the file needs to be passed to the compiler with a flag.
 
 \paragraph{Embedded}
-The meta-code can also be embedded with the program to transform.
+The meta-code can also be embedded within the program to transform.
 This means a source file with a mixture of normal code and meta-code.
 Embedded code can have three levels of context-awareness.
 
 \begin{itemize}
-	\item Completely unaware: The meta-code only relies on the input passed to it.
-	      The code immediately after is not available to the metaprogram.
+	\item Completely unaware: The meta-code only relies on the inputs passed to it.
+	      The code immediately after the meta-code is not available to the metaprogram.
 	\item Local awareness: The meta-code relies not only on inputs but also on the code immediately after the meta-code.
-	\item Global awareness: The meta-code relies on input and is aware of all code in the file.
+	\item Global awareness: The meta-code relies on inputs and is aware of all code in the file.
 \end{itemize}
 
 \subsubsection{Data representation}
@@ -134,11 +135,11 @@ Many systems use strings, graphs, or an algebraic data structure \cite{sheard_01
 \paragraph{String}
 The final program is held in a string.
 This option is not desired since building a class may need hundreds of string append operations spanning hundreds of lines.
-The object code interleaving with the metaprogram like this makes it hard to distinguish between the two.
-It is thus easy to construct a string that is not syntactically correct.
+The object code will be interleaved with the metaprogram, thus making it hard to distinguish between the two.
+This makes it easy to construct a string that is not syntactically correct.
 
 \paragraph{Graphs}
-A graph type will add some structure to the program being built.
+A graph type will add structure to the program being built.
 Furthermore, it makes a better separation between the object code and the metaprogram code.
 However, it still does not guarantee that the structure will be syntactically correct.
 
@@ -147,11 +148,11 @@ Storing the data as an algebraic expression with type encoding or an AST is the 
 However, building an AST by hand is hard.
 Lisp solved this problem by using \textit{quasiquotes} \cite{bawden_99_01}.
 
-\textit{Quasiquotes} is a form of templating.
-It allows writing the data as a ``string'' (enclosed in backtick quotes) in the form of the object language.
+\textit{Quasiquotes} is a form of templating/string interpolation.
+It allows writing the data as a ``string'' (enclosed in backtick quotes) in the syntactical form of the object language.
 This \textit{quoted} ``string'' is then transformed into the desired data structure.
 Thus, it acts as a shortcut for constructing an AST \cite{lilis_15_01}.
-Placeholders are placed in the \textit{quoted} ``string'' to be replaced with variables from the meta program context.
+Placeholders are placed in the \textit{quoted} ``string'' to be replaced with variables from the metaprogram context.
 These placeholders need to be identifiable.
 Thus, the placeholders are preceded by some \textit{unquote} character \cite{bawden_99_01}.\\
 
@@ -165,18 +166,19 @@ It is called \textit{Procedural Macros} and is the only focus of this report \ci
 
 The metalanguage for \textit{Procedural Macros} is Rust.
 Thus, \textit{Procedural Macros} are homogenous.
-From the name, it is also clear they follow the macro model, and the parsing is procedural.
+From the name \textit{Procedural Macros}, it is also clear it follows the macro model, and the parsing is procedural.
 The input stream is also a lexical token stream.
-Whil, execution happens during compilation.
+
+Execution happens during compilation.
 This means the macros need to be available to the compiler and thus need to be precompiled.
-Thus, they need to be isolated from client code in a library marked for macro use \footnote{https://doc.rust-lang.org/reference/procedural-macros.html}.
+Therefore, they need to be isolated from client code in a library marked for macro use \footnote{https://doc.rust-lang.org/reference/procedural-macros.html}.
 The macro invocation is then embedded in the client code.
 Since \textit{Procedural macros} come in three flavors, it has both local awareness or no awareness depending on the flavor used.
 The data representation is the same as the input - a lexical token stream.
 
-The input token stream does not need to be Rust code, but only the output stream.
+The input token stream does not need to be Rust code, but only the output stream needs to be valid Rust code.
 Rust tries to keep its standard library as slim as possible while offloading features to libraries.
-Given the wide range of possible inputs, it should not be a surprise that no standard library helpers exist for working with a token stream.
+Given the wide range of possible inputs, no standard library helpers exist for working with a token stream.
 However, two Rust libraries do exist for working with tokens streams.
 
 The first is \textit{syn}\footnote{https://docs.rs/syn/1.0.31/syn/index.html} for parsing Rust syntax to a syntax tree.
@@ -186,7 +188,7 @@ The second is \textit{quote}\footnote{https://docs.rs/quote/1.0.7/quote/index.ht
 It is a macro that uses the quasiquotes concept from Lisp.
 Thus, anything in the \textit{quoted} ``string'' is correctly highlighted, formatted, and autocompleted by an editor.
 
-Let's discover the token stream, \textit{syn}, \textit{quote}, and the three flavors of \textit{Procedural Macros}.
+Let's discover the \textit{TokenStream}, \textit{syn}, and \textit{quote} by exploring the three flavors of \textit{Procedural Macros}.
 
 \subsubsection{Procedural Macro flavors}
 \colorlet{input}{Blue!10!}
@@ -206,7 +208,7 @@ They take an input stream and return an output stream - i.e., they are context u
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macros and will not appear in future examples.
 The \textit{\#[proc\_macro]} attribute on line 4 marks the function that follows as a function-like macro.
-Line 5 shows it taking one \colorbox{input}{input} and returning one \colorbox{output}{output}.
+Line 5 shows it taking one \colorbox{input}{input} and returning one \colorbox{output}{output} - both of type \textit{TokenStream}.
 On line 6, the input is returned unaltered.
 Line 9 shows the line that will appear in client code to call the macro using the same \colorbox{function}{function name}.
 All function macros are invoked using the \textit{!} (exclamation) sign - called the \textit{macro invocation operator} - to distinguish them from normal function calls.
@@ -218,9 +220,9 @@ A \textit{TokenStream} can be thought of as a list of tokens.
 There are four possible token types \footnote{https://doc.rust-lang.org/proc\_macro/enum.TokenTree.html}:
 
 \begin{itemize}
-	\item An \textit{Ident} to hold an identifier like a variable name.
+	\item An \textit{Ident} to hold an identifier like a variable name or keyword.
 	\item A \textit{Punct} to hold a single punctuation mark.
-	\item A \textit{Literal} to hold a literal like an integer value.
+	\item A \textit{Literal} to hold a literal like an integer value, string, or literal character.
 	\item A \textit{Group} to hold an inner/nested \textit{TokenStream} surrounded by brackets.
 \end{itemize}
 
@@ -246,11 +248,12 @@ Getting the struct name happens on line 6.
 
 Lines 8 to 14 show the use of the \textit{quote} library for quasiquotes.
 Rather than a \textit{quoted} ``string'', it uses the \textit{quote} macro.
-Placeholders are marked with the \# (pound) sign.
+Placeholders are \textit{unquoted} with the \# (pound) sign.
+Thus, \textit{\#name} will come from the metaprogram context - line 6.
 Notice the syntax highlighting being correct inside the quote macro.
-Finally, line 16 converts the output to a \textit{TokenStream}.
+Finally, line 16 converts output to a \textit{TokenStream}.
 
-The macro is used on line 19 as an attribute on an object.
+The macro is used on line 19 with the derive attribute on an object.
 The compiler will write line 21.
 Thus derive macros append code below the annotated type.
 
