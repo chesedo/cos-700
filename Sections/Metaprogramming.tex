@@ -193,10 +193,11 @@ Thus, anything in the \textit{quoted} ``string'' is correctly highlighted, forma
 
 \subsubsection{Procedural Macro flavors}
 \label{sec:procedural-macro-flavors}
-\colorlet{input}{Blue!10!}
-\colorlet{context}{Red!10!}
-\colorlet{output}{Green!10!}
-\colorlet{function}{Yellow!40!}
+
+\newcommand{\functionh}[1]{\highlight[Yellow!100!]{#1}}
+\newcommand{\inputh}[1]{\highlight[Blue!40!]{#1}}
+\newcommand{\outputh}[1]{\highlight[Green!40!]{#1}}
+\newcommand{\contexth}[1]{\highlight[Red!40!]{#1}}
 
 The three flavors of Procedural Macros are function-like, derive, and attribute macros.
 
@@ -205,29 +206,23 @@ These are the most straightforward flavor of procedural macros.
 They take an input stream and return an output stream - i.e., they are context unaware.
 \Fref{lst:function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
 
-\libraryCodeFromFile{function-like-macro/src/main.rs}{function-like-macro}{Declaring a function-like macro}
+\libraryCodeFromFile[lastline=7]{Metaprogramming/library/src/lib.highlighted.rs}{function-like-macro}{Declaring a function-like macro}
 
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macros and will not appear in future examples.
 The \textit{\#[proc\_macro]} attribute on line 4 marks the function that follows as a function-like macro.
-Line 5 shows it taking one \colorbox{input}{input} and returning one \colorbox{output}{output} - both of type \textit{TokenStream}.
+Line 5 shows it taking one \inputh{input} and returning one \outputh{output} - both of type \textit{TokenStream}.
 On line 6, the input is returned unaltered.
 
 Client code will have a call as follows to use the macro.
 
-\begin{minted}[
-		autogobble,
-		escapeinside=||,
-		xleftmargin=21pt
-	]{rust}
-	|\colorbox{function}{reflect}|!(|\colorbox{input}{2 + 3, 5}|);
-\end{minted}
+\clientCodeFromFile[firstline=7,lastline=7]{Metaprogramming/client/src/main.highlighted.rs}
 
-This call has the same \colorbox{function}{function name} as the macro.
+This call has the same \functionh{function name} as the macro.
 All function macros are invoked using the \textit{!} (exclamation) sign - called the \textit{macro invocation operator} - to distinguish them from regular function calls.
-The call will be replaced with the \colorbox{output}{output} ``2 + 3, 5''.
+The call will be replaced with the \outputh{output} ``2 + 3, 5''.
 Since the output is invalid Rust code, the compiler will give an error on the call line.
-Notice how everything inside the parenthesis (\colorbox{input}{2 + 3, 5}) will be passed to \colorbox{input}{input}.
+Notice how everything inside the parenthesis (\inputh{2 + 3, 5}) will be passed to \inputh{input}.
 A \textit{TokenStream} can be thought of as a list of tokens.
 There are four possible token types \footnote{https://doc.rust-lang.org/proc\_macro/enum.TokenTree.html}:
 
@@ -247,26 +242,18 @@ The next example shows how to use the \textit{syn} and \textit{quote} libraries 
 \paragraph{Derive macros}
 These macros are used to add methods to objects as seen in \Fref{lst:derive-macro}.
 
-\libraryCodeFromFile[firstline=4]{derive-macro/src/main.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
+\libraryCodeFromFile[firstline=9,lastline=26]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
 
 Line 1 shows the import for the \textit{syn} library to parse the input list of tokens to a syntax tree.
-Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \colorbox{function}{name} as seen on line 3.
-The \colorbox{context}{input} on line 4 is the context the macro is called on.
+Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \functionh{name} as seen on line 3.
+The \inputh{input} on line 4 is the context the macro is called on.
 Thus, derive macros have local context-awareness.
 
 This macro is called by annotating a type with the derive attribute.
 
-\begin{minted}[
-		autogobble,
-		escapeinside=||,
-		xleftmargin=21pt
-	]{rust}
-	|\#|[derive(|\colorbox{function}{GetType}|)]
-	|\colorbox{context}{struct SomeStruct;}|
-	|\colorbox{output}{impl GetType for SomeStruct \{ ... \}}|
-\end{minted}
+\clientCodeFromFile[firstline=9,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
-Here, \textit{SomeStruct} is the type being annotated and the \colorbox{context}{context} passed to the macro.
+Here, \textit{SomeStruct} is the type being annotated and the \contexth{context} passed to the macro.
 Line 5 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
 \textit{Syn} will give a compilation error if the parsing fails.
 Getting the struct's name happens on line 6.
@@ -278,30 +265,23 @@ Thus, \textit{\#name} will come from the metaprogram context - line 6.
 Notice the syntax highlighting being correct inside the quote macro.
 Finally, line 16 converts \textit{output} to a \textit{TokenStream}.
 
-The compiler will append the \colorbox{output}{output} below the annotated type for derive macros.
-Thus, the \colorbox{output}{output} was written by the compiler and not the client.
+The compiler will append the \outputh{output} below the annotated type for derive macros.
+Thus, the \outputh{output} was written by the compiler and not the client.
 
 \paragraph{Attribute macros}
 A function-like macro with context-awareness results in attribute macros.
 Therefore, two token streams are passed to them.
 This time the attribute above the function is \textit{proc\_macro\_attribute} as seen in \Fref{lst:attribute-macro}.
 
-\libraryCodeFromFile[firstline=4]{attribute-macro/src/main.rs}{attribute-macro}{Declaring an attribute macro}
+\libraryCodeFromFile[firstline=28]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
 
 Client code will again annotate a type with an attribute to call the macro.
-However, the attribute is the macro's \colorbox{function}{function name}.
+However, the attribute is the macro's \functionh{function name}.
 
-\begin{minted}[
-		autogobble,
-		escapeinside=||,
-		xleftmargin=21pt
-	]{rust}
-	#[|\colorbox{function}{reflect\_two}|(|\colorbox{input}{multiple => tokens}|)]
-	|\colorbox{context}{fn some\_function() \{\}}|
-\end{minted}
+\clientCodeFromFile[firstline=13,lastline=14]{Metaprogramming/client/src/main.highlighted.rs}
 
-The \colorbox{input}{attribute input} is the first stream passed to the function, while the \colorbox{context}{context} is the second.
-Like function macros, the \colorbox{context}{context} will be replaced with the \colorbox{output}{output}.
+The \inputh{attribute input} is the first stream passed to the function, while the \contexth{context} is the second.
+Like function macros, the \contexth{context} will be replaced with the \outputh{output}.
 
 Since the metalanguage is Rust code itself, it is time to learn more about Rust.
 
