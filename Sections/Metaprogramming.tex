@@ -1,12 +1,17 @@
 \section{Metaprogramming}
 Metaprogramming is a program that writes another program.
-A program operates on data; a metaprogram treats a program as its data \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
+A program operates on data; a metaprogram treats a program as its data as shown in \Fref{fig:BlackboxProgramming} \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
 Input to a metaprogram will be referred to as meta-code.
 This makes a metaprogram like any regular program.
 Therefore, a metaprogram can be refactored, abstracted, turned into library helpers, and tested \cite{lilis_15_01}.
 Being able to write a program using code opens up many uses.
 
-% TODO: two picture for regular and meta program
+\begin{figure}[h]
+	\centering
+	\includegraphics{BlackboxProgramming.1}
+	\caption{Programs operating on data}
+	\label{fig:BlackboxProgramming}
+\end{figure}
 
 % Is a program in itself [lilis]
 % allows code reuse at micro and macro level [savidis]
@@ -64,8 +69,8 @@ Procedural will use an algorithm to generate the output.
 Patterns will match an input pattern to its output.
 
 \paragraph{Reflection systems}
-% TODO: expand
-Reflection is the process an object follows to look at itself and then modify its structure accordingly.
+Reflection is the process an object follows to look at its members and methods.
+The object can then modify its structure dynamically.
 This is commonly done at run-time but can also happen at compile-time.
 
 \paragraph{Metaobject Protocol (MOP)}
