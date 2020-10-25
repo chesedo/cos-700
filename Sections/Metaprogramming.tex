@@ -210,11 +210,12 @@ The three flavors of Procedural Macros are function-like, derive, and attribute 
 These are the most straightforward flavor of procedural macros.
 They take an input stream and return an output stream - i.e., they are context unaware.
 \Fref{lst:function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
+Note, \Fref{sec:Rust} will explain Rust syntax in detail.
 
 \libraryCodeFromFile[lastline=7]{Metaprogramming/library/src/lib.highlighted.rs}{function-like-macro}{Declaring a function-like macro}
 
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
-These two lines will be needed for all macros and will not appear in future examples.
+These two lines will be needed for all macro definitions and will not appear in future examples.
 The \textit{\#[proc\_macro]} attribute on line 4 marks the function that follows as a function-like macro.
 Line 5 shows it taking one \inputh{input} and returning one \outputh{output} - both of type \textit{TokenStream}.
 On line 6, the input is returned unaltered.
@@ -243,41 +244,48 @@ The +(plus) sign and ,(comma) will be punctuations in both streams.
 Again, parsing and generating the list will be hard.
 The next example shows how to use the \textit{syn} and \textit{quote} libraries to make parsing and generating easier.
 
-% NOTE: here
 \paragraph{Derive macros}
-These macros are used to implement interface methods on objects as seen in \Fref{lst:derive-macro}.
+These macros are used to automatically implement interface methods on objects as seen in \Fref{lst:derive-macro}.
 
-\libraryCodeFromFile[firstline=9,lastline=26]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
+\libraryCodeFromFile[firstline=9,lastline=28]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
 
-Line 1 shows the import for the \textit{syn} library to parse the input list of tokens to a syntax tree.
-This is follow by the \textit{quote} macro in the \textit{quote} library for generating a token stream.
-Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \functionh{name} as seen on line 4.
-The \inputh{input} on line 5 is the context the macro is called on.
+Line 1 shows the import for the \textit{syn} library to parse an unstructured input list of tokens to a syntax tree.
+This is followed by the \textit{quote} macro in the \textit{quote} library for generating a token stream.
+Derive macros have the \textit{proc\_macro\_derive} attribute with an argument for the macro \functionh{name} as seen on line 4.
+The \contexth{function's input} on line 5 is the context the macro is called on.
 Thus, derive macros have local context-awareness.
 
+% TODO: this is unexplained. The next section explains Rust, but this is thin.
+% Show how get_type is added to SomeStruct.
 This macro is called by annotating a type with the derive attribute.
+The type being annotated will serve as context for the macro.
 
-\clientCodeFromFile[firstline=9,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
+\clientCodeFromFile[firstline=9,lastline=10]{Metaprogramming/client/src/main.highlighted.rs}
 
-Here, \textit{SomeStruct} is the type being annotated and the \contexth{context} passed to the macro.
-Line 6 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
+Here, \textit{SomeStruct} is the type being annotated and it is the \contexth{context} passed to the macro.
+Line 7 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
+TokenStreams can be parsed to any syntax tree defined by the macro developer.
+Here we chose \textit{DerivedInput} since it is provided by \textit{syn} for derive macros.
 \textit{Syn} will give a compilation error if the parsing fails.
-Getting the struct's name happens on line 7.
+Getting the struct's name happens on line 9.
 
-Lines 9 to 15 show the use of the \textit{quote} library for quasiquotes.
+Lines 11 to 17 show the use of the \textit{quote} library for quasiquotes.
 Rather than a \textit{quoted} ``string'', it uses the \textit{quote} macro.
 Placeholders are \textit{unquoted} with the \# (pound) sign.
-Thus, \textit{\#name} will come from the metaprogram context - line 7.
+Thus, \textit{\#name} will come from the metaprogram context - line 9.
 Notice the syntax highlighting being correct inside the quote macro.
-Finally, line 17 converts \textit{output} to a \textit{TokenStream}.
+Finally, line 19 converts \textit{output} to a \textit{TokenStream}.
 
-The compiler will append the \outputh{output} below the annotated type for derive macros.
-Thus, the \outputh{output} was written by the compiler and not the client.
+The compiler will append the macro \outputh{output} below the annotated type for derive macros.
+A snippet of the output is as follow - it comes from line 12.
+
+\clientCodeFromFile[firstline=11,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
 \paragraph{Attribute macros}
 A function-like macro with context-awareness results in attribute macros.
-Therefore, two token streams are passed to them.
-This time the attribute above the function is \textit{proc\_macro\_attribute} as seen in \Fref{lst:attribute-macro}.
+Therefore, two token streams - the input and the context - are passed as arguments to it.
+This time the attribute above the function is \textit{proc\_macro\_attribute}.
+\Fref{lst:attribute-macro} shows another reflect macro that returns the \contexth{context} unaltered.
 
 \libraryCodeFromFile[firstline=28]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
 
@@ -286,7 +294,7 @@ However, the attribute is the macro's \functionh{function name}.
 
 \clientCodeFromFile[firstline=13,lastline=14]{Metaprogramming/client/src/main.highlighted.rs}
 
-The \inputh{attribute input} is the first stream passed to the function, while the \contexth{context} is the second.
+The \inputh{attribute's input} - not following a specific syntax - is the first stream passed to the function, while the \contexth{context} is the second.
 Like function macros, the \contexth{context} will be replaced with the \outputh{output}.
 
 Since the metalanguage is Rust code itself, it is time to learn more about Rust.
