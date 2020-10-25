@@ -20,7 +20,7 @@
 \usepackage{keyval}
 
 \usepackage[plain]{fancyref}
-\usepackage{minted}
+\usepackage[breakable,minted]{tcolorbox}
 
 \DeclareGraphicsRule{*}{mps}{*}{}
 
@@ -36,33 +36,35 @@
     ]{rust}}
  {\end{minted}\end{listing}}
 
-\makeatletter
+\newtcbinputlisting[auto counter]{\libraryCodeFromFile}[4][firstline=1,lastline=-1]{%
+  listing engine=minted,
+  minted language=rust,
+  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
+  listing file={Code/Rust/#2},
+  listing only,
+  size=title,
+  breakable,
+  boxrule=0.5mm,
+  colback=white,
+  coltext=Black!95!,
+  title=\small{Listing \thetcbcounter}: #4,
+  label=lst:#3
+}
 
-\define@key{embed}{pos}{\def\e@pos{#1}}
-\define@key{embed}{firstline}{\def\e@firstline{#1}}
-\define@key{embed}{lastline}{\def\e@lastline{#1}}
-
-\setkeys{embed}{pos=ht,firstline=1,lastline=-1}
-  
-\newcommand{\embed}[3][]
- {\begingroup
-  \setkeys{embed}{#1}
-  \expandafter\listing\expandafter[\e@pos]
-  \caption{#2}\label{lst:#3}
-  \inputminted[
-    autogobble,
-    breaklines,
-    linenos,
-    firstline={\e@firstline},
-    lastline={\e@lastline},
-    firstnumber=1,
-    xleftmargin=21pt,
-    escapeinside=||
-    ]{rust}{Code/#3/src/main.rs}
-  \endlisting
-  \endgroup}
-
-\makeatother
+\newtcbinputlisting[auto counter]{\exampleCodeFromFile}[4][firstline=1,lastline=-1]{%
+  listing engine=minted,
+  minted language=rust,
+  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
+  listing file={Code/Rust/#2},
+  listing only,
+  size=title,
+  breakable,
+  boxrule=0.5mm,
+  colback=white,
+  coltext=Black!95!,
+  title=\small{Listing \thetcbcounter}: #4,
+  label=lst:#3
+}
 
 \newcommand*{\fancyreflstlabelprefix}{lst}
 \frefformat{plain}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1}

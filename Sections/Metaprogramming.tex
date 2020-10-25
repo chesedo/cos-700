@@ -203,9 +203,9 @@ The three flavors of Procedural Macros are function-like, derive, and attribute 
 \paragraph{Function-like macros}
 These are the most straightforward flavor of procedural macros.
 They take an input stream and return an output stream - i.e., they are context unaware.
-\Fref{lst:Rust/function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
+\Fref{lst:function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
 
-\embed{Reflective function-like macro}{Rust/function-like-macro}
+\libraryCodeFromFile{function-like-macro/src/main.rs}{function-like-macro}{Declaring a function-like macro}
 
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macros and will not appear in future examples.
@@ -245,9 +245,9 @@ The next example shows how to use the \textit{syn} and \textit{quote} libraries 
 
 % NOTE: here
 \paragraph{Derive macros}
-These macros are used to add methods to objects as seen in \Fref{lst:Rust/derive-macro}.
+These macros are used to add methods to objects as seen in \Fref{lst:derive-macro}.
 
-\embed[firstline=4]{Derive macro example}{Rust/derive-macro}
+\libraryCodeFromFile[firstline=4]{derive-macro/src/main.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
 
 Line 1 shows the import for the \textit{syn} library to parse the input list of tokens to a syntax tree.
 Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \colorbox{function}{name} as seen on line 3.
@@ -284,9 +284,9 @@ Thus, the \colorbox{output}{output} was written by the compiler and not the clie
 \paragraph{Attribute macros}
 A function-like macro with context-awareness results in attribute macros.
 Therefore, two token streams are passed to them.
-This time the attribute above the function is \textit{proc\_macro\_attribute} as seen in \Fref{lst:Rust/attribute-macro}.
+This time the attribute above the function is \textit{proc\_macro\_attribute} as seen in \Fref{lst:attribute-macro}.
 
-\embed{Attribute macro example}{Rust/attribute-macro}
+\libraryCodeFromFile[firstline=4]{attribute-macro/src/main.rs}{attribute-macro}{Declaring an attribute macro}
 
 Client code will again annotate a type with an attribute to call the macro.
 However, the attribute is the macro's \colorbox{function}{function name}.
