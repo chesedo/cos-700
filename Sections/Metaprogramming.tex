@@ -167,9 +167,9 @@ Each dimension has an option used by Rust to enable metaprogramming.
 \subsection{Metaprogramming in Rust}
 Rust has two metaprogramming functionalities built into the language.
 The first has been part of the language for some time and is meant for general metaprogramming.
-The second, called \textit{Procedural Macros}, is a newer addition added, in late 2018 \footnote{https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html} and is the focus of this report \cite{klabnik_2019_01}.
+The second, called \textit{Procedural Macros}, is a newer addition added in late 2018 \footnote{https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html} and is the focus of this report \cite{klabnik_2019_01}.
 
-The metalanguage for \textit{Procedural Macros} in Rust are coded in Rust syntax.
+The metalanguage for \textit{Procedural Macros} in Rust is coded in Rust syntax.
 \textit{Procedural Macros} are homogenous.
 From the name \textit{Procedural Macros}, it is also clear it follows the macro model, and the parsing is procedural.
 The input stream is also a lexical token stream.
@@ -178,7 +178,7 @@ Execution happens during compilation.
 This means the macros need to be available to the compiler and need to be precompiled.
 Therefore, the macros need to be isolated from client code in a library marked for macro use \footnote{https://doc.rust-lang.org/reference/procedural-macros.html}.
 The macro invocation is embedded in the client code.
-\textit{Procedural macros} have both local awareness or no awareness depending on the flavor used.
+\textit{Procedural macros} have both local awareness or no awareness, depending on the flavor used.
 Flavors will be discussed in \Fref{sec:procedural-macro-flavors}.
 The data representation is the same as the input - a lexical token stream.
 
@@ -258,11 +258,11 @@ Thus, derive macros have local context-awareness.
 % TODO: this is unexplained. The next section explains Rust, but this is thin.
 % Show how get_type is added to SomeStruct.
 This macro is called by annotating a type with the derive attribute.
-The type being annotated will serve as context for the macro.
+The type being annotated will serve as the local context for the macro.
 
 \clientCodeFromFile[firstline=9,lastline=10]{Metaprogramming/client/src/main.highlighted.rs}
 
-Here, \textit{SomeStruct} is the type being annotated and it is the \contexth{context} passed to the macro.
+Here, \textit{SomeStruct} is the type being annotated, and it is the \contexth{context} passed to the macro.
 Line 7 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
 TokenStreams can be parsed to any syntax tree defined by the macro developer.
 Here we chose \textit{DerivedInput} since it is provided by \textit{syn} for derive macros.
@@ -276,8 +276,8 @@ Thus, \textit{\#name} will come from the metaprogram context - line 9.
 Notice the syntax highlighting being correct inside the quote macro.
 Finally, line 19 converts \textit{output} to a \textit{TokenStream}.
 
-The compiler will append the macro \outputh{output} below the annotated type for derive macros.
-A snippet of the output is as follow - it comes from line 12.
+The compiler will append the macro's \outputh{output} below the annotated type for derive macros.
+A snippet of the output is as follows - it comes from line 12.
 
 \clientCodeFromFile[firstline=11,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
