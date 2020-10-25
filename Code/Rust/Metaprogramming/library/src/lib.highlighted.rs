@@ -6,8 +6,8 @@ pub fn |\functionh{reflect}|(|\inputh{input: TokenStream}|) -> |\outputh{TokenSt
     input
 }
 
-use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
+use quote::quote;
 
 #[proc_macro_derive(|\functionh{GetType}|)]
 pub fn derive_answer_fn(|\contexth{tokens: TokenStream}|) -> |\outputh{TokenStream}| {

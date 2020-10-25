@@ -240,13 +240,14 @@ The next example shows how to use the \textit{syn} and \textit{quote} libraries 
 
 % NOTE: here
 \paragraph{Derive macros}
-These macros are used to add methods to objects as seen in \Fref{lst:derive-macro}.
+These macros are used to implement interface methods on objects as seen in \Fref{lst:derive-macro}.
 
 \libraryCodeFromFile[firstline=9,lastline=26]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
 
 Line 1 shows the import for the \textit{syn} library to parse the input list of tokens to a syntax tree.
-Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \functionh{name} as seen on line 3.
-The \inputh{input} on line 4 is the context the macro is called on.
+This is follow by the \textit{quote} macro in the \textit{quote} library for generating a token stream.
+Derive macros have the \textit{proc\_macro\_derive} attribute followed by the macro \functionh{name} as seen on line 4.
+The \inputh{input} on line 5 is the context the macro is called on.
 Thus, derive macros have local context-awareness.
 
 This macro is called by annotating a type with the derive attribute.
@@ -254,16 +255,16 @@ This macro is called by annotating a type with the derive attribute.
 \clientCodeFromFile[firstline=9,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
 Here, \textit{SomeStruct} is the type being annotated and the \contexth{context} passed to the macro.
-Line 5 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
+Line 6 parses the context to a \textit{DerivedInput} syntax tree from \textit{syn}.
 \textit{Syn} will give a compilation error if the parsing fails.
-Getting the struct's name happens on line 6.
+Getting the struct's name happens on line 7.
 
-Lines 8 to 14 show the use of the \textit{quote} library for quasiquotes.
+Lines 9 to 15 show the use of the \textit{quote} library for quasiquotes.
 Rather than a \textit{quoted} ``string'', it uses the \textit{quote} macro.
 Placeholders are \textit{unquoted} with the \# (pound) sign.
-Thus, \textit{\#name} will come from the metaprogram context - line 6.
+Thus, \textit{\#name} will come from the metaprogram context - line 7.
 Notice the syntax highlighting being correct inside the quote macro.
-Finally, line 16 converts \textit{output} to a \textit{TokenStream}.
+Finally, line 17 converts \textit{output} to a \textit{TokenStream}.
 
 The compiler will append the \outputh{output} below the annotated type for derive macros.
 Thus, the \outputh{output} was written by the compiler and not the client.
