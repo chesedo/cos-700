@@ -1,24 +1,25 @@
 \section{Rust}
+\label{sec:Rust}
+\newcommand{\errorh}[1]{\textcolor{Red!60!Maroon}{\footnotesize{- #1}}}
+
 Rust is a relatively new language created by Mozilla to be memory safe yet have low level like performance \cite{klabnik_2019_01}.
 Traditionally, memory safe languages will make use of a garbage collector which slows performance \cite{hertz_05_01}.
 Garbage collector languages include C\# \cite{robinson_04_01}, Java \cite{gosling_96_01}, Python \cite{martelli_06_01}, Golang \cite{tsoukalos_18_01} and Javascript \cite{flanagan_06_01}.
 Languages that perform well use manual memory management, which is not memory safe whenever the programmer is not careful.
 Dangling pointers \cite{caballero_12_01}, memory leaks \cite{wilson_92_01}, and double freeing \cite{sharp_13_01} in languages like C and C++ are prime examples of manual memory management problems \cite{konrad_18_01}.
 Few languages have both memory safety and performance.
-However, Rust achieves both by using a less popular model known as ownership.
+However, Rust achieves both by using a less popular model known as ownership \cite{matsakis_14_01}.
 
 \subsection{Ownership}
 In the ownership model, the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data.
 Each data piece can only be owned by one variable at a time.
-The owning variable is called the \textit{owner}.
-\cite{klabnik_2019_01}
+The owning variable is called the \textit{owner} \cite{klabnik_2019_01}.
 
 A variable also has a scope.
 The scope starts at the variable declaration and ends at the closing curly bracket of the code block containing the variable.
 When the owner goes out of scope, Rust returns the memory by calling the \textit{drop} method at the end of the scope.
 Ownership is manifested in two forms -- moving and borrowing.
-These two forms are explained next.
-\cite{klabnik_2019_01}
+These two forms are explained next \cite{klabnik_2019_01}.
 
 \subsubsection{Moving}
 Moving happens when one variable is assigned to another.
@@ -27,19 +28,19 @@ The initial variable's access is then invalidated \cite{klabnik_2019_01}.
 An analogy example would be to give a book to a friend.
 The friend can do anything from annotating to burning the book as they feel fit since the friend is the book's owner.
 
-\exampleCodeFromFile[firstline=2,lastline=7]{moved/src/main.rs}{moved}{Example of ownership transfer}
+\exampleCodeFromFile[firstline=2,lastline=7]{moved/src/main.highlighted.rs}{moved}{Example of ownership transfer}
 
 In \Fref{lst:moved}, on line 2, a heap data object is created and assigned to variable \textit{s}.
 Line 3 assigns \textit{s} to \textit{t}.
 However, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
-When trying to use the data on line 5, via \textit{s}, the compiler, therefore, throws an error saying \textit{s} was moved.
+When trying to use the data on line 5, via \textit{s}, the compiler throws an error saying \textit{s} was moved.
 Any reference to \textit{s} after line 3 will always give a compiler error.
 
 Finally, the scope of \textit{t} ends on line 6.
 Since the compiler can guarantee \textit{t} is the only variable owning the data, the compiler can free the memory on line 6.
 
-\exampleCodeFromFile{fn-move/src/main.rs}{fn-move}{Function taking ownership}
+\exampleCodeFromFile{fn-move/src/main.highlighted.rs}{fn-move}{Function taking ownership}
 
 Having ownership moving makes excellent memory guarantees within a function; however, it is annoying when calling another function, as seen in \Fref{lst:fn-move}.
 The \textit{take\_ownership} function takes ownership of the heap data resulting in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope on line 10.
@@ -48,16 +49,16 @@ When taking ownership is not desired, the second form of ownership, borrowing, s
 
 \subsubsection{Borrowing}
 
-Borrowing has a new variable take references to data rather than becoming its new owner \cite{klabnik_2019_01}.
+Borrowing has a new variable take a reference to data rather than becoming its new owner \cite{klabnik_2019_01}.
 An analogy is borrowing a book from a friend with a promise of returning the book to its owner once done with it.
 
-\exampleCodeFromFile{fn-borrow/src/main.rs}{fn-borrow}{Function taking borrow}
+\exampleCodeFromFile{fn-borrow/src/main.highlighted.rs}{fn-borrow}{Function taking borrow}
 
 As seen in \Fref{lst:fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data.
 References are activated with an ampersand (\textit{\&}) before the type.
 Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted.
 Having references as function parameters is called borrowing \cite{klabnik_2019_01}.
-The ampersand is also used in the call argument to signal the called function will borrow the data.
+The ampersand is also used in the call argument on line 3 to signal the called function will borrow the data.
 
 However, in Rust, all variables are immutable by default \cite{klabnik_2019_01}.
 Hence changing the data in \textit{take\_borrow} causes an error stating the borrow is not mutable on line 9.
@@ -69,12 +70,11 @@ Mutable borrows are an explicit indication that a function/variable is allowed t
 
 \exampleCodeFromFile{fn-mut-borrow/src/main.rs}{fn-mut-borrow}{Function taking mutable borrow}
 
-As seen in \Fref{lst:fn-mut-borrow}, mutable borrows are activated using \textit{\&mut } on the type.
-Again, \textit{mut} is also used in the call to make it explicit the function will modify the data.
-Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable.
-\cite{klabnik_2019_01}
+As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using \textit{\&mut } on the type.
+Again, \textit{mut} is also used in the call on line 3 to make it explicit the function will modify the data.
+Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01} as seen on line 2.
 
-The two ownership forms - moving and borrowing - together with mutable variables put some constraints on the code of each variable type and their calls: \cite{klabnik_2019_01}
+The two ownership forms - moving and borrowing - together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
 	\item Moving will always invalidate the variable.
 	\item Borrowed variables cannot be mutated.
@@ -83,8 +83,8 @@ The two ownership forms - moving and borrowing - together with mutable variables
 	      But only one function can hold a mutable borrow at a time, and no other immutable borrows can exist.
 \end{itemize}
 
-The constraints will always be enforced by the compiler, thus requiring all code to meet them.
-Meeting these constraints also requires some shift in thinking at times.
+The constraints will always be enforced by the compiler, thus requiring all code - written by hand or a macro - to meet them.
+Meeting these constraints also requires some shift in thinking.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language.
 
 \subsection{Not quite OOP}
@@ -102,10 +102,10 @@ A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} 
 Structs are used to define objects with named data pieces, as shown in \Fref{lst:oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
-\exampleCodeFromFile[lastline=44]{oop/src/main.rs}{oop}{Example of a Struct}
+\exampleCodeFromFile[lastline=44]{oop/src/main.highlighted.rs}{oop}{Example of a Struct}
 
 \paragraph{Methods}
-The operations to perform on a struct are defined in an \textit{impl} block, as seen in lines 7 - 19 in \Fref{lst:oop}.
+The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 - 19 in \Fref{lst:oop}.
 Notice how the ownership rules apply to the struct.
 
 The methods \textit{get\_age} and \textit{have\_birthday} will take a borrow of the struct object.
@@ -143,15 +143,14 @@ The answer being: \textit{main} is located in the same module/file as the struct
 The last definition being looked at is inheritance.
 Inheritance has an object inherit some of its data members and procedures from a parent object \cite{meyer_97_01, stefik_85_01, gamma_94_01}.
 Inheritance is mostly used to reduce code duplication.
-Rust does not meet the inheritance definition for OOP.
+Rust does not meet the inheritance definition for OOP.\\
 
 The GoF made their design patterns for Object-Oriented languages.
 They also define two principles for Object-Oriented design \cite{gamma_94_01}.
 \begin{itemize}
 	\item ``Program to an interface, not an implementation.''
-	      Rust meets this requirement by using \textit{traits}.
+	      Rust meets this requirement by using \textit{traits} - discussed next.
 	\item ``Favor object composition over class inheritance.''
-	      The lack of inheritance will, therefore, not be an issue in Rust.
 	      Not having inheritance causes Rust code to use composition naturally.
 \end{itemize}
 
