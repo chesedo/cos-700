@@ -78,6 +78,7 @@ impl<T: Parse + Interpolate> Interpolate for TokenList<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::attribute_item::AttributeItem;
     use crate::trait_specifier::TraitSpecifier;
     use macro_test_helpers::reformat;
     use pretty_assertions::assert_eq;
@@ -142,6 +143,26 @@ mod tests {
         let mut expected_types: Punctuated<TraitSpecifier, Comma> = Punctuated::new();
         expected_types.push(parse_str("IButton => BigButton")?);
         expected_types.push(parse_str("IWindow => MinimalWindow")?);
+
+        assert_eq!(
+            actual,
+            TokenList {
+                types: expected_types
+            }
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn attribute_item_parsing() -> Result {
+        let actual: TokenList<AttributeItem> =
+            parse_str("tmpl = { TRAIT }, no_default, other = Button")?;
+
+        let mut expected_types: Punctuated<AttributeItem, Comma> = Punctuated::new();
+        expected_types.push(parse_str("tmpl = { TRAIT }")?);
+        expected_types.push(parse_str("no_default")?);
+        expected_types.push(parse_str("other = Button")?);
 
         assert_eq!(
             actual,
