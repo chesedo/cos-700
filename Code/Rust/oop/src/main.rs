@@ -6,7 +6,7 @@ pub struct Foo {
 
 impl Foo {
     pub fn get_age(&self) -> u8 {
-        self.age
+        self.age // age is returned
     }
 
     pub fn have_birthday(&mut self) {
@@ -33,7 +33,9 @@ fn main() {
     println!("Bar was {} years old", bar.get_age()); // borrow of moved value: 'bar'
 }
 
+// Second implementation block
 impl Foo {
+    /// Construct a new `Foo` with a given name
     pub fn be_born(name: String) -> Self {
         Foo {
             name,

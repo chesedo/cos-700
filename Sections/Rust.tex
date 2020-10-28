@@ -12,10 +12,9 @@ However, Rust achieves both by using a less popular model known as ownership \ci
 
 \subsection{Ownership}
 In the ownership model, the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data.
-Each data piece can only be owned by one variable at a time.
-The owning variable is called the \textit{owner} \cite{klabnik_2019_01}.
+Each data piece can only be owned by one variable at a time called the \textit{owner} \cite{klabnik_2019_01}.
 
-A variable also has a scope.
+A variable also has scope.
 The scope starts at the variable declaration and ends at the closing curly bracket of the code block containing the variable.
 When the owner goes out of scope, Rust returns the memory by calling the \textit{drop} method at the end of the scope.
 Ownership is manifested in two forms -- moving and borrowing.
@@ -71,125 +70,135 @@ Mutable borrows are an explicit indication that a function/variable is allowed t
 \exampleCodeFromFile{fn-mut-borrow/src/main.rs}{fn-mut-borrow}{Function taking mutable borrow}
 
 As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using \textit{\&mut } on the type.
-Again, \textit{mut} is also used in the call on line 3 to make it explicit the function will modify the data.
+Again, \textit{mut} is also used in the call on line 3 to make it explicit that the function will modify the data.
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01} as seen on line 2.
 
 The two ownership forms - moving and borrowing - together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
 	\item Moving will always invalidate the variable.
 	\item Borrowed variables cannot be mutated.
-	      However, more than one function can borrow the data simultaneously in parallel and concurrent code.
+	      However, more than one variable can borrow the data simultaneously in parallel and concurrent code.
 	\item Mutable borrowing does allow mutations.
-	      But only one function can hold a mutable borrow at a time, and no other immutable borrows can exist.
+	      But only one variable can hold a mutable borrow, while no other immutable borrows can exist at the same time.
 \end{itemize}
 
 The constraints will always be enforced by the compiler, thus requiring all code - written by hand or a macro - to meet them.
 Meeting these constraints also requires some shift in thinking.
-Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language.
+Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language, which will now be discussed.
 
 \subsection{Not quite OOP}
 No single definition exists to qualify a language as Object-Oriented \cite{meyer_97_01,stefik_85_01,gamma_94_01,klabnik_2019_01}.
-Three Object-Oriented definitions will be explored to understand Rust better.
-These three are Objects as Data and their Behaviour, Encapsulation, and Inheritance.
+Three Object-Oriented concepts will be explored to understand Rust better, these three are \textit{Objects as Data and their Behaviour}, \textit{Encapsulation}, and \textit{Inheritance}.
 
 \subsubsection{Objects as Data and their Behaviour}
-The first definition of Object-Oriented design is a language using objects.
-An object, in turn, holds both data and procedures operating on the data \cite{meyer_97_01,stefik_85_01,gamma_94_01}.
-Rust meets the data with their operations requirement by holding the data in \textit{struct}s and having the operations defined in \textit{impl} blocks \cite{klabnik_2019_01}.
+An object holds both data and procedures operating on the data \cite{meyer_97_01,stefik_85_01,gamma_94_01,malik_09_01}.
+Rust holds data in \textit{struct}s and the operations are defined in \textit{impl} blocks \cite{klabnik_2019_01}.
 
-\paragraph{Struct}
-A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C like languages \cite{robinson_04_01, savitch_15_01, malik_09_01}.
+% TODO: test : (colon) on all paragraphs
+\paragraph{Struct:}
+A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C-like languages \cite{robinson_04_01,savitch_15_01,malik_09_01}.
 Structs are used to define objects with named data pieces, as shown in \Fref{lst:oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
-\exampleCodeFromFile[lastline=44]{oop/src/main.highlighted.rs}{oop}{Example of a Struct}
-
 \paragraph{Methods}
 The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 - 19 in \Fref{lst:oop}.
-Notice how the ownership rules apply to the struct.
 
-The methods \textit{get\_age} and \textit{have\_birthday} will take a borrow of the struct object.
-To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} - also why \textit{bar} needs to be \textit{mut} in \textit{main}.
-The method \textit{have\_burial} moves \textit{self}, thus invalidating any objects of \textit{Foo} after \textit{have\_burial} is called - resulting in a compile error on line 33.
-The same error happened in \Fref{lst:fn-move}.
-
-\begin{notebox}
-	Rust does not always use the \textit{return} keyword.
-	The missing semi-colon on line 9 is deliberate, and the Rust way to say we want to return the age for the Foo instance.
-\end{notebox}
-
-\subsubsection{Encapsulation}
-The next definition deals with hiding implementation details from the client - known as encapsulation \cite{klabnik_2019_01, meyer_97_01}.
-Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
-Rust also meets the encapsulation definition by using the \textit{pub} keyword.
-
-\paragraph{pub}
-As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member is made public explicitly.
-The methods \textit{get\_age} and \textit{have\_birthday} are also made public explicitly.
-All the other data members and methods are private - Rust's default - and unreachable by client code.
-A curious question then is why can \textit{main} access the private variables and methods.
-The answer being: \textit{main} is located in the same module/file as the struct and therefore has full access to it.
-
-\begin{notebox}
-	Rust does not provide constructors like other OOP languages.
-	Instead, Rust has what it calls associate methods.
-	An associate method is a method definition not containing \textit{self} in the parameter list \cite{klabnik_2019_01}.
-	A constructor like associate-method will return an owned instance of the struct being constructed.
-	\Fref{lst:oop}, lines 36 to 44 shows an example of an associate method for Foo defined in the same file as Foo's definition.
-	Yes, Rust code can have multiple \textit{impl} blocks for a single struct.
-\end{notebox}
-
-\subsubsection{Inheritance}
-The last definition being looked at is inheritance.
-Inheritance has an object inherit some of its data members and procedures from a parent object \cite{meyer_97_01, stefik_85_01, gamma_94_01}.
-Inheritance is mostly used to reduce code duplication.
-Rust does not meet the inheritance definition for OOP.\\
-
-The GoF made their design patterns for Object-Oriented languages.
-They also define two principles for Object-Oriented design \cite{gamma_94_01}.
+The ownership rules apply to the struct as follow:
 \begin{itemize}
-	\item ``Program to an interface, not an implementation.''
-	      Rust meets this requirement by using \textit{traits} - discussed next.
-	\item ``Favor object composition over class inheritance.''
-	      Not having inheritance causes Rust code to use composition naturally.
+	\item The method \textit{have\_burial} moves \textit{self} and will result in cleanup code being inserted on line 18.
+	      Thus, any objects of \textit{Foo} after \textit{have\_burial} is called will be invalidated.
+	      This happens on line 33, resulting in a compile error - the same error happened in \Fref{lst:fn-move}.
+	\item The method \textit{get\_age} will take a borrow of the struct object.
+	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} - also why \textit{bar} needs to be \textit{mut} in \textit{main} on line 22.
 \end{itemize}
 
-Rust \textit{traits} cause it to meet both requirements allowing Rust to implement the GoF design patterns.
+\addtocounter{footnote}{1}\footnotetext{%
+	\label{return}
+	Rust does not always use the \textit{return} keyword.
+	Lines without a semi-colon that are the last lines in a scope act as return statements.
+	Thus, line 9 acts as a return statement.
+}
 
-\subsection{Traits}
+\exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
+
+\addtocounter{footnote}{1}\footnotetext{%
+	\label{associate}
+	Rust does not provide constructors like other OOP languages.
+	Instead, Rust has what it calls \textit{associate functions}.
+	An associate function is a method definition not containing \textit{self} in the parameter list \cite{klabnik_2019_01}.
+	They are used as constructors by returning an owned instance of the struct as seen on line 39.
+}
+\addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single struct.}
+
+\subsubsection{Encapsulation}
+Encapsulation hides the implementation details from the client \cite{klabnik_2019_01,meyer_97_01,savitch_15_01}.
+In Rust, encapsulation is the default unless specified otherwise using the \textit{pub} keyword.
+Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
+Therefore, Rust meets the encapsulation concept.
+
+\paragraph{pub}
+As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member are explicitly made public, as are the methods \textit{get\_age} and \textit{have\_birthday}.
+All the other data members and methods are private - Rust's default - and unreachable by client code.
+\textit{Main} is allowed to access the private members and methods - even though they are hidden - because they are all in the same file.
+
+\subsubsection{Inheritance}
+Inheritance allows an object to inherit some of its data members and procedures from a parent object \cite{meyer_97_01,stefik_85_01,gamma_94_01,savitch_15_01}.
+Inheritance is mostly used to reduce code duplication.
+Rust does not make provision for the inheritance concept.
+
+Rust does make provision for ``Program to an interface, not an implementation'' and ``Favor object composition over class inheritance'' which the GoF include as concepts for OOP design \cite{gamma_94_01}.
+Both concepts are realized using \textit{traits} thereby allowing Rust to implement the GoF design patterns.
+
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
 Thus, \textit{traits} allow the definition of abstract behavior as seen in \Fref{lst:traits}, lines 1 to 7.
 
-\exampleCodeFromFile[firstline=3,lastline=35]{traits/src/main.rs}{traits}{Working with traits}
+\exampleCodeFromFile[firstline=3,lastline=36]{traits/src/main.rs}{traits}{Working with traits}
 
 The compiler uses \textit{traits} at compile time to guarantee an object implements a set of methods using \textit{trait bounds}.
-Line 9 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
+Line 10 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
 Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
 In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
 
-More complex trait bounds can be constructed as shown on line 13.
+More complex trait bounds can be constructed as shown on line 14.
 Here \textit{T} (\textit{first}) has to implement the traits: \textit{Show} to be able to call the \textit{show()} method on \textit{first}; \textit{Display} to pass it to \textit{println!}; \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
-Trait bounds this complex become hard to read, so Rust offers an alternative syntax for placing trait bounds on generics as seen in lines 19 to 22.
+Trait bounds this complex become hard to read, so Rust offers an alternative syntax for placing trait bounds on generics as seen in lines 20 to 23.
 
-Traits are implemented using the \textit{impl} keyword followed by the trait name as seen on line 29.
+Traits are implemented on structs using the \textit{impl} keyword followed by the trait name as seen on line 30.
 The \textit{Show} trait has a default implementation for \textit{show\_size}.
 Thus, \textit{Tester} does not need to implement \textit{show\_size} and chooses only to implement the \textit{show} method.
 
-Generics and traits are a good match since they result in static dispatch function calls.
+Traits also causes one to use composition to construct complex objects.
+Getting back to the generic dialog presented in the Design Patterns section, using composition, the generic dialog will have to be composed of a button, text, and a scroller as seen in \Fref{lst:composition}.
+
+\exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
+
+Using traits, an abstract button, scroller, and display text is defined on lines 1 to 3.
+The confirmation dialog ``has-a'' \cite{malik_09_01} button, scroller, and display text on lines 6 to 8.
+Using associate functions\footnotemark[\ref{associate}], a composition constructor is created on line 13.
+To construct the open dialog, the open button will be passed to this constructor.
+The safe dialog will need the safe button to be passed in.
+Finally, the \textit{show} method on line 25 will show the confirmation dialog - whether it is the open, safe, or some new version of the dialog.
+
+This is called polymorphism since the dialog will change form depending on the elements passed to the constructor at run-time \cite{savitch_15_01,malik_09_01,gamma_94_01}.
+To allow the dialog to work on any button, one has to instruct Rust to hold off on binding button operations until run-time as discussed next.
+
+\subsection{Dispatch}
+Binding an operation to an object is known as dispatching.
+Two forms exist - \textit{static dispatching} and \textit{dynamic dispatching} - as discussed next.
 
 \subsubsection{Static Dispatch}
-When Rust sees generics on a function or type, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
+When Rust sees generics on a function or type, as seen in \Fref{lst:traits} line 10, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
 \textit{Monomorphization} creates a new function or type at compile time for each concrete object passed into the generic placeholders.
 Thus, at compile-time, the compiler knows exactly which version of the expanded function to call.
 Knowing which function to call at compile-time is known as \textit{compile-time binding} \cite{malik_09_01} or \textit{static dispatch} \cite{klabnik_2019_01, alexandrescu_01_01}.
 Using just \textit{trait objects} - rather than generics - will result in dynamic dispatch.
 
 \subsubsection{Dynamic Dispatch}
-Dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01} happens when the compiler cannot determine which method to call because the \textit{self} object is not fixed.
+Dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01} happens when the compiler cannot determine which method to call because the object type is not fixed.
 Instead, at run-time, pointers inside the trait objects are used to determine which method to call \cite{klabnik_2019_01}, hence why it is also known as \textit{run-time binding} \cite{malik_09_01}.
 
-\Fref{lst:traits-dyn-dispatch} shows \textit{work} with dynamic dispatch rather than generics.
+\Fref{lst:traits-dyn-dispatch} shows \textit{work} with dynamic dispatch rather than generics - in contrast to \textit{work} in \Fref{lst:traits} line 10.
 
 \exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
 
@@ -200,7 +209,7 @@ Three changes need to be made to the function signature.
 	\item Borrowing now takes place.
 \end{itemize}
 
-The static dispatch generic trait examples can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch.
+The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch.
 The special \textit{Sized} trait is the cause of the error.
 
 \subsubsection{Sized trait}
@@ -210,6 +219,7 @@ A special trait called \textit{Sized} is used by the compiler to make sure this 
 
 The size of an object is influenced by the data it holds.
 Also, any object can choose to implement \textit{Show}.
+Thus, two different objects implementing \textit{Show} can have different sizes.
 Ownership will want to pass each object on the stack, but each object will need a different stack size only known at run-time.
 However, pointers have a fixed size.
 Therefore, putting the dynamic object behind any pointer means the stack size will be fixed.
@@ -218,7 +228,7 @@ Therefore, putting the dynamic object behind any pointer means the stack size wi
 	\textit{Sized} is a unique Rust trait.
 	It is the only trait automatically added as a trait bound on all generics.
 	For this reason, a special syntax is needed when the programmer wants to opt-out of the \textit{Sized} trait bound.
-	The syntax in question is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
+	The syntax is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
 \end{notebox}
 
 Rust offers many pointer options: \cite{klabnik_2019_01}
@@ -234,6 +244,7 @@ Rust offers many pointer options: \cite{klabnik_2019_01}
 	\item \textit{Mutex$<$T$>$} - a thread-safe version of \textit{RefCell}.
 	      However, a lock needs to be acquired first.
 	\item \textit{RwLock$<$T$>$} - like \textit{Mutex}, but distinguishes between a reader and a writer.
+	      It is the run-time equivalent of mutable and immutable borrows.
 	\item Finally, \textit{Arc$<$RwLock$<$T$>$$>$} which will be used by our Abstract Factory.
 	      It will hold \textit{T}s for use in multiple threads using \textit{Arc}, while \textit{RwLock} will guarantee only one writer.
 \end{itemize}

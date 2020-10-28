@@ -3,6 +3,7 @@ use std::fmt::Display;
 trait Show {
     fn show(&self) -> String;
 
+    // Method with a default implemetation
     fn show_size(&self) -> usize {
         self.show().chars().count()
     }
