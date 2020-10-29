@@ -121,6 +121,7 @@ The ownership rules apply to the struct as follow:
 
 \exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
 
+\addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single type.}
 \addtocounter{footnote}{1}\footnotetext{%
 	\label{associate}
 	Rust does not provide constructors like other OOP languages.
@@ -128,7 +129,6 @@ The ownership rules apply to the struct as follow:
 	An associate function is a method definition not containing \textit{self} in the parameter list \cite{klabnik_2019_01}.
 	They are used as constructors by returning an owned instance of the struct as seen on line 39.
 }
-\addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single struct.}
 
 \subsubsection{Encapsulation}
 Encapsulation hides the implementation details from the client \cite{klabnik_2019_01,meyer_97_01,savitch_15_01}.
@@ -151,7 +151,7 @@ Both concepts are realized using \textit{traits} thereby allowing Rust to implem
 
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
-Thus, \textit{traits} allow the definition of abstract behavior as seen in \Fref{lst:traits}, lines 1 to 7.
+Thus, \textit{traits} allow the definition of abstract behavior to program to an interface as seen in \Fref{lst:traits}, lines 1 to 7.
 
 \exampleCodeFromFile[firstline=3,lastline=36]{traits/src/main.rs}{traits}{Working with traits}
 
@@ -160,8 +160,15 @@ Line 10 shows the \textit{work} function having a \textit{trait bound} on the ge
 Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
 In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
 
+% TODO: might not be needed - consider for removal
 More complex trait bounds can be constructed as shown on line 14.
-Here \textit{T} (\textit{first}) has to implement the traits: \textit{Show} to be able to call the \textit{show()} method on \textit{first}; \textit{Display} to pass it to \textit{println!}; \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
+Here \textit{T} (\textit{first}) has to implement the traits:
+\begin{itemize}
+	\item \textit{Show} to be able to call the \textit{show()} method on it.
+	\item \textit{Display} to pass it to \textit{println!}.
+	\item \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
+\end{itemize}
+
 Trait bounds this complex become hard to read, so Rust offers an alternative syntax for placing trait bounds on generics as seen in lines 20 to 23.
 
 Traits are implemented on structs using the \textit{impl} keyword followed by the trait name as seen on line 30.
@@ -169,7 +176,7 @@ The \textit{Show} trait has a default implementation for \textit{show\_size}.
 Thus, \textit{Tester} does not need to implement \textit{show\_size} and chooses only to implement the \textit{show} method.
 
 Traits also causes one to use composition to construct complex objects.
-Getting back to the generic dialog presented in the Design Patterns section, using composition, the generic dialog will have to be composed of a button, text, and a scroller as seen in \Fref{lst:composition}.
+Getting back to the generic confirmation dialog presented in the Design Patterns section, using composition, the generic confirmation dialog will have to be composed of a button, text, and a scroller as seen in \Fref{lst:composition}.
 
 \exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
 
@@ -185,7 +192,7 @@ To allow the dialog to work on any button, one has to instruct Rust to hold off 
 
 \subsection{Dispatch}
 Binding an operation to an object is known as dispatching.
-Two forms exist - \textit{static dispatching} and \textit{dynamic dispatching} - as discussed next.
+Two forms exist - \textit{static dispatching} and \textit{dynamic dispatching}.
 
 \subsubsection{Static Dispatch}
 When Rust sees generics on a function or type, as seen in \Fref{lst:traits} line 10, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
@@ -195,8 +202,8 @@ Knowing which function to call at compile-time is known as \textit{compile-time 
 Using just \textit{trait objects} - rather than generics - will result in dynamic dispatch.
 
 \subsubsection{Dynamic Dispatch}
-Dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01} happens when the compiler cannot determine which method to call because the object type is not fixed.
-Instead, at run-time, pointers inside the trait objects are used to determine which method to call \cite{klabnik_2019_01}, hence why it is also known as \textit{run-time binding} \cite{malik_09_01}.
+When the compiler cannot determine which method to call because the object type is not fixed dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01} needs to happen.
+At run-time, pointers inside the trait objects are used to determine which method to call \cite{klabnik_2019_01}, hence why it is also known as \textit{run-time binding} \cite{malik_09_01}.
 
 \Fref{lst:traits-dyn-dispatch} shows \textit{work} with dynamic dispatch rather than generics - in contrast to \textit{work} in \Fref{lst:traits} line 10.
 
@@ -224,6 +231,7 @@ Ownership will want to pass each object on the stack, but each object will need 
 However, pointers have a fixed size.
 Therefore, putting the dynamic object behind any pointer means the stack size will be fixed.
 
+% TODO: consider removal
 \begin{notebox}
 	\textit{Sized} is a unique Rust trait.
 	It is the only trait automatically added as a trait bound on all generics.
@@ -231,11 +239,13 @@ Therefore, putting the dynamic object behind any pointer means the stack size wi
 	The syntax is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
 \end{notebox}
 
+% TODO: consider trimming - change AF implementation to use Box<T>
 Rust offers many pointer options: \cite{klabnik_2019_01}
 \begin{itemize}
 	\item A reference - also called a borrow.
 	\item The \textit{Box$<$T$>$} used to hold heap objects.
 	      \textit{Box} differs from a reference since \textit{Box} owns its \textit{T} \footnote{https://joshleeb.com/blog/rust-traits-trait-objects/}.
+	      Thus, when the box is dropped, the object it holds is dropped too.
 	\item The \textit{Rc$<$T$>$} reference counting pointer that is essentially a run-time immutable borrow.
 	      When the reference count reaches zero, the \textit{T} is dropped.
 	\item The special \textit{RefCell$<$T$>$} which exposes mutable access behind an immutable object using the \textit{Interior Mutability Pattern}.
@@ -255,15 +265,14 @@ One more Rust uniqueness is left to be covered. Rust treats enums differently th
 In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \Fref{lst:enums}, lines 1 to 3.
 The \textit{Option} enum, as defined here, is built into the standard Rust library \cite{klabnik_2019_01} to replace \textit{null} as used in other languages.
 An \textit{Option} can either be \textit{Some} object or \textit{None}.
-This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by checking the ``\textit{null}'' (\textit{None}) option is handled at compile-time.
+This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by checking that the ``\textit{null}'' (\textit{None}) option is handled at compile-time.
 
 \exampleCodeFromFile{enums/src/main.rs}{enums}{Enums holding objects in Rust}
 
 Lines 9 to 12 show the use of \textit{match} - called a \textit{switch} in most languages - to match against each possible enum variant.
 Line 10 and 11 are each called a \textit{match arm}.
-Line 10 shows how an object can be extracted on an arm and be assigned to a value variable.
-If any of the two arms are missing, the compiler will give an error stating not all the enum options are covered.
-Because matches need to be exhaustive - i.e. all variants need to be covered - in Rust.
+Line 10 shows how an object can be extracted on an arm and be assigned to a \textit{value} variable.
+If any of the two arms are missing, the compiler will give an error stating not all the enum options are covered, because matches need to be exhaustive - i.e. all variants need to be covered - in Rust.
 There are two options for getting around the exhaustive check \cite{klabnik_2019_01}.
 
 Either adding the \textit{\_} (underscore) catch-all arm to handle the default case for all missing enum options.
@@ -273,9 +282,9 @@ However, since the object is not used inside the if block, no extraction needs t
 The \textit{\_} is, therefore, used to not extract the enum object.
 
 Both \textit{if} and \textit{match} blocks are considered expressions in Rust.
-Thus, lines 16 and 18 miss their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if}.
+Thus, lines 16 and 18 are missing their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
 The value returned from the \textit{if} is assigned to \textit{valid}.
-Returning from a \textit{match} is quite common, especially with a particular enum used for error handling.
+Returning from a \textit{match} is quite common, especially with a particular enum used for error handling as discussed next.
 
 \subsubsection{Result enum for error handling}
 While other languages use exceptions to propagate errors up to the caller, Rust uses the \textit{Result} enum instead.
@@ -295,7 +304,7 @@ If the \textit{Err} enum is returned, then just run the alternative instead.
 \paragraph{Panicking}
 The caller will use a \textit{match pattern} to extract the error and panic as seen on lines 13 to 16.
 However, writing matches all the time for possible errors breaks the flow of the code.
-So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} - yes, Rust enums are like ordinary objects that can have methods.
+So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} - Rust enums are like ordinary objects that can have methods.
 
 The helper method \textit{expect}, as seen on line 22, does the exact same as the match on lines 13 to 16.
 
