@@ -1,4 +1,4 @@
-use crate::attribute_item::AttributeItem;
+use crate::key_value::KeyValue;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::{bracketed, token, Token};
@@ -8,7 +8,7 @@ use syn::{bracketed, token, Token};
 pub struct OptionsAttribute {
     pound_token: Token![#],
     bracket_token: token::Bracket,
-    options: Punctuated<AttributeItem, Token![,]>,
+    options: Punctuated<KeyValue, Token![,]>,
 }
 
 /// Make OptionsAttribute parsable from a token stream
@@ -18,7 +18,7 @@ impl Parse for OptionsAttribute {
         Ok(OptionsAttribute {
             pound_token: input.parse()?,
             bracket_token: bracketed!(content in input),
-            options: content.parse_terminated(AttributeItem::parse)?,
+            options: content.parse_terminated(KeyValue::parse)?,
         })
     }
 }

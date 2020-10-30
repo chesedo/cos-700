@@ -5,20 +5,20 @@ use syn::{Ident, Token};
 
 /// Holds a single key value attribute, with the value being optional
 #[derive(Debug)]
-pub struct AttributeItem {
+pub struct KeyValue {
     key: Ident,
     equal_token: Token![=],
     value: TokenStream,
 }
 
-/// Make AttributeItem parsable from a token stream
-impl Parse for AttributeItem {
+/// Make KeyValue parsable from a token stream
+impl Parse for KeyValue {
     fn parse(input: ParseStream) -> Result<Self> {
         let key = input.parse()?;
 
         // Stop if optional value is not given
         if input.is_empty() || input.peek(Token![,]) {
-            return Ok(AttributeItem {
+            return Ok(KeyValue {
                 key,
                 equal_token: Default::default(),
                 value: Default::default(),
@@ -40,7 +40,7 @@ impl Parse for AttributeItem {
             Err(cursor.error("value not supplied"))
         })?;
 
-        Ok(AttributeItem {
+        Ok(KeyValue {
             key,
             equal_token: equal,
             value,
@@ -49,12 +49,12 @@ impl Parse for AttributeItem {
 }
 
 // Just for testing
-#[cfg(test)]
-impl PartialEq for AttributeItem {
+impl PartialEq for KeyValue {
     fn eq(&self, other: &Self) -> bool {
         self.key == other.key && format!("{}", self.value) == format!("{}", other.value)
     }
 }
+impl Eq for KeyValue {}
 
 #[cfg(test)]
 mod tests {
@@ -66,8 +66,8 @@ mod tests {
 
     #[test]
     fn parse_attribute_item() -> Result {
-        let actual: AttributeItem = parse_str("some_key = \"value\"")?;
-        let expected = AttributeItem {
+        let actual: KeyValue = parse_str("some_key = \"value\"")?;
+        let expected = KeyValue {
             key: parse_str("some_key")?,
             equal_token: Default::default(),
             value: parse_str("\"value\"")?,
@@ -79,8 +79,8 @@ mod tests {
 
     #[test]
     fn parse_attribute_item_missing_value() -> Result {
-        let actual: AttributeItem = parse_str("bool_key")?;
-        let expected = AttributeItem {
+        let actual: KeyValue = parse_str("bool_key")?;
+        let expected = KeyValue {
             key: parse_str("bool_key")?,
             equal_token: Default::default(),
             value: Default::default(),
@@ -92,8 +92,8 @@ mod tests {
 
     #[test]
     fn parse_attribute_item_complex_stream() -> Result {
-        let actual: AttributeItem = parse_str("tmpl = {trait To {};}")?;
-        let expected = AttributeItem {
+        let actual: KeyValue = parse_str("tmpl = {trait To {};}")?;
+        let expected = KeyValue {
             key: parse_str("tmpl")?,
             equal_token: Default::default(),
             value: parse_str("{trait To {};}")?,
@@ -107,24 +107,24 @@ mod tests {
     #[test]
     #[should_panic(expected = "expected token")]
     fn parse_attribute_item_complex_stream_extra() {
-        parse_str::<AttributeItem>("tmpl = {trait To {};}, key").unwrap();
+        parse_str::<KeyValue>("tmpl = {trait To {};}, key").unwrap();
     }
 
     #[test]
     #[should_panic(expected = "expected identifier")]
     fn missing_key() {
-        parse_str::<AttributeItem>("= true").unwrap();
+        parse_str::<KeyValue>("= true").unwrap();
     }
 
     #[test]
     #[should_panic(expected = "expected `=`")]
     fn missing_equal_sign() {
-        parse_str::<AttributeItem>("key  value").unwrap();
+        parse_str::<KeyValue>("key  value").unwrap();
     }
 
     #[test]
     #[should_panic(expected = "value not supplied")]
     fn missing_value() {
-        parse_str::<AttributeItem>("key = ").unwrap();
+        parse_str::<KeyValue>("key = ").unwrap();
     }
 }
