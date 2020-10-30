@@ -283,7 +283,7 @@ One more Rust uniqueness is left to be covered. Rust treats enums differently th
 
 \subsection{Enums}
 In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \Fref{lst:enums}, lines 1 to 3.
-The \textit{Option} enum, as defined here, is built into the standard Rust library \cite{klabnik_2019_01} to replace \textit{null} as used in other languages.
+The \textit{Option} enum, as defined here, is built into the standard Rust library \cite{klabnik_2019_01} to replace \textit{null} as used in most languages.
 An \textit{Option} can either be \textit{Some} object or \textit{None}.
 This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by checking that the ``\textit{null}'' (\textit{None}) option is handled at compile-time.
 
@@ -292,22 +292,28 @@ This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the
 Lines 9 to 12 show the use of \textit{match} - called a \textit{switch} in most languages - to match against each possible enum variant.
 Line 10 and 11 are each called a \textit{match arm}.
 Line 10 shows how an object can be extracted on an arm and be assigned to a \textit{value} variable.
-If any of the two arms are missing, the compiler will give an error stating not all the enum options are covered, because matches need to be exhaustive - i.e. all variants need to be covered - in Rust.
-There are two options for getting around the exhaustive check \cite{klabnik_2019_01}.
+If any of the arms are missing, the compiler will provide an error stating not all the enum options are covered,
+Matches need to be exhaustive since all variants need to be covered in Rust.
+The exhaustive check is not always desired.
+Thus, there are two options for mitigating the exhaustive check \cite{klabnik_2019_01}.
 
-Either adding the \textit{\_} (underscore) catch-all arm to handle the default case for all missing enum options.
-Alternatively, using the \textit{if let} pattern as seen on line 14.
+\begin{itemize}
+	\item Adding the \textit{\_} (underscore) catch-all arm to handle the default case for all missing enum options.
+	\item Using the \textit{if let} pattern as seen on line 14.
+\end{itemize}
+
 The \textit{if let} pattern also allows extraction of the enum object.
 However, since the object is not used inside the if block, no extraction needs to occur.
-The \textit{\_} is, therefore, used to not extract the enum object.
+When using the \textit{\_}, the enum object will not be extract.
 
-Both \textit{if} and \textit{match} blocks are considered expressions in Rust.
-Thus, lines 16 and 18 are missing their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
-The value returned from the \textit{if} is assigned to \textit{valid}.
-Returning from a \textit{match} is quite common, especially with a particular enum used for error handling as discussed next.
+\textit{Match} blocks and \textit{if} conditions - which include \textit{if let} - are considered expressions in Rust.
+Returning from a \textit{match} is quite common, especially with a particular enum used for error handling as discussed in \Fref{sec:result-enum}.
+Resulting in lines 16 and 18 not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
+The value returned from the \textit{if} is assigned to the \textit{valid} variable.
 
 \subsubsection{Result enum for error handling}
-While other languages use exceptions to propagate errors up to the caller, Rust uses the \textit{Result} enum instead.
+\label{sec:result-enum}
+While most languages use exceptions to propagate errors back to the caller, Rust uses the \textit{Result} enum instead.
 The definition for \textit{Result} can be seen in \Fref{lst:enum-result} on lines 1 to 4.
 
 \exampleCodeFromFile[lastline=40]{enum-result/src/main.rs}{enum-result}{The \textit{Result} enum}
@@ -318,6 +324,8 @@ Any calls to \textit{may\_error} have to handle the possible error.
 A few error handling options exist: trying an alternative, panicking, or propagating the error.
 
 \paragraph{Alternative}
+% TODO: have example
+% or trim
 Trying an alternative is quite simple.
 If the \textit{Err} enum is returned, then just run the alternative instead.
 
@@ -329,11 +337,11 @@ So the \textit{Result} enum has some helper methods defined on it \footnote{http
 The helper method \textit{expect}, as seen on line 22, does the exact same as the match on lines 13 to 16.
 
 \paragraph{Propagation}
-The caller might decide more information is need to panic.
+The caller might decide more information is needed to panic.
 So the caller's caller will need to handle the error instead.
 
-Line 30 shows how to propagate the error up the stack - the \textit{return} is to return from the function and not the match.
-Line 29 uses the result if it is fine - the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
+Line 30 shows how to propagate the error up the stack - the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
+Line 29 uses the \textit{result} if it is fine - the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
 Again, the match is verbose and Rust offers a helper to make it shorter.
 The helper is the \textit{?} (question mark) operator.
 The \textit{?} operator can be used in any function returning a \textit{Result} or \textit{Option} - or type implementing the \textit{std::ops::Try} trait \cite{klabnik_2019_01}.
