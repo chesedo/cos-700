@@ -24,7 +24,7 @@ where
     T: Show + Display + PartialEq<U>,
     U: Display,
 {
-    // Same as complex
+    // Same as complex with easier to read trait bounds
 }
 
 struct Tester {}
@@ -33,6 +33,13 @@ impl Show for Tester {
     fn show(&self) -> String {
         String::from("Tester")
     }
+}
+
+fn work_tester(object: Tester) {
+    println!("{}", object.show());
+}
+fn work_string(object: String) {
+    println!("{}", object.show());
 }
 
 fn main() {
