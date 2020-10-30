@@ -4,7 +4,7 @@ use syn::punctuated::Punctuated;
 use syn::{bracketed, token, Token};
 
 /// Holds an outer attribute filled with key-value options
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Eq, PartialEq, Debug, Default)]
 pub struct OptionsAttribute {
     pound_token: Token![#],
     bracket_token: token::Bracket,
