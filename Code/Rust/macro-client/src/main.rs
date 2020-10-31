@@ -1,5 +1,3 @@
-mod abstract_factory;
-mod abstract_factory_hand;
 mod abstract_factory_r;
 mod abstract_factory_r_hand;
 mod abstract_factory_trait;
@@ -28,11 +26,6 @@ macro_rules! traits_expansion {
 mod tests {
     use macro_test_helpers::{expand, expand_cli};
     use pretty_assertions::assert_eq;
-
-    #[test]
-    fn abstract_factory() {
-        expand!("abstract_factory");
-    }
 
     #[test]
     fn abstract_factory_trait() {

@@ -8,24 +8,7 @@ use proc_macro::TokenStream;
 use syn::punctuated::Punctuated;
 use syn::{parse_macro_input, ItemTrait, Token};
 
-use abstract_factory::{
-    abstract_factory_attribute, abstract_factory_function, AbstractFactoryAttribute,
-    AbstractFactoryFunction, ConcreteFactoryFunction,
-};
-
-#[proc_macro]
-pub fn abstract_factory(tokens: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(tokens as AbstractFactoryFunction);
-
-    abstract_factory_function(&input).into()
-}
-
-#[proc_macro]
-pub fn concrete_factory(tokens: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(tokens as ConcreteFactoryFunction);
-
-    input.traits.interpolate(input.implementation).into()
-}
+use abstract_factory::{abstract_factory_attribute, AbstractFactoryAttribute};
 
 #[proc_macro_attribute]
 pub fn abstract_factory_trait(tokens: TokenStream, trait_expr: TokenStream) -> TokenStream {
