@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use macro_patterns::{abstract_factory_trait, interpolate_traits};
+use macro_patterns::{abstract_factory, interpolate_traits};
 use std::fmt::{Display, Formatter, Result};
 
 use crate::gui::{
@@ -11,7 +11,8 @@ pub trait Factory<T: Element + ?Sized> {
     fn create(&self, name: String) -> Box<T>;
 }
 
-pub trait Gui: Display + Factory<dyn Button> + Factory<dyn Input> + Factory<Window> {}
+#[abstract_factory(Factory, dyn Button, dyn Input, Window)]
+pub trait Gui: Display {}
 
 struct KDE {}
 
@@ -23,19 +24,20 @@ impl Display for KDE {
     }
 }
 
-impl Factory<dyn Button> for KDE {
-    fn create(&self, name: String) -> Box<dyn Button> {
-        Box::new(kde::KdeButton::new(name))
+#[interpolate_traits(
+    Button => kde::KdeButton,
+    Input => kde::Input,
+)]
+impl Factory<dyn TRAIT> for KDE {
+    fn create(&self, name: String) -> Box<dyn TRAIT> {
+        Box::new(CONCRETE::new(name))
     }
 }
-impl Factory<dyn Input> for KDE {
-    fn create(&self, name: String) -> Box<dyn Input> {
-        Box::new(kde::Input::new(name))
-    }
-}
-impl Factory<Window> for KDE {
-    fn create(&self, name: String) -> Box<Window> {
-        Box::new(Window::new(name))
+
+#[interpolate_traits(Window => Window)]
+impl Factory<TRAIT> for KDE {
+    fn create(&self, name: String) -> Box<TRAIT> {
+        Box::new(CONCRETE::new(name))
     }
 }
 

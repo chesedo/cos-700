@@ -1,7 +1,7 @@
+mod abstract_factory;
+mod abstract_factory_hand;
 mod abstract_factory_r;
 mod abstract_factory_r_hand;
-mod abstract_factory_trait;
-mod abstract_factory_trait_hand;
 
 mod visitor_r;
 mod visitor_r_hand;
@@ -29,7 +29,7 @@ mod tests {
 
     #[test]
     fn abstract_factory_trait() {
-        expand!("abstract_factory_trait");
+        expand!("abstract_factory");
     }
 
     #[test]

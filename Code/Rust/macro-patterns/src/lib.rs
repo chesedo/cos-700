@@ -8,14 +8,14 @@ use proc_macro::TokenStream;
 use syn::punctuated::Punctuated;
 use syn::{parse_macro_input, ItemTrait, Token};
 
-use abstract_factory::{abstract_factory_attribute, AbstractFactoryAttribute};
+use abstract_factory::AbstractFactoryAttribute;
 
 #[proc_macro_attribute]
-pub fn abstract_factory_trait(tokens: TokenStream, trait_expr: TokenStream) -> TokenStream {
+pub fn abstract_factory(tokens: TokenStream, trait_expr: TokenStream) -> TokenStream {
     let mut input = parse_macro_input!(trait_expr as ItemTrait);
     let attributes = parse_macro_input!(tokens as AbstractFactoryAttribute);
 
-    abstract_factory_attribute(&mut input, &attributes).into()
+    attributes.expand(&mut input).into()
 }
 
 #[proc_macro_attribute]

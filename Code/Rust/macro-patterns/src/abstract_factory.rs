@@ -26,25 +26,24 @@ impl Parse for AbstractFactoryAttribute {
     }
 }
 
-/// Expands a trait definition together with an [AbstractFactoryAttribute](struct.AbstractFactoryAttribute.html) to a TokenStream
-pub fn abstract_factory_attribute(
-    input_trait: &mut ItemTrait,
-    attributes: &AbstractFactoryAttribute,
-) -> TokenStream {
-    let bounds: Punctuated<TypeParamBound, Token![+]> = {
-        let types = attributes.types.iter();
-        let factory_name = &attributes.factory_trait;
+impl AbstractFactoryAttribute {
+    /// Add factory trait bounds to an `ItemTrait` to turn the `ItemTrait` into an Abstract Factory
+    pub fn expand(&self, input_trait: &mut ItemTrait) -> TokenStream {
+        let bounds: Punctuated<TypeParamBound, Token![+]> = {
+            let types = self.types.iter();
+            let factory_name = &self.factory_trait;
 
-        parse_quote! {
-            #(#factory_name<#types>)+*
+            parse_quote! {
+                #(#factory_name<#types>)+*
+            }
+        };
+
+        // Add extra bounds
+        input_trait.supertraits.extend(bounds);
+
+        quote! {
+            #input_trait
         }
-    };
-
-    // Add extra bounds
-    input_trait.supertraits.extend(bounds);
-
-    quote! {
-        #input_trait
     }
 }
 
@@ -56,7 +55,7 @@ mod tests {
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
-    mod abstract_factory_attribute {
+    mod abstract_factory {
         use super::*;
         use pretty_assertions::assert_eq;
 
@@ -94,14 +93,12 @@ mod tests {
             input_types.push(parse_str("u32")?);
             input_types.push(parse_str("i64")?);
 
-            let actual = abstract_factory_attribute(
-                &mut t,
-                &AbstractFactoryAttribute {
-                    factory_trait: parse_str("Factory")?,
-                    sep: Default::default(),
-                    types: input_types,
-                },
-            );
+            let actual = &AbstractFactoryAttribute {
+                factory_trait: parse_str("Factory")?,
+                sep: Default::default(),
+                types: input_types,
+            }
+            .expand(&mut t);
 
             assert_eq!(
                 reformat(&actual),
