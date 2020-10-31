@@ -1,9 +1,9 @@
-use macro_lib::token_list::TokenList;
 use macro_lib::trait_specifier::TraitSpecifier;
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::parse::{Parse, ParseStream, Result};
-use syn::{parenthesized, token, ItemTrait, Token, Type, Visibility};
+use syn::punctuated::Punctuated;
+use syn::{parenthesized, parse_quote, token, ItemTrait, Token, Type, TypeParamBound, Visibility};
 
 /// Holds tokens for AbstractFactory functional macro inputs
 /// Expects an input in the following format
@@ -17,7 +17,7 @@ pub struct AbstractFactoryFunction {
     first_sep: Token![,],
     factory_trait: Type,
     second_sep: Token![,],
-    types: TokenList<Type>,
+    types: Punctuated<Type, Token![,]>,
 }
 
 impl Parse for AbstractFactoryFunction {
@@ -28,7 +28,7 @@ impl Parse for AbstractFactoryFunction {
             first_sep: input.parse()?,
             factory_trait: input.parse()?,
             second_sep: input.parse()?,
-            types: input.parse()?,
+            types: input.parse_terminated(Type::parse)?,
         })
     }
 }
@@ -44,7 +44,7 @@ impl Parse for AbstractFactoryFunction {
 #[derive(Debug)]
 pub struct ConcreteFactoryFunction {
     paren_token: token::Paren,
-    pub traits: TokenList<TraitSpecifier>,
+    pub traits: Punctuated<TraitSpecifier, Token![,]>,
     comma: Token![,],
     pub implementation: TokenStream,
 }
@@ -55,7 +55,7 @@ impl Parse for ConcreteFactoryFunction {
 
         Ok(ConcreteFactoryFunction {
             paren_token: parenthesized!(traits_content in input),
-            traits: traits_content.call(TokenList::parse)?,
+            traits: traits_content.parse_terminated(TraitSpecifier::parse)?,
             comma: input.parse()?,
             implementation: input.parse()?,
         })
@@ -71,7 +71,7 @@ impl Parse for ConcreteFactoryFunction {
 pub struct AbstractFactoryAttribute {
     factory_trait: Type,
     sep: Token![,],
-    types: TokenList<Type>,
+    types: Punctuated<Type, Token![,]>,
 }
 
 impl Parse for AbstractFactoryAttribute {
@@ -79,16 +79,28 @@ impl Parse for AbstractFactoryAttribute {
         Ok(AbstractFactoryAttribute {
             factory_trait: input.parse()?,
             sep: input.parse()?,
-            types: input.parse()?,
+            types: input.parse_terminated(Type::parse)?,
         })
     }
 }
 
 /// Expands an [AbstractFactoryFunction](struct.AbstractFactoryFunction.html) to a TokenStream
 pub fn abstract_factory_function(input: &AbstractFactoryFunction) -> TokenStream {
-    input
-        .types
-        .to_abstract_factory(&input.vis, &input.trait_ident, &input.factory_trait)
+    let vis = &input.vis;
+    let abstract_name = &input.trait_ident;
+    let factory_name = &input.factory_trait;
+
+    let bounds = {
+        let types = input.types.iter();
+
+        quote! {
+            #(#factory_name<#types>)+*
+        }
+    };
+
+    quote! {
+        #vis trait #abstract_name: #bounds {}
+    }
 }
 
 /// Expands a trait definition together with an [AbstractFactoryAttribute](struct.AbstractFactoryAttribute.html) to a TokenStream
@@ -96,9 +108,14 @@ pub fn abstract_factory_attribute(
     input_trait: &mut ItemTrait,
     attributes: &AbstractFactoryAttribute,
 ) -> TokenStream {
-    let bounds = attributes
-        .types
-        .to_type_param_bounds(&attributes.factory_trait);
+    let bounds: Punctuated<TypeParamBound, Token![+]> = {
+        let types = attributes.types.iter();
+        let factory_name = &attributes.factory_trait;
+
+        parse_quote! {
+            #(#factory_name<#types>)+*
+        }
+    };
 
     // Add extra bounds
     input_trait.supertraits.extend(bounds);
@@ -123,6 +140,10 @@ mod tests {
         #[test]
         fn parse() -> Result {
             let actual: AbstractFactoryFunction = parse_str("Gui, Factory, u32, i64")?;
+            let mut expected_types = Punctuated::new();
+
+            expected_types.push(parse_str("u32")?);
+            expected_types.push(parse_str("i64")?);
 
             assert_eq!(
                 actual,
@@ -132,7 +153,7 @@ mod tests {
                     first_sep: Default::default(),
                     factory_trait: parse_str("Factory")?,
                     second_sep: Default::default(),
-                    types: parse_str("u32, i64")?,
+                    types: expected_types,
                 }
             );
 
@@ -147,13 +168,18 @@ mod tests {
 
         #[test]
         fn expand() -> Result {
+            let mut input_types = Punctuated::new();
+
+            input_types.push(parse_str("u32")?);
+            input_types.push(parse_str("i64")?);
+
             let actual = abstract_factory_function(&AbstractFactoryFunction {
                 vis: parse_str("pub")?,
                 trait_ident: parse_str("Gui")?,
                 first_sep: Default::default(),
                 factory_trait: parse_str("Factory")?,
                 second_sep: Default::default(),
-                types: parse_str("u32, i64")?,
+                types: input_types,
             });
             assert_eq!(
                 reformat(&actual),
@@ -172,11 +198,12 @@ mod tests {
         fn parse() -> Result {
             let actual: ConcreteFactoryFunction =
                 parse_str("(IButton => Button, IInput => Input), const _: TRAIT = CONCRETE{};")?;
+            let mut expected_traits = Punctuated::new();
 
-            assert_eq!(
-                actual.traits,
-                parse_str("IButton => Button, IInput => Input")?
-            );
+            expected_traits.push(parse_str("IButton => Button")?);
+            expected_traits.push(parse_str("IInput => Input")?);
+
+            assert_eq!(actual.traits, expected_traits);
             assert_eq!(
                 reformat(&actual.implementation),
                 "const _: TRAIT = CONCRETE {};\n"
@@ -193,13 +220,17 @@ mod tests {
         #[test]
         fn parse() -> Result {
             let actual: AbstractFactoryAttribute = parse_str("Factory, u32, i64")?;
+            let mut expected_types = Punctuated::new();
+
+            expected_types.push(parse_str("u32")?);
+            expected_types.push(parse_str("i64")?);
 
             assert_eq!(
                 actual,
                 AbstractFactoryAttribute {
                     factory_trait: parse_str("Factory")?,
                     sep: Default::default(),
-                    types: parse_str("u32, i64")?,
+                    types: expected_types,
                 }
             );
 
@@ -215,12 +246,17 @@ mod tests {
         #[test]
         fn expand() -> Result {
             let mut t = parse_str::<ItemTrait>("pub trait Abstraction<T>: Display + Extend<T> {}")?;
+            let mut input_types = Punctuated::new();
+
+            input_types.push(parse_str("u32")?);
+            input_types.push(parse_str("i64")?);
+
             let actual = abstract_factory_attribute(
                 &mut t,
                 &AbstractFactoryAttribute {
                     factory_trait: parse_str("Factory")?,
                     sep: Default::default(),
-                    types: parse_str("u32, i64")?,
+                    types: input_types,
                 },
             );
 

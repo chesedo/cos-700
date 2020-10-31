@@ -1,11 +1,23 @@
 use proc_macro2::{Group, TokenStream, TokenTree};
 use quote::{ToTokens, TokenStreamExt};
 use std::collections::HashMap;
+use syn::punctuated::Punctuated;
 
 /// Trait for tokens that can replace interpolation markers
 pub trait Interpolate {
     /// Take a token stream and replace interpolation markers with their actual values in a new stream
     fn interpolate(&self, stream: TokenStream) -> TokenStream;
+}
+
+/// Make a Punctuated list interpolatible if it holds interpolatible types
+impl<T: Interpolate, P> Interpolate for Punctuated<T, P> {
+    fn interpolate(&self, stream: TokenStream) -> TokenStream {
+        self.iter()
+            .fold(TokenStream::new(), |mut implementations, t| {
+                implementations.extend(t.interpolate(stream.clone()));
+                implementations
+            })
+    }
 }
 
 /// Replace the interpolation markers in a token stream with a specific text
@@ -46,9 +58,10 @@ pub fn interpolate(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::trait_specifier::TraitSpecifier;
     use pretty_assertions::assert_eq;
     use quote::quote;
-    use syn::{parse_str, Ident, Type};
+    use syn::{parse_str, Ident, Token, Type};
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -99,6 +112,29 @@ mod tests {
 
         assert_eq!(
             format!("{}", interpolate(input, &r)),
+            format!("{}", expected)
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn interpolate_on_punctuated() -> Result {
+        let mut traits: Punctuated<TraitSpecifier, Token![,]> = Punctuated::new();
+
+        traits.push(parse_str("IButton => BigButton")?);
+        traits.push(parse_str("IWindow => MinimalWindow")?);
+
+        let input = quote! {
+            let _: TRAIT = CONCRETE{};
+        };
+        let expected = quote! {
+            let _: IButton = BigButton{};
+            let _: IWindow = MinimalWindow{};
+        };
+
+        assert_eq!(
+            format!("{}", traits.interpolate(input)),
             format!("{}", expected)
         );
 
