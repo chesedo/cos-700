@@ -1,15 +1,16 @@
 use crate::options_attribute::OptionsAttribute;
 use syn::parse::{Parse, ParseStream, Result};
-use syn::{Ident, Token};
+use syn::{Token, Type};
 
 /// Holds a type that is optionally annotated with key-value options
 #[derive(Eq, PartialEq, Debug)]
+pub struct RichType<T = Type> {
     pub attrs: OptionsAttribute,
     pub ident: T,
 }
 
 /// Make RichType parsable from token stream
-impl Parse for RichType {
+impl<T: Parse> Parse for RichType<T> {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.peek(Token![#]) {
             return Ok(RichType {
@@ -29,7 +30,7 @@ impl Parse for RichType {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-    use syn::{parse_quote, parse_str};
+    use syn::{parse_quote, parse_str, TypeTraitObject};
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -63,7 +64,22 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "expected identifier")]
+    fn parse_trait_bounds() -> Result {
+        let actual: RichType<TypeTraitObject> = parse_quote! {
+            #[no_default]
+            dyn Button
+        };
+        let expected = RichType::<TypeTraitObject> {
+            attrs: parse_str("#[no_default]")?,
+            ident: parse_str("dyn Button")?,
+        };
+
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    #[should_panic(expected = "unexpected end of input")]
     fn missing_type() {
         parse_str::<RichType>("#[no_default]").unwrap();
     }
