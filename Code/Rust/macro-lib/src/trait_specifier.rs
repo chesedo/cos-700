@@ -12,9 +12,9 @@ use syn::{Token, Type};
 /// ```
 #[derive(Eq, PartialEq, Debug)]
 pub struct TraitSpecifier {
-    abstract_trait: Type,
-    arrow_token: Token![=>],
-    concrete: Type,
+    pub abstract_trait: Type,
+    pub arrow_token: Token![=>],
+    pub concrete: Type,
 }
 
 /// Make TraitSpecifier parsable from a token stream

@@ -6,9 +6,9 @@ use syn::{bracketed, token, Token};
 /// Holds an outer attribute filled with key-value options
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct OptionsAttribute {
-    pound_token: Token![#],
-    bracket_token: token::Bracket,
-    options: Punctuated<KeyValue, Token![,]>,
+    pub pound_token: Token![#],
+    pub bracket_token: token::Bracket,
+    pub options: Punctuated<KeyValue, Token![,]>,
 }
 
 /// Make OptionsAttribute parsable from a token stream

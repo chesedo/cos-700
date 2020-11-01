@@ -4,9 +4,8 @@ use syn::{Ident, Token};
 
 /// Holds a type that is optionally annotated with key-value options
 #[derive(Eq, PartialEq, Debug)]
-struct RichType {
-    attrs: OptionsAttribute,
-    ident: Ident,
+    pub attrs: OptionsAttribute,
+    pub ident: T,
 }
 
 /// Make RichType parsable from token stream

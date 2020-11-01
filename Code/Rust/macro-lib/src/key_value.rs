@@ -6,9 +6,9 @@ use syn::{Ident, Token};
 /// Holds a single key value attribute, with the value being optional
 #[derive(Debug)]
 pub struct KeyValue {
-    key: Ident,
-    equal_token: Token![=],
-    value: TokenStream,
+    pub key: Ident,
+    pub equal_token: Token![=],
+    pub value: TokenStream,
 }
 
 /// Make KeyValue parsable from a token stream
