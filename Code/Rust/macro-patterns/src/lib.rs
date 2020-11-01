@@ -1,4 +1,5 @@
 mod abstract_factory;
+mod visitor;
 
 extern crate proc_macro;
 
@@ -9,6 +10,7 @@ use syn::punctuated::Punctuated;
 use syn::{parse_macro_input, ItemTrait, Token};
 
 use abstract_factory::AbstractFactoryAttribute;
+use visitor::VisitorFunction;
 
 #[proc_macro_attribute]
 pub fn abstract_factory(tokens: TokenStream, trait_expr: TokenStream) -> TokenStream {
@@ -24,4 +26,11 @@ pub fn interpolate_traits(tokens: TokenStream, concrete_impl: TokenStream) -> To
         parse_macro_input!(tokens with Punctuated::<TraitSpecifier, Token![,]>::parse_terminated);
 
     attributes.interpolate(concrete_impl.into()).into()
+}
+
+#[proc_macro]
+pub fn visitor(tokens: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(tokens as VisitorFunction);
+
+    input.expand().into()
 }
