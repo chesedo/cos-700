@@ -1,3 +1,4 @@
+pub mod extensions;
 pub mod key_value;
 pub mod options_attribute;
 mod rich_type;
