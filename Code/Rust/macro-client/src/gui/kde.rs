@@ -15,9 +15,6 @@ impl elements::Element for KdeButton {
     fn get_name(&self) -> &str {
         &self.name
     }
-    fn set_name(&mut self, name: String) {
-        self.name = name;
-    }
 }
 
 impl elements::Button for KdeButton {
@@ -46,9 +43,6 @@ impl elements::Element for Input {
     }
     fn get_name(&self) -> &str {
         &self.name
-    }
-    fn set_name(&mut self, name: String) {
-        self.name = name;
     }
 }
 

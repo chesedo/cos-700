@@ -2,16 +2,13 @@ use crate::gui::elements::{Button, Child, Element, Input, Window};
 #[allow(unused_imports)]
 use macro_patterns_dec::visitor;
 use std::fmt;
-use std::ops::Deref;
 
 macro_rules! children_walker {
     ($var_name:ident, $visitor_name:ident) => {
         $var_name.get_children().iter().for_each(|child| {
             match child {
-                Child::Button(button) => $visitor_name
-                    .visit_button(button.read().expect("Button is no longer readable").deref()),
-                Child::Input(input) => $visitor_name
-                    .visit_input(input.read().expect("Input is no longer readable").deref()),
+                Child::Button(button) => $visitor_name.visit_button(button.as_ref()),
+                Child::Input(input) => $visitor_name.visit_input(input.as_ref()),
             };
         });
     };

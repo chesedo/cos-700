@@ -1,17 +1,8 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
-
-#[allow(dead_code)]
-pub type Wrap<T> = Rc<RefCell<T>>;
-pub type AWrap<T> = Arc<RwLock<T>>;
-
-pub trait Element: Send + Sync {
+pub trait Element {
     fn new(name: String) -> Self
     where
         Self: Sized;
     fn get_name(&self) -> &str;
-    fn set_name(&mut self, name: String);
 }
 
 pub trait Button: Element {
@@ -26,25 +17,24 @@ pub trait Input: Element {
 }
 
 pub enum Child {
-    Button(AWrap<dyn Button>),
-    Input(AWrap<dyn Input>),
-}
-
-impl From<AWrap<dyn Button>> for Child {
-    fn from(button: AWrap<dyn Button>) -> Self {
-        Child::Button(button)
-    }
-}
-
-impl From<AWrap<dyn Input>> for Child {
-    fn from(input: AWrap<dyn Input>) -> Self {
-        Child::Input(input)
-    }
+    Button(Box<dyn Button>),
+    Input(Box<dyn Input>),
 }
 
 pub struct Window {
     name: String,
     children: Vec<Child>,
+}
+
+impl Window {
+    pub fn add_child(&mut self, child: Child) -> &mut Self {
+        self.children.push(child);
+
+        self
+    }
+    pub fn get_children(&self) -> &[Child] {
+        &self.children
+    }
 }
 
 impl Element for Window {
@@ -57,18 +47,16 @@ impl Element for Window {
     fn get_name(&self) -> &str {
         &self.name
     }
-    fn set_name(&mut self, name: String) {
-        self.name = name;
+}
+
+impl From<Box<dyn Button>> for Child {
+    fn from(button: Box<dyn Button>) -> Self {
+        Child::Button(button)
     }
 }
 
-impl Window {
-    pub fn add_child(&mut self, child: Child) -> &mut Self {
-        self.children.push(child);
-
-        self
-    }
-    pub fn get_children(&self) -> &[Child] {
-        &self.children
+impl From<Box<dyn Input>> for Child {
+    fn from(input: Box<dyn Input>) -> Self {
+        Child::Input(input)
     }
 }

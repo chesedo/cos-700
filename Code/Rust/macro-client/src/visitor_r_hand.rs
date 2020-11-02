@@ -2,7 +2,6 @@ use crate::gui::elements::{Button, Child, Element, Input, Window};
 #[allow(unused_imports)]
 use macro_patterns_dec::visitor;
 use std::fmt;
-use std::ops::Deref;
 
 pub trait Visitor {
     fn visit_element(&mut self, element: &dyn Element) {
@@ -43,12 +42,8 @@ where
 {
     window.get_children().iter().for_each(|child| {
         match child {
-            Child::Button(button) => {
-                visitor.visit_button(button.read().expect("Button is no longer readable").deref())
-            }
-            Child::Input(input) => {
-                visitor.visit_input(input.read().expect("Input is no longer readable").deref())
-            }
+            Child::Button(button) => visitor.visit_button(button.as_ref()),
+            Child::Input(input) => visitor.visit_input(input.as_ref()),
         };
     });
 }
@@ -118,10 +113,8 @@ impl Visitor for VisitorName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::gui::elements::{AWrap, Child};
+    use crate::gui::elements::Child;
     use crate::gui::kde;
-    use std::sync::{Arc, RwLock};
-    use std::thread;
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
@@ -138,58 +131,24 @@ mod tests {
 
     #[test]
     fn visit_window() -> Result {
-        let window = Arc::new(RwLock::new(Window::new(String::from("Holding window"))));
-        let button: AWrap<dyn Button> = Arc::new(RwLock::new(kde::KdeButton::new(String::from(
-            "Some Button",
-        ))));
-        let input: AWrap<dyn Input> =
-            Arc::new(RwLock::new(kde::Input::new(String::from("Some Input"))));
+        let mut window = Box::new(Window::new(String::from("Holding window")));
+        let button: Box<dyn Button> = Box::new(kde::KdeButton::new(String::from("Some Button")));
+        let mut input: Box<dyn Input> = Box::new(kde::Input::new(String::from("Some Input")));
+
+        input.set_input(String::from("John Doe"));
 
         window
-            .write()
-            .expect("Failed to get writable window")
             .add_child(Child::from(button))
-            .add_child(Child::from(input.clone()));
-
-        input
-            .write()
-            .expect("Failed to get writable input")
-            .set_input(String::from("John Doe"));
-
-        let clone = window.clone();
-
-        let handle = thread::spawn(move || {
-            let mut visitor = VisitorName::new();
-
-            clone
-                .read()
-                .expect("Clone is no longer readable")
-                .apply(&mut visitor);
-
-            assert_eq!(
-                visitor.to_string(),
-                "Holding window, Some Button, Some Input (Mary Doe)"
-            );
-        });
+            .add_child(Child::from(input));
 
         let mut visitor = VisitorName::new();
 
-        window
-            .read()
-            .expect("Clone is no longer readable")
-            .apply(&mut visitor);
+        window.apply(&mut visitor);
 
         assert_eq!(
             visitor.to_string(),
             "Holding window, Some Button, Some Input (John Doe)"
         );
-
-        input
-            .write()
-            .expect("Failed to get writable input")
-            .set_input(String::from("Mary Doe"));
-
-        handle.join().expect("Test failed");
 
         Ok(())
     }
