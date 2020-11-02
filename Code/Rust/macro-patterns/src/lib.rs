@@ -4,7 +4,7 @@ mod visitor;
 extern crate proc_macro;
 
 use macro_lib::token_stream_utils::Interpolate;
-use macro_lib::trait_specifier::TraitSpecifier;
+use macro_lib::TraitSpecifier;
 use proc_macro::TokenStream;
 use syn::punctuated::Punctuated;
 use syn::{parse_macro_input, ItemTrait, Token};

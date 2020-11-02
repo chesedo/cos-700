@@ -65,7 +65,7 @@ mod tests {
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[test]
-    fn parse_attribute_item() -> Result {
+    fn parse() -> Result {
         let actual: KeyValue = parse_str("some_key = \"value\"")?;
         let expected = KeyValue {
             key: parse_str("some_key")?,
@@ -78,7 +78,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_attribute_item_missing_value() -> Result {
+    fn parse_missing_value() -> Result {
         let actual: KeyValue = parse_str("bool_key")?;
         let expected = KeyValue {
             key: parse_str("bool_key")?,

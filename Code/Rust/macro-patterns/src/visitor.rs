@@ -1,4 +1,4 @@
-use macro_lib::{extensions::ToLowercase, key_value::KeyValue, RichType, SimpleType};
+use macro_lib::{extensions::ToLowercase, KeyValue, RichType, SimpleType};
 use proc_macro2::{Span, TokenStream, TokenTree};
 use quote::{format_ident, quote};
 use syn::parse::{Parse, ParseStream, Result};
