@@ -1,4 +1,5 @@
 \section{Metaprogramming}
+\label{sec:metaprogramming}
 Metaprogramming is a program that writes another program.
 A program operates on data; a metaprogram treats a program as its data as shown in \Fref{fig:BlackboxProgramming} \cite{savidis_19_01, anggoro_17_01, sheard_01_01}.
 Input to a metaprogram will be referred to as meta-code.
@@ -165,6 +166,7 @@ Thus, the placeholders are preceded by some \textit{unquote} character \cite{baw
 Each dimension has an option used by Rust to enable metaprogramming.
 
 \subsection{Metaprogramming in Rust}
+\label{sec:rust-metaprogramming}
 Rust has two metaprogramming functionalities built into the language.
 The first has been part of the language for some time and is meant for general metaprogramming.
 The second, called \textit{Procedural Macros}, is a newer addition added in late 2018 \footnote{https://blog.rust-lang.org/2018/12/21/Procedural-Macros-in-Rust-2018.html} and is the focus of this report \cite{klabnik_2019_01}.
@@ -282,6 +284,7 @@ A snippet of the output is as follows - it comes from line 12.
 \clientCodeFromFile[firstline=11,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
 \paragraph{Attribute macros}
+\label{sec:attribute-macro}
 A function-like macro with context-awareness results in attribute macros.
 Therefore, two token streams - the input and the context - are passed as arguments to it.
 This time the attribute above the function is \textit{proc\_macro\_attribute}.
