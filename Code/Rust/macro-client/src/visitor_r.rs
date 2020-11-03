@@ -1,4 +1,4 @@
-use crate::gui::elements::{Button, Child, Element, Input, Window};
+use crate::gui::elements::{Button, Child, Input, Window};
 #[allow(unused_imports)]
 use macro_patterns_dec::visitor;
 use std::fmt;
@@ -15,7 +15,6 @@ macro_rules! children_walker {
 }
 
 visitor!(
-    dyn Element,
     dyn Button,
     dyn Input,
 
@@ -48,11 +47,5 @@ impl Visitor for VisitorName {
     fn visit_input(&mut self, input: &dyn Input) {
         self.names
             .push(format!("{} ({})", input.get_name(), input.get_input()));
-    }
-
-    fn visit_window(&mut self, window: &Window) {
-        self.names.push(window.get_name().to_string());
-
-        visit_window(self, window);
     }
 }

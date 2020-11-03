@@ -1,13 +1,13 @@
 use super::elements;
 
-pub struct KdeButton {
+pub struct BrandButton {
     name: String,
     text: String,
 }
 
-impl elements::Element for KdeButton {
+impl elements::Element for BrandButton {
     fn new(name: String) -> Self {
-        KdeButton {
+        BrandButton {
             name,
             text: String::new(),
         }
@@ -17,7 +17,7 @@ impl elements::Element for KdeButton {
     }
 }
 
-impl elements::Button for KdeButton {
+impl elements::Button for BrandButton {
     fn click(&self) {
         unimplemented!()
     }
@@ -29,14 +29,14 @@ impl elements::Button for KdeButton {
     }
 }
 
-pub struct Input {
+pub struct BrandInput {
     name: String,
     input: String,
 }
 
-impl elements::Element for Input {
+impl elements::Element for BrandInput {
     fn new(name: String) -> Self {
-        Input {
+        BrandInput {
             name,
             input: String::new(),
         }
@@ -46,7 +46,7 @@ impl elements::Element for Input {
     }
 }
 
-impl elements::Input for Input {
+impl elements::Input for BrandInput {
     fn get_input(&self) -> String {
         self.input.to_owned()
     }

@@ -2,8 +2,8 @@
 use macro_patterns_dec::{abstract_factory, concrete_factory};
 
 use crate::gui::{
+    brand_elements::BrandButton,
     elements::{Button, Element, Window},
-    kde::KdeButton,
 };
 
 pub trait Factory<T: Element + ?Sized> {
@@ -11,15 +11,15 @@ pub trait Factory<T: Element + ?Sized> {
 }
 
 abstract_factory!(
-    pub trait Gui: Factory<T> {
+    pub trait AbstractGuiFactory: Factory<T> {
      dyn Button,
      Window,
     }
 );
 
-struct KDE {}
+struct BrandFactory {}
 
-impl Gui for KDE {}
+impl AbstractGuiFactory for BrandFactory {}
 
 macro_rules! create_named {
     ($concrete:ty: $trait:ty) => {
@@ -31,8 +31,8 @@ macro_rules! create_named {
 
 concrete_factory!(
     create_named(
-        impl Factory<T> for KDE {
-            KdeButton: dyn Button,
+        impl Factory<T> for BrandFactory {
+            BrandButton: dyn Button,
             Window: Window,
         }
     )
@@ -44,7 +44,7 @@ mod tests {
 
     #[test]
     fn button_factory() {
-        let factory = KDE {};
+        let factory = BrandFactory {};
         let actual: Box<dyn Button> = factory.create(String::from("Close Button"));
 
         assert_eq!(actual.get_name(), "Close Button");
@@ -52,7 +52,7 @@ mod tests {
 
     #[test]
     fn window_factory() {
-        let factory = KDE {};
+        let factory = BrandFactory {};
         let actual: Box<Window> = factory.create(String::from("Main Window"));
 
         assert_eq!(actual.get_name(), "Main Window");

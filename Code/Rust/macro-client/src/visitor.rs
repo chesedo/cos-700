@@ -1,10 +1,10 @@
-use crate::gui::elements::{Button, Child, Element, Input, Window};
 #[allow(unused_imports)]
 use macro_patterns::visitor;
 use std::fmt;
 
+use crate::gui::elements::{Button, Child, Input, Window};
+
 visitor!(
-    dyn Element,
     dyn Button,
     dyn Input,
 
@@ -31,12 +31,6 @@ impl VisitorName {
     }
 }
 
-impl fmt::Display for VisitorName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.names.join(", "))
-    }
-}
-
 impl Visitor for VisitorName {
     fn visit_button(&mut self, button: &dyn Button) {
         self.names.push(button.get_name().to_string());
@@ -46,10 +40,10 @@ impl Visitor for VisitorName {
         self.names
             .push(format!("{} ({})", input.get_name(), input.get_input()));
     }
+}
 
-    fn visit_window(&mut self, window: &Window) {
-        self.names.push(window.get_name().to_string());
-
-        visit_window(self, window);
+impl fmt::Display for VisitorName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.names.join(", "))
     }
 }

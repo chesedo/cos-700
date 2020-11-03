@@ -1,12 +1,9 @@
-use crate::gui::elements::{Button, Child, Element, Input, Window};
+use crate::gui::elements::{Button, Child, Input, Window};
 #[allow(unused_imports)]
 use macro_patterns_dec::visitor;
 use std::fmt;
 
 pub trait Visitor {
-    fn visit_element(&mut self, element: &dyn Element) {
-        visit_element(self, element)
-    }
     fn visit_button(&mut self, button: &dyn Button) {
         visit_button(self, button)
     }
@@ -16,12 +13,6 @@ pub trait Visitor {
     fn visit_window(&mut self, window: &Window) {
         visit_window(self, window)
     }
-}
-
-pub fn visit_element<V>(_visitor: &mut V, _element: &dyn Element)
-where
-    V: Visitor + ?Sized,
-{
 }
 
 pub fn visit_button<V>(_visitor: &mut V, _button: &dyn Button)
@@ -50,12 +41,6 @@ where
 
 trait Visitable {
     fn apply(&self, visitor: &mut dyn Visitor);
-}
-
-impl Visitable for dyn Element {
-    fn apply(&self, visitor: &mut dyn Visitor) {
-        visitor.visit_element(self);
-    }
 }
 
 impl Visitable for dyn Button {
@@ -102,25 +87,19 @@ impl Visitor for VisitorName {
         self.names
             .push(format!("{} ({})", input.get_name(), input.get_input()));
     }
-
-    fn visit_window(&mut self, window: &Window) {
-        self.names.push(window.get_name().to_string());
-
-        visit_window(self, window);
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::gui::elements::Child;
-    use crate::gui::kde;
+    use crate::gui::brand_elements;
+    use crate::gui::elements::{Child, Element};
 
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[test]
     fn visit_button() {
-        let button: &dyn Button = &kde::KdeButton::new(String::from("Some Button"));
+        let button: &dyn Button = &brand_elements::BrandButton::new(String::from("Some Button"));
 
         let mut visitor = VisitorName::new();
 
@@ -132,8 +111,11 @@ mod tests {
     #[test]
     fn visit_window() -> Result {
         let mut window = Box::new(Window::new(String::from("Holding window")));
-        let button: Box<dyn Button> = Box::new(kde::KdeButton::new(String::from("Some Button")));
-        let mut input: Box<dyn Input> = Box::new(kde::Input::new(String::from("Some Input")));
+        let button: Box<dyn Button> = Box::new(brand_elements::BrandButton::new(String::from(
+            "Some Button",
+        )));
+        let mut input: Box<dyn Input> =
+            Box::new(brand_elements::BrandInput::new(String::from("Some Input")));
 
         input.set_input(String::from("John Doe"));
 
@@ -145,10 +127,7 @@ mod tests {
 
         window.apply(&mut visitor);
 
-        assert_eq!(
-            visitor.to_string(),
-            "Holding window, Some Button, Some Input (John Doe)"
-        );
+        assert_eq!(visitor.to_string(), "Some Button, Some Input (John Doe)");
 
         Ok(())
     }
