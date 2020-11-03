@@ -1,0 +1,121 @@
+\section{Reporting}
+In this section we will discuss the layout of our macro library, the hand-written factory implementations we want the macros to write, the AF macro to write the AF hand-written implementation, and the Visitor macro to write the hand-written Visitor implementation.
+
+\subsection{Library layout}
+Parts of the framework we are creating can be used by other macros.
+Thus, we want to separate the macro implementations from the structures they will be using.
+This leads to the libraries shown in \Fref{fig:LibraryLayout}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{Layout.1}
+	\caption{Layout of libraries}
+	\label{fig:LibraryLayout}
+\end{figure}
+
+Client code will use the \textit{macro-patterns} library.
+\textit{Macro-patterns} will contain macro definitions as defined in \Fref{sec:rust-metaprogramming} for Abstract Factory and Visitor.
+\textit{Macro-lib} will provide syntax trees components that are missing from \textit{syn} or are simpler than \textit{syn}'s.
+Finally, all the code is tested with \textit{macro-test-helpers} providing helpers dedicated to making tests easier.
+The tests will not be covered in this report, but the reader should note that automated tests are used to ensure the macro outputs are identical to the hand-written implementations covered next.
+
+\subsection{Hand-written implementations}
+\label{sec:hand-written}
+Typically the design patterns implementations will be written by hand.
+Even though we want to create macros to replace this manual process, we will be writing them here manually once to know what the macro outputs should be.
+
+\subsubsection{Simple GUI}
+The design pattern implementations are built on the simple GUI library shown in \Fref{lst:client-gui}.
+
+\libraryCodeFromFile[lastline=38]{macro-client/src/gui/elements.rs}{client-gui}{Simple GUI defined by client}
+
+\Fref{lst:client-gui} defines:
+\begin{itemize}
+	\item An \textit{Element} that can create itself with a given name and return that name.
+	\item A \textit{Button} that is an \textit{Element} to be clicked with text.
+	\item An \textit{Input} element that can hold text inputs.
+	\item A \textit{Child} enum that can be a \textit{Button} or \textit{Input}.
+	\item A concrete \textit{Window} struct that can hold \textit{Child} elements.
+\end{itemize}
+
+The abstract \textit{Button} and \textit{Input} each have a concrete brand version -- i.e. \textit{BrandButton} and \textit{BrandInput} that will not be shown.
+
+\subsubsection{Hand-written AF}
+\Fref{lst:abstract-factory-hand} shows a hand-written AF implementation for the GUI.
+
+\libraryCodeFromFile[firstline=5,lastline=14]{macro-client/src/abstract_factory_hand.rs}{abstract-factory-hand}{Hand-written abstract factory}
+
+Line 2 imports the elements from \Fref{lst:client-gui}, with line 3 importing the concrete brand elements.
+A factory method is defined on lines 6 to 8.
+On line 10 an AF is defined using the factory method as super traits.
+The \textit{Display} super trait is to show the macro can handle complex AFs.
+
+Client code will create a concrete brand factory as follow:
+
+\clientCodeFromFile[firstline=16,lastline=34]{macro-client/src/abstract_factory_hand.rs}
+
+\subsubsection{Hand-written Visitor}
+A hand-written visitor can be seen in \Fref{lst:visitor-hand}.
+
+\libraryCodeFromFile[firstline=5,lastline=62]{macro-client/src/visitor_hand.rs}{visitor-hand}{Hand-written visitor}
+
+Visitor consists of three parts:
+\begin{itemize}
+	\item The abstract visitor as defined on lines 3 to 14.
+	\item Helper functions for transversing the object structure \cite{gamma_94_01} on lines 16 to 37.
+	      This allows for default implementations on the abstract visitor to call its respective helper.
+	      Doing this allows the client to write less code when their visitor will not visit each element.
+	      It means client code does not need to repeat code to visit into an element's children since the client can call a helper that has the transversal code - like \textit{visit\_window} on line 27.
+	\item Double dispatch reflections on lines 40 to 58.
+	      With these, the client does not need to remember/match each abstract visitor method with the element they are currently using.
+	      The client can just call \textit{apply} on the element and have it redirect to the correct visitor method.
+\end{itemize}
+
+A client will write a concrete visitor as shown below.
+This visitor collects the names of each element in a structure except for the names of windows.
+However, because the default implementation in \Fref{lst:visitor-hand} line 12 uses the helper on line 27, \textit{VisitorName} does not need to implement anything for \textit{Window} to be able to transvers into a \textit{Window}'s children.
+
+\clientCodeFromFile[firstline=64,lastline=82]{macro-client/src/visitor_hand.rs}
+
+\subsection{AF macro}
+The implementation of the AF macro will be used as a foundation to implement the Visitor macro.
+Thus, we propose reading meta-code -- the input to a metaprogram as defined in \Fref{sec:metaprogramming} -- to a model.
+This model will be able to expand itself into the pattern implementation as defined in \Fref{sec:hand-written}.
+
+The clien meta-code for AF is as follow:
+\clientCodeFromFile[firstline=5,lastline=36]{macro-client/src/abstract_factory.rs}
+
+The client needs to specify the factory method they will use.
+This factory method needs to take a generic element \textit{T}.
+The \textit{AbstractGuiFactory} is annotated with an attribute macro (see \Fref{sec:attribute-macro}) named \textit{abstract\_factory}.
+The factory method and factory elements are passed to the macro.
+
+The client will create their concrete \textit{BrandFactory} and use the \textit{interpolate\_traits} attribute macro to implement the factory method for each element.
+Here the client uses two versions since \textit{Window} is concrete and does not use the \textit{dyn} keyword.
+
+\subsubsection{Models}
+Both \textit{abstract\_factory} and \textit{interpolate\_traits} take in a comma-seperated list of inputs to work against.
+The \textit{syn} library provides the \textit{Punctuated}\footnote{https://docs.rs/syn/1.0.48/syn/punctuated/struct.Punctuated.html} type to parse a list of elements seperated by any punctuation marker.
+\textit{Syn} also provides \textit{Type}\footnote{https://docs.rs/syn/1.0.48/syn/enum.Type.html} for parsing Rust types as used in \textit{abstract\_factory}.
+We will have to create our own element to parse the items passed to \textit{interpolate\_trait}.
+
+\paragraph{TraitSpecifier}
+We will call this element \textit{TraitSpecifier} as seen in \Fref{lst:trait-specifier}.
+It will be used to map a trait type to its concrete definition using the syntax \textit{trait =$>$ concrete}.
+
+\libraryCodeFromFile[firstline=5,lastline=29]{macro-lib/src/trait_specifier.rs}{trait-specifier}{Making a parsable trait specifier}
+
+Lines 1 and 2 import the \textit{syn} elements we will need -- imports will not be shown for the remainder of the examples.
+The model is defined on lines 10 to 14 to hold the abstract trait, the arrow token, and the concrete.
+The \textit{Token}\footnote{https://docs.rs/syn/1.0.48/syn/macro.Token.html} macro on line 12 is a helper from \textit{syn} to easily expand Rust tokens and punctuations.
+Lines 17 to 25 implement the \textit{Parse}\footnote{https://docs.rs/syn/1.0.48/syn/parse/trait.Parse.html} trait from \textit{syn} for parsing a token stream to this model.
+Here parsing is simple, we only \textit{parse} each stream token and propagate the errors.
+\textit{Syn} will take care of converting the errors into compiler errors.
+
+\paragraph{AbstractFactoryAttribute}
+The AF attribute macro will be using the model defined in \Fref{lst:abstract-factory-attribute-model}.
+
+\libraryCodeFromFile[firstline=7,lastline=27]{macro-patterns/src/abstract_factory.rs}{abstract-factory-attribute-model}{Meta-code model for abstract factory macro}
+
+The model takes the factory method trait as the first input followed by a list of types the abstract factory will create.
+\subsection{Visitor macro}
