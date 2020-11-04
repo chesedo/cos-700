@@ -256,23 +256,18 @@ Six parsable models need to be created:
 The \textit{KeyValue} type is the most complex to parse.
 It is defined in \Fref{lst:key-value}.
 
-\libraryCodeFromFile[lastline=49]{macro-lib/src/key_value.rs}{key-value}{Parses a single key value option}
+\libraryCodeFromFile[lastline=39]{macro-lib/src/key_value.rs}{key-value}{Parses a single key value option}
 
 \textit{KeyValue} parses a single \textit{key = value}.
-The \textit{key} is an identifier with \textit{value} holding a token stream -- lines 9 to 11.
+The \textit{key} is an identifier with \textit{value} holding a token stream -- lines 8 to 10.
 The \textit{value} part is optional for boolean options.
-Thus, line 20 checks if a \textit{value} part is present.
+Thus, line 19 checks if a \textit{value} part is present.
 % NOTE: special because of comma used in normal sentences.
 A \textit{value} will be present if the end of the stream has not been reached or if the next token is not a comma (,) -- indicating the next key value option.
-If no \textit{value} is given, lines 21 to 25 returns the key from the parse function.
+If no \textit{value} is given, lines 20 to 24 returns the key from the parse function.
 
-Line 29 parses the = (equal) sign with the \textit{value} being parsed on lines 32 to 41.
-The \textit{value} needs to be parsed as a token stream, but only a single token needs to be parsed from the current stream.
-The \textit{step()} method\footnote{https://docs.rs/syn/1.0.48/syn/parse/struct.ParseBuffer.html\#method.step} with the \textit{token\_tree()} method\footnote{https://docs.rs/syn/1.0.48/syn/buffer/struct.Cursor.html\#method.token\_tree} allows the extraction of a single token leaving the \textit{rest} of the stream intact.
-If no \textit{value} was given, line 40 creates a compile error at the current stream position using the \textit{error()} method\footnote{https://docs.rs/syn/1.0.48/syn/parse/struct.StepCursor.html\#method.error}.
-Finally, the entire \textit{KeyValue} is returned on lines 43 to 47.
-
-% TODO: can this be token? yes!!!
+Line 28 parses the = (equal) sign with the \textit{value} being parsed on line 30.
+Finally, the entire \textit{KeyValue} is returned on lines 33 to 37.
 
 The \textit{OptionsAttribute} is simple as seen in \Fref{lst:options-attribute}.
 It parses the \textit{\#} token, a group of enclosing square brackets, and a comma punctuated list of \textit{KeyValue}s.
@@ -289,7 +284,7 @@ It consists of an optional \textit{dyn} keyword followed by a type identifier.
 
 \libraryCodeFromFile[lastline=27]{macro-lib/src/rich_type.rs}{annotated-type}{Parses an annotated type}
 
-% TODO: will `Option' like dyn make this simpler
+% NOTE: will `Option' like dyn make this simpler? Cannot use since Option is only possible if implementing the Token trait.
 
 Lastly, \textit{VisitorFunction} -- the input to the Visitor macro -- will be a comma punctuated list of \textit{AnnotatedType}s as shown in \Fref{lst:visitor-function}.
 The generic \textit{T} in \textit{AnnotatedType} is set to \textit{SimpleType}.
