@@ -1,14 +1,13 @@
-use proc_macro2::TokenStream;
-use quote::TokenStreamExt;
+use proc_macro2::TokenTree;
 use syn::parse::{Parse, ParseStream, Result};
-use syn::{Ident, Token};
+use syn::{parse_str, Ident, Token};
 
 /// Holds a single key value attribute, with the value being optional
 #[derive(Debug)]
 pub struct KeyValue {
     pub key: Ident,
     pub equal_token: Token![=],
-    pub value: TokenStream,
+    pub value: TokenTree,
 }
 
 /// Make KeyValue parsable from a token stream
@@ -21,7 +20,7 @@ impl Parse for KeyValue {
             return Ok(KeyValue {
                 key,
                 equal_token: Default::default(),
-                value: Default::default(),
+                value: parse_str("default")?,
             });
         }
 
@@ -29,16 +28,7 @@ impl Parse for KeyValue {
         let equal = input.parse()?;
 
         // Get the next token item from the parse stream
-        let value = input.step(|cursor| {
-            let mut s = TokenStream::new();
-
-            if let Some((inner, rest)) = cursor.token_tree() {
-                s.append(inner);
-                return Ok((s, rest));
-            }
-
-            Err(cursor.error("value not supplied"))
-        })?;
+        let value = input.parse()?;
 
         Ok(KeyValue {
             key,
@@ -83,7 +73,7 @@ mod tests {
         let expected = KeyValue {
             key: parse_str("bool_key")?,
             equal_token: Default::default(),
-            value: Default::default(),
+            value: parse_str("default")?,
         };
 
         assert_eq!(actual, expected);
@@ -123,7 +113,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "value not supplied")]
+    #[should_panic(expected = "expected token tree")]
     fn missing_value() {
         parse_str::<KeyValue>("key = ").unwrap();
     }

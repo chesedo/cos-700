@@ -110,8 +110,8 @@ impl Options {
             }
 
             if option.key == Ident::new("helper_tmpl", Span::call_site()) {
-                match option.value.clone().into_iter().next().unwrap() {
-                    TokenTree::Ident(ident) if ident == Ident::new("false", Span::call_site()) => {
+                match &option.value {
+                    TokenTree::Ident(ident) if ident == &Ident::new("false", Span::call_site()) => {
                         has_helper = false;
                     }
                     TokenTree::Group(group) => {
