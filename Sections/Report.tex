@@ -63,11 +63,12 @@ Client code will create a concrete brand factory as follow:
 \clientCodeFromFile[firstline=19,lastline=37]{macro-client/src/abstract_factory_hand.rs}
 
 \subsubsection{Hand-written Visitor implementation}
+\label{sec:visitor-hand-written}
 % TODO: refer back to the UML (here and macro)
 A hand-written visitor implementation can be seen in \Fref{lst:visitor-hand}.
 Visitor consists of three parts:
 \begin{itemize}
-	\item The abstract visitor as defined on lines 3 to 14.
+	\item The abstract visitor as defined on lines 3 to 14 which maps to the UML for visitor as defined in \Fref{sec:design-visitor}.
 	\item Helper functions for traversing the object structure \cite{gamma_94_01} on lines 16 to 37.
 	      This allows for default implementations on the abstract visitor to call its respective helper.
 	      Doing this allows the client to write less code when their visitor will not visit each element.
@@ -124,7 +125,7 @@ Here the client uses two invocations of \textit{interpolate\_traits} since \text
 Both \textit{abstract\_factory} and \textit{interpolate\_traits} take in a comma-seperated list of inputs.
 The \textit{syn} library provides the \textit{Punctuated}\footnote{https://docs.rs/syn/1.0.48/syn/punctuated/struct.Punctuated.html} type to parse a list of elements seperated by any punctuation marker.
 \textit{Syn} also provides \textit{Type}\footnote{https://docs.rs/syn/1.0.48/syn/enum.Type.html} for parsing Rust types that will used by the \textit{abstract\_factory} macro.
-The elements passed to \textit{interpolate\_traits} needs to be custom made.
+The elements passed to \textit{interpolate\_traits} need to be custom made.
 Two models needs to be created for the AF macros:
 
 \begin{enumerate}
@@ -158,15 +159,146 @@ The expand method for the \textit{AbstractFactoryAttribute} model is defined as 
 
 \libraryCodeFromFile[firstline=29,lastline=48]{macro-patterns/src/abstract_factory.rs}{abstract-factory-attribute-expand}{Expanding an abstract factory macro model}
 
+The expand method takes in a trait definition syntax tree as \textit{input\_trait} on line 3.
 On lines 4 to 11 a factory method super trait is created for each type passed to the macro.
 Lines 5 and 6 create local variables to be passed to \textit{quote}.
 Line 8 uses a \textit{syn} helper function to turn a \textit{quote} into a syntax tree.
 Since \textit{types} defined on line 5 is a list, \textit{quote} has to be told to expand each element in the list.
-The \textit{\#(list-quote)$<$sep$>$*} quasiquote is used for to specify how to expand a list.
+The special \textit{\#(list-quote)$<$sep$>$*} quasiquote is used to specify how to expand a list.
 The optional \textit{sep} character is used as a separator for each item.
 On line 9 the factory method is expanded for each type using the + (plus) sign as a separator.
+Thus, if \textit{MyFactory, Type1, Type2} is passed to the macro, then line 9 will create \textit{MyFactory$<$Type1$>$ + MyFactory$<$Type2$>$}.
 
 Line 14 appends the factory super trait that was just constructed to the context input.
 The new context input is returned on line 17.
 
-\subsection{Visitor macro}
+\paragraph{Definitions}
+The AF macro is shown in \Fref{lst:abstract-factory-macro} to be an attribute macro as defined in \Fref{sec:attribute-macro}.
+Line 11 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 12 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute-model}.
+Line 14 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute-expand}.
+
+\libraryCodeFromFile[firstline=4,lastline=18]{macro-patterns/src/lib.rs}{abstract-factory-macro}{Abstract Factory macro definition}
+
+The \textit{interpolate\_traits} macro -- also being an attribute macro -- is shown in \Fref{lst:interpolate-traits-macro}.
+
+\libraryCodeFromFile[firstline=20,lastline=29]{macro-patterns/src/lib.rs}{interpolate-traits-macro}{Interpolate traits macro definition}
+
+Line 6 parses the macro inputs to a list of \textit{TraitSpecifier}s defined in \Fref{lst:trait-specifier}.
+Rather than parsing the context input to a model, the context input is used as a template for each concrete factory implementation.
+\textit{Quote} macro templates expand at compile -- i.e. the compile-time of the macro.
+But, these templates need to be expanded when the macro is run -- i.e. the compile-time of the client code.
+Thus a string interpolation like \textit{quote} is needed that can run at run-time.
+\Fref{lst:fn-interpolate} defines such a helper for a \textit{proc\_macro2} token stream.
+
+\libraryCodeFromFile[lastline=56]{macro-lib/src/token_stream_utils.rs}{fn-interpolate}{Run-time string interpolator}
+
+Line 7 defines an \textit{Interpolate} trait for types that will be interpolatable at macro run-time.
+Line 8 implements the \textit{Interpolate} trait for \textit{syn}'s \textit{Punctuated} type if the punctuated tokens implement the \textit{Interpolate} trait -- the \textit{TraitSpecifier} token will be made interpolatable in the next listing.
+
+The \textit{interpolate} function on line 24 takes in a template \textit{stream} and hash map of items to replace in the input stream.
+Thus, if the hash map has a key of \textit{TRAIT} with the value of \textit{Window}, then each \textit{TRAIT} in the template will be replaced with \textit{Window}.
+Line 28 creates a \textit{new} tokens stream that will be returned from the function on line 55.
+Each token in \textit{stream} will be copied to \textit{new} if the token does not need to be replaced.
+
+Line 30 starts looping through the tokens and line 31 matches on the token type.
+Four token types were presented in \Fref{lst:function-like-macro}.
+The \textit{Literal}, \textit{Punct}, and \textit{Group} tokens will be copied as is.
+Since the \textit{Group} token holds its own token stream, it needs to recursively call \textit{interpolate} in its stream and create a new group from the result -- the span that is copied on line 46 is to preserve the context for compilation errors.
+Only the \textit{Ident} tokens are matched against the replacements.
+Thus, if the identifier matches any of the replacements on line 35, then the replacement value is copied to the \textit{new} stream on line 36.
+Else the identifier is copied on line 40.
+
+\Fref{lst:trait-specifier-interpolate} shows interpolation being implemented for \textit{TraitSpecifier} -- specified in \Fref{lst:trait-specifier}.
+Lines 5 and 6 set up the hash map to be replaced \textit{TRAIT} with the abstract trait and \textit{CONCRETE} to be replaced with the concrete type.
+Line 8 calls \textit{interpolate} as defined in \Fref{lst:fn-interpolate} line 24.
+
+\libraryCodeFromFile[firstline=31,lastline=40]{macro-lib/src/trait_specifier.rs}{trait-specifier-interpolate}{Implement \textit{Interpolate} for \textit{TraitSpecifier}}
+
+Thus, line 9 in \Fref{lst:interpolate-traits-macro} will use the context input as a template to interpolate each \textit{TraitSpecifier} passed into the \textit{interpolate\_traits} macro.
+
+\subsubsection{Visitor macro}
+The Visitor macro implementation will be a function-like macro -- as was defined in section \Fref{sec:function-like-macro}.
+Like the AF implementation, it will use \textit{syn} to parse the input to a model.
+The model will be expanded to match a hand-written implementation using \textit{quote}.
+
+The following shows the client meta-code for the Visitor macro -- meta-code being the input to the macro as defined in \Fref{sec:metaprogramming}.
+This will result in the same code as \Fref{lst:visitor-hand}.
+
+\clientCodeFromFile[firstline=2,lastline=21]{macro-client/src/visitor.rs}
+
+A list of types is being passed to the \textit{visitor} macro function.
+A type can also have two options inside the \textit{\#[options]} syntax:
+\begin{enumerate}
+	\item \textit{no\_default} to turn off the default trait function implementation -- as defined in \Fref{sec:visitor-hand-written}.
+	\item \textit{helper\_tmpl} to modify the helper template used -- also defined in \Fref{sec:visitor-hand-written}.
+\end{enumerate}
+
+The client code above show how the \textit{helper\_tmpl} option is used on the \textit{Window} type.
+Nothing in \textit{syn} makes it easy to parse a set of options like this.
+Thus, this section will create new syntax elements to parse the input for the Visitor macro.
+
+\paragraph{Models}
+Six parsable models need to be created:
+\begin{enumerate}
+	\item \textit{KeyValue} to parse a \textit{key = value} stream.
+	      The \textit{key} will be an option with \textit{value} being the option value.
+	\item \textit{OptionsAttribute} to hold a comma seperated list of \textit{options} inside the \textit{\#[options]} syntax.
+	      Each option will be a \textit{KeyValue}.
+	\item \textit{SimpleType} to parse each type in the input list.
+	      The \textit{Type} provided by \textit{syn} holds to much information to use it easily here.
+	\item \textit{AnnotatedType} which is a type annotated with an \textit{OptionsAttribute} like \textit{Window} in the client code above.
+	\item \textit{VisitorFunction} to parse the input passed to the macro.
+	      The input is a list of \textit{AnnotatedType}s.
+\end{enumerate}
+
+The \textit{KeyValue} type is the most complex to parse.
+It is defined in \Fref{lst:key-value}.
+
+\libraryCodeFromFile[lastline=49]{macro-lib/src/key_value.rs}{key-value}{Parses a single key value option}
+
+\textit{KeyValue} parses a single \textit{key = value}.
+The \textit{key} is an identifier with \textit{value} holding a token stream -- lines 9 to 11.
+The \textit{value} part is optional for boolean options.
+Thus, line 20 checks if a \textit{value} part is present.
+A \textit{value} will be present if the end of the stream has not been reached or if the next token is not a , (comma) -- indicating the next key value option.
+If no \textit{value} is given, lines 21 to 25 returns the key from the parse function.
+
+Line 29 parses the = (equal) sign with the \textit{value} being parsed on lines 32 to 41.
+The \textit{value} needs to be parsed as a token stream, but only a single token needs to be parsed from the current stream.
+The \textit{step()} method\footnote{https://docs.rs/syn/1.0.48/syn/parse/struct.ParseBuffer.html\#method.step} with the \textit{token\_tree()} method\footnote{https://docs.rs/syn/1.0.48/syn/buffer/struct.Cursor.html\#method.token\_tree} allows the extraction of a single token leaving the \textit{rest} of the stream intact.
+If no \textit{value} was given, line 40 creates a compile error at the current stream position using the \textit{error()} method\footnote{https://docs.rs/syn/1.0.48/syn/parse/struct.StepCursor.html\#method.error}.
+Finally, the entire \textit{KeyValue} is returned on lines 43 to 47.
+
+% TODO: can this be token? yes!!!
+
+The \textit{OptionsAttribute} is simple as seen in \Fref{lst:options-attribute}.
+It parses the \textit{\#} token, a group of enclosing square brackets, and a comma punctuated list of \textit{KeyValue}s.
+
+\libraryCodeFromFile[lastline=24]{macro-lib/src/options_attribute.rs}{options-attribute}{Parses an attribute with options}
+
+\Fref{lst:simple-type} shows the \textit{SimpleType} model.
+It consists of an optional \textit{dyn} keyword followed by a type identifier.
+\textit{ToTokens} is implemented on \textit{SimpleType} to be able to use it in \textit{quote} later.
+
+\libraryCodeFromFile[lastline=29]{macro-lib/src/simple_type.rs}{simple-type}{Parses a simple type identifier with an optional \textit{dyn}}
+
+\textit{AnnotatedType} will combine a generic type with an optional \textit{OptionsAttribute} as seen in \Fref{lst:annotated-type}.
+
+\libraryCodeFromFile[lastline=27]{macro-lib/src/rich_type.rs}{annotated-type}{Parses an annotated type}
+
+% TODO: will `Option' like dyn make this simpler
+
+Lastly, \textit{VisitorFunction} -- the input to the Visitor macro -- will be a comma punctuated list of \textit{AnnotatedType}s as shown in \Fref{lst:visitor-function}.
+The generic \textit{T} in \textit{AnnotatedType} is set to \textit{SimpleType}.
+
+\libraryCodeFromFile[lastline=131]{macro-patterns/src/visitor.rs}{visitor-function}{Model to parse and expand Visitor macro inputs}
+
+\textit{VisitorFunction} makes use of a private \textit{Options} struct -- lines 94 to 98 -- to dissect the options passed to each type.
+On lines 102 to 104 \textit{Options} defaults to creating the default trait method that will call the helper function; creating a helper function; the helper function being empty.
+
+Each option passed to the type is iterated on line 106.
+If the option has the \textit{no\_default} key, then creating a default trait method for the type is turned off on line 107 to 110.
+The option \textit{helper\_tmpl = false} turns off creating a helper function on 114, while the option \textit{helper\_tmpl = \{template\}} activates a custom helper template on lines 117 to 119.
+Line 120 ignores anything else passed to \textit{helper\_tmpl}.
+
+\paragraph{Definition}
