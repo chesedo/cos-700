@@ -126,7 +126,7 @@ Both \textit{abstract\_factory} and \textit{interpolate\_traits} take in a comma
 The \textit{syn} library provides the \textit{Punctuated}\footnote{https://docs.rs/syn/1.0.48/syn/punctuated/struct.Punctuated.html} type to parse a list of elements seperated by any punctuation marker.
 \textit{Syn} also provides \textit{Type}\footnote{https://docs.rs/syn/1.0.48/syn/enum.Type.html} for parsing Rust types that will used by the \textit{abstract\_factory} macro.
 The elements passed to \textit{interpolate\_traits} need to be custom made.
-Two models needs to be created for the AF macros:
+Two models need to be created for the AF macros:
 
 \begin{enumerate}
 	\item A \textit{TraitSpecifier} to hold an item passed to the \textit{interpolate\_traits} macro.
@@ -153,7 +153,7 @@ This will be the input passed to the \textit{abstract\_factory} macro.
 
 \libraryCodeFromFile[firstline=7,lastline=27]{macro-patterns/src/abstract_factory.rs}{abstract-factory-attribute-model}{Meta-code model for abstract factory macro}
 
-The model takes the factory method trait as the first input followed by a list of types the abstract factory will create as was shown in the client meta-code.
+The model takes the factory method trait as the first input, separated (\textit{sep}) by a comma, followed by a comma-separated list of types the abstract factory will create as was shown in the client meta-code.
 
 The expand method for the \textit{AbstractFactoryAttribute} model is defined as seen in \Fref{lst:abstract-factory-attribute-expand}.
 
@@ -173,7 +173,7 @@ Line 14 appends the factory super trait that was just constructed to the context
 The new context input is returned on line 17.
 
 \paragraph{Definitions}
-The AF macro is shown in \Fref{lst:abstract-factory-macro} to be an attribute macro as defined in \Fref{sec:attribute-macro}.
+The AF macro is shown in \Fref{lst:abstract-factory-macro} to be an attribute macro as was defined in \Fref{sec:attribute-macro}.
 Line 11 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 12 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute-model}.
 Line 14 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute-expand}.
 
@@ -183,11 +183,12 @@ The \textit{interpolate\_traits} macro -- also being an attribute macro -- is sh
 
 \libraryCodeFromFile[firstline=20,lastline=29]{macro-patterns/src/lib.rs}{interpolate-traits-macro}{Interpolate traits macro definition}
 
-Line 6 parses the macro inputs to a list of \textit{TraitSpecifier}s defined in \Fref{lst:trait-specifier}.
+Line 6 parses the macro inputs to a comma-separated list of \textit{TraitSpecifier}s defined in \Fref{lst:trait-specifier}.
 Rather than parsing the context input to a model, the context input is used as a template for each concrete factory implementation.
-\textit{Quote} macro templates expand at compile -- i.e. the compile-time of the macro.
-But, these templates need to be expanded when the macro is run -- i.e. the compile-time of the client code.
-Thus a string interpolation like \textit{quote} is needed that can run at run-time.
+\textit{Quote} macro templates expand when the macro is compiled.
+But, these templates need to be expanded when the macro is run.
+Macros are run at the compile-time of the client code.
+Thus a string interpolator like \textit{quote} is needed that can run at the macro's run-time.
 \Fref{lst:fn-interpolate} defines such a helper for a \textit{proc\_macro2} token stream.
 
 \libraryCodeFromFile[lastline=56]{macro-lib/src/token_stream_utils.rs}{fn-interpolate}{Run-time string interpolator}
@@ -197,19 +198,19 @@ Line 8 implements the \textit{Interpolate} trait for \textit{syn}'s \textit{Punc
 
 The \textit{interpolate} function on line 24 takes in a template \textit{stream} and hash map of items to replace in the input stream.
 Thus, if the hash map has a key of \textit{TRAIT} with the value of \textit{Window}, then each \textit{TRAIT} in the template will be replaced with \textit{Window}.
-Line 28 creates a \textit{new} tokens stream that will be returned from the function on line 55.
+Line 28 creates a \textit{new} token stream that will be returned from the function on line 55.
 Each token in \textit{stream} will be copied to \textit{new} if the token does not need to be replaced.
 
 Line 30 starts looping through the tokens and line 31 matches on the token type.
-Four token types were presented in \Fref{lst:function-like-macro}.
+Four token types were presented in \Fref{sec:function-like-macro}.
 The \textit{Literal}, \textit{Punct}, and \textit{Group} tokens will be copied as is.
-Since the \textit{Group} token holds its own token stream, it needs to recursively call \textit{interpolate} in its stream and create a new group from the result -- the span that is copied on line 46 is to preserve the context for compilation errors.
+Since the \textit{Group} token holds its own token stream, it needs to recursively call \textit{interpolate} on its stream and create a new group from the result -- the span that is copied on line 46 is to preserve the context for compilation errors.
 Only the \textit{Ident} tokens are matched against the replacements.
 Thus, if the identifier matches any of the replacements on line 35, then the replacement value is copied to the \textit{new} stream on line 36.
-Else the identifier is copied on line 40.
+Otherwise, the identifier is copied on line 40.
 
-\Fref{lst:trait-specifier-interpolate} shows interpolation being implemented for \textit{TraitSpecifier} -- specified in \Fref{lst:trait-specifier}.
-Lines 5 and 6 set up the hash map to be replaced \textit{TRAIT} with the abstract trait and \textit{CONCRETE} to be replaced with the concrete type.
+\Fref{lst:trait-specifier-interpolate} shows interpolation being implemented for the \textit{TraitSpecifier} -- specified in \Fref{lst:trait-specifier}.
+Lines 5 and 6 set up the hash map to replace \textit{TRAIT} with the abstract trait and \textit{CONCRETE} with the concrete type.
 Line 8 calls \textit{interpolate} as defined in \Fref{lst:fn-interpolate} line 24.
 
 \libraryCodeFromFile[firstline=31,lastline=40]{macro-lib/src/trait_specifier.rs}{trait-specifier-interpolate}{Implement \textit{Interpolate} for \textit{TraitSpecifier}}
@@ -233,8 +234,8 @@ A type can also have two options inside the \textit{\#[options]} syntax:
 	\item \textit{helper\_tmpl} to modify the helper template used -- also defined in \Fref{sec:visitor-hand-written}.
 \end{enumerate}
 
-The client code above show how the \textit{helper\_tmpl} option is used on the \textit{Window} type.
-Nothing in \textit{syn} makes it easy to parse a set of options like this.
+The client code above shows how the \textit{helper\_tmpl} option is used on the \textit{Window} type.
+\textit{Syn} does not make provision for parsing complex options like this.
 Thus, this section will create new syntax elements to parse the input for the Visitor macro.
 
 \paragraph{Models}
@@ -245,7 +246,8 @@ Six parsable models need to be created:
 	\item \textit{OptionsAttribute} to hold a comma seperated list of \textit{options} inside the \textit{\#[options]} syntax.
 	      Each option will be a \textit{KeyValue}.
 	\item \textit{SimpleType} to parse each type in the input list.
-	      The \textit{Type} provided by \textit{syn} holds to much information to use it easily here.
+	      The \textit{Type} provided by \textit{syn} holds a punctuated \textit{PathSegment}s\footnote{https://docs.rs/syn/1.0.48/syn/struct.PathSegment.html}.
+	      The type will determine the function name, thus building a function name from each identifier in the \textit{PathSegment} list is unnecessarily complex.
 	\item \textit{AnnotatedType} which is a type annotated with an \textit{OptionsAttribute} like \textit{Window} in the client code above.
 	\item \textit{VisitorFunction} to parse the input passed to the macro.
 	      The input is a list of \textit{AnnotatedType}s.
@@ -260,7 +262,8 @@ It is defined in \Fref{lst:key-value}.
 The \textit{key} is an identifier with \textit{value} holding a token stream -- lines 9 to 11.
 The \textit{value} part is optional for boolean options.
 Thus, line 20 checks if a \textit{value} part is present.
-A \textit{value} will be present if the end of the stream has not been reached or if the next token is not a , (comma) -- indicating the next key value option.
+% NOTE: special because of comma used in normal sentences.
+A \textit{value} will be present if the end of the stream has not been reached or if the next token is not a comma (,) -- indicating the next key value option.
 If no \textit{value} is given, lines 21 to 25 returns the key from the parse function.
 
 Line 29 parses the = (equal) sign with the \textit{value} being parsed on lines 32 to 41.
