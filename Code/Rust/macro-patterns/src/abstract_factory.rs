@@ -27,9 +27,9 @@ impl Parse for AbstractFactoryAttribute {
 }
 
 impl AbstractFactoryAttribute {
-    /// Add factory trait bounds to an `ItemTrait` to turn the `ItemTrait` into an Abstract Factory
+    /// Add factory super traits to an `ItemTrait` to turn the `ItemTrait` into an Abstract Factory
     pub fn expand(&self, input_trait: &mut ItemTrait) -> TokenStream {
-        let bounds: Punctuated<TypeParamBound, Token![+]> = {
+        let factory_traits: Punctuated<TypeParamBound, Token![+]> = {
             let types = self.types.iter();
             let factory_name = &self.factory_trait;
 
@@ -38,8 +38,8 @@ impl AbstractFactoryAttribute {
             }
         };
 
-        // Add extra bounds
-        input_trait.supertraits.extend(bounds);
+        // Add extra factory super traits
+        input_trait.supertraits.extend(factory_traits);
 
         quote! {
             #input_trait
