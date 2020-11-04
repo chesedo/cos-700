@@ -302,6 +302,40 @@ On lines 102 to 104 \textit{Options} defaults to creating the default trait meth
 Each option passed to the type is iterated on line 106.
 If the option has the \textit{no\_default} key, then creating a default trait method for the type is turned off on line 107 to 110.
 The option \textit{helper\_tmpl = false} turns off creating a helper function on 114, while the option \textit{helper\_tmpl = \{template\}} activates a custom helper template on lines 117 to 119.
-Line 120 ignores anything else passed to \textit{helper\_tmpl}.
+Line 120 ignores anything else passed to the \textit{helper\_tmpl} option.
+
+The \textit{expand} method for the \textit{VisitorFunction} is defined on line 22.
+As defined in \Fref{sec:visitor-hand-written}, the Visitor implementation will consist of three parts:
+
+\begin{enumerate}
+	\item The \textit{Visitor} trait.
+	      A \textit{visit\_$<$type\_name$>$} trait method needs to be made for each type passed to the macro.
+	\item A helper function for each type.
+	\item A \textit{Visitable} implementation for each type.
+\end{enumerate}
+
+Lines 23 to 25 define variables to holds each of these three parts in a list.
+Line 27 starts an iterator over each type passed to the \textit{Visit} macro.
+Line 28 gets the type name to construct a function name on line 31 -- \textit{format\_ident}\footnote{https://docs.rs/quote/1.0.7/quote/macro.format\_ident.html} is a \textit{quote} macro for creating an \textit{Ident} token.
+Line 29 creates a local variable of the type for use in \textit{quote}.
+The private \textit{Options} is used on line 33 to dissect the attribute options.
+
+Line 35 uses the \textit{no\_default} option to decide if the trait method should not have a default implementation.
+Otherwise a default implementation that calls the helper function is created.
+
+The macro will write the helper by default.
+Line 47 checks if the client has not turned it off.
+If the client supplied a custom helper template, then line 48 extracts it into \textit{inner} and writes the helper function with \textit{inner} as the function block.
+Otherwise, if no custom template was supplied, lines 58 to 65 create an empty helper function.
+
+Lastly, the \textit{Visitable} trait is implemented for the type on lines 70 to 76.
+
+Once iterating over all the types is done, lines 79 to 90 write the macro output.
+The list for each of the three parts is expanded without a separator on lines 81, 84, and 89.
 
 \paragraph{Definition}
+The function-like -- as was defined in \Fref{sec:function-like-macro} -- \textit{visitor} macro is shown in \Fref{lst:visitor-macro}.
+It uses the \textit{VisitorFunction} model defined in \Fref{lst:visitor-function} to parse the macro input on line 5.
+The model is expanded on line 7.
+
+\libraryCodeFromFile[firstline=31,lastline=38]{macro-patterns/src/lib.rs}{visitor-macro}{Visitor macro definition}
