@@ -1,4 +1,4 @@
-use macro_lib::{extensions::ToLowercase, KeyValue, RichType, SimpleType};
+use macro_lib::{extensions::ToLowercase, AnnotatedType, KeyValue, SimpleType};
 use proc_macro2::{Span, TokenStream, TokenTree};
 use quote::{format_ident, quote};
 use syn::parse::{Parse, ParseStream, Result};
@@ -7,13 +7,13 @@ use syn::{Ident, Token};
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct VisitorFunction {
-    types: Punctuated<RichType<SimpleType>, Token![,]>,
+    types: Punctuated<AnnotatedType<SimpleType>, Token![,]>,
 }
 
 impl Parse for VisitorFunction {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(VisitorFunction {
-            types: input.parse_terminated(RichType::parse)?,
+            types: input.parse_terminated(AnnotatedType::parse)?,
         })
     }
 }
@@ -25,8 +25,8 @@ impl VisitorFunction {
         let mut visitables: Vec<TokenStream> = Vec::new();
 
         for t in self.types.iter() {
-            let elem_name = t.ident.ident.to_lowercase();
-            let elem_type = &t.ident;
+            let elem_name = t.inner_type.ident.to_lowercase();
+            let elem_type = &t.inner_type;
 
             let fn_name = format_ident!("visit_{}", elem_name);
 

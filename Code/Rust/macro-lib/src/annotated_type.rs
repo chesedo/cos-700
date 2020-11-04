@@ -4,24 +4,24 @@ use syn::{Token, Type};
 
 /// Holds a type that is optionally annotated with key-value options
 #[derive(Eq, PartialEq, Debug)]
-pub struct RichType<T = Type> {
+pub struct AnnotatedType<T = Type> {
     pub attrs: OptionsAttribute,
-    pub ident: T,
+    pub inner_type: T,
 }
 
-/// Make RichType parsable from token stream
-impl<T: Parse> Parse for RichType<T> {
+/// Make AnnotatedType parsable from token stream
+impl<T: Parse> Parse for AnnotatedType<T> {
     fn parse(input: ParseStream) -> Result<Self> {
         if input.peek(Token![#]) {
-            return Ok(RichType {
+            return Ok(AnnotatedType {
                 attrs: input.parse()?,
-                ident: input.parse()?,
+                inner_type: input.parse()?,
             });
         };
 
-        Ok(RichType {
+        Ok(AnnotatedType {
             attrs: Default::default(),
-            ident: input.parse()?,
+            inner_type: input.parse()?,
         })
     }
 }
@@ -36,13 +36,13 @@ mod tests {
 
     #[test]
     fn parse_rich_type() -> Result {
-        let actual: RichType = parse_quote! {
+        let actual: AnnotatedType = parse_quote! {
             #[no_default]
             i32
         };
-        let expected = RichType {
+        let expected = AnnotatedType {
             attrs: parse_str("#[no_default]")?,
-            ident: parse_str("i32")?,
+            inner_type: parse_str("i32")?,
         };
 
         assert_eq!(actual, expected);
@@ -51,12 +51,12 @@ mod tests {
 
     #[test]
     fn parse_simple_type() -> Result {
-        let actual: RichType = parse_quote! {
+        let actual: AnnotatedType = parse_quote! {
             Button
         };
-        let expected = RichType {
+        let expected = AnnotatedType {
             attrs: Default::default(),
-            ident: parse_str("Button")?,
+            inner_type: parse_str("Button")?,
         };
 
         assert_eq!(actual, expected);
@@ -65,13 +65,13 @@ mod tests {
 
     #[test]
     fn parse_trait_bounds() -> Result {
-        let actual: RichType<TypeTraitObject> = parse_quote! {
+        let actual: AnnotatedType<TypeTraitObject> = parse_quote! {
             #[no_default]
             dyn Button
         };
-        let expected = RichType::<TypeTraitObject> {
+        let expected = AnnotatedType::<TypeTraitObject> {
             attrs: parse_str("#[no_default]")?,
-            ident: parse_str("dyn Button")?,
+            inner_type: parse_str("dyn Button")?,
         };
 
         assert_eq!(actual, expected);
@@ -81,6 +81,6 @@ mod tests {
     #[test]
     #[should_panic(expected = "unexpected end of input")]
     fn missing_type() {
-        parse_str::<RichType>("#[no_default]").unwrap();
+        parse_str::<AnnotatedType>("#[no_default]").unwrap();
     }
 }
