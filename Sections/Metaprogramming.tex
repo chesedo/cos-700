@@ -29,7 +29,7 @@ Optimizations include knowing a value can never be negative \cite{hinsen_13_01},
 
 \paragraph{Code reuse}
 Metaprogramming can also be viewed as a code reuse tool.
-Repeated code - like design patterns \cite{lilis_15_01, alexandrescu_01_01} - can be wrapped behind a metaprogram function that will write the reusable code \cite{savidis_19_01, klabnik_2019_01}.
+Repeated code -- like design patterns \cite{lilis_15_01, alexandrescu_01_01} -- can be wrapped behind a metaprogram function that will write the reusable code \cite{savidis_19_01, klabnik_2019_01}.
 Complex code can also be translated from a simpler language that end-users can understand \cite{hinsen_13_01}.
 The generated code can be anything from one-liners to classes \cite{savidis_19_01}.
 
@@ -84,7 +84,7 @@ MOPs can also be used to modify a language's behavior \cite{seaton_15_01}.
 Assume one wants to add logging or performance metrics to all functions in a program.
 Modifying each function will add a responsibility that does not form part of the function's duties.
 There is also the cost in the time it will take to modify each function.
-AOP will \textit{weave} the extra responsibility - called \textit{advice} - into each function.
+AOP will \textit{weave} the extra responsibility -- called \textit{advice} -- into each function.
 
 \paragraph{Generative Programming}
 This is like a macro system.
@@ -182,14 +182,14 @@ Therefore, the macros need to be isolated from client code in a library marked f
 The macro invocation is embedded in the client code.
 \textit{Procedural macros} have both local awareness or no awareness, depending on the flavor used.
 Flavors will be discussed in \Fref{sec:procedural-macro-flavors}.
-The data representation is the same as the input - a lexical token stream.
+The data representation is the same as the input -- a lexical token stream.
 
 The input lexical token stream does not need to follow a specific syntax.
 The metaprogram designer is free to choose this syntax.
 However, the output stream needs to be valid Rust code.
 Rust tries to keep its standard library as slim as possible while offloading features to libraries.
 Given the wide range of possible inputs, no standard library helpers exist for working with a token stream.
-However, two Rust libraries exist for working with token streams - the input and output of \textit{Procedural Macros}.
+However, two Rust libraries exist for working with token streams -- the input and output of \textit{Procedural Macros}.
 
 The first is \textit{syn}\footnote{https://docs.rs/syn/1.0.31/syn/index.html} for parsing Rust syntax to a syntax tree.
 Other parsers can also be built using \textit{syn}.
@@ -211,7 +211,7 @@ The three flavors of Procedural Macros are function-like, derive, and attribute 
 \paragraph{Function-like macros}
 \label{sec:function-like-macro}
 These are the most straightforward flavor of procedural macros.
-They take an input stream and return an output stream - i.e., they are context unaware.
+They take an input stream and return an output stream -- i.e., they are context unaware.
 \Fref{lst:function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
 Note, \Fref{sec:rust} will explain Rust syntax in detail.
 
@@ -220,7 +220,7 @@ Note, \Fref{sec:rust} will explain Rust syntax in detail.
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macro definitions and will not appear in future examples.
 The \textit{\#[proc\_macro]} attribute on line 4 marks the function that follows as a function-like macro.
-Line 5 shows it taking one \inputh{input} and returning one \outputh{output} - both of type \textit{TokenStream}.
+Line 5 shows it taking one \inputh{input} and returning one \outputh{output} -- both of type \textit{TokenStream}.
 On line 6, the input is returned unaltered.
 
 Client code will have a call as follows to use the macro.
@@ -228,7 +228,7 @@ Client code will have a call as follows to use the macro.
 \clientCodeFromFile[firstline=7,lastline=7]{Metaprogramming/client/src/main.highlighted.rs}
 
 This call has the same \functionh{function name} as the macro.
-All function macros are invoked using the \textit{!} (exclamation) sign - called the \textit{macro invocation operator} - to distinguish them from regular function calls.
+All function macros are invoked using the \textit{!} (exclamation) sign -- called the \textit{macro invocation operator} -- to distinguish them from regular function calls.
 The call will be replaced with the \outputh{output} ``2 + 3, 5''.
 Since the output is invalid Rust code, the compiler will give an error on the call line.
 Notice how everything inside the parenthesis (\inputh{2 + 3, 5}) will be passed to \inputh{input}.
@@ -275,19 +275,19 @@ Getting the struct's name happens on line 9.
 Lines 11 to 17 show the use of the \textit{quote} library for quasiquotes.
 Rather than a \textit{quoted} ``string'', it uses the \textit{quote} macro.
 Placeholders are \textit{unquoted} with the \# (pound) sign.
-Thus, \textit{\#name} will come from the metaprogram context - line 9.
+Thus, \textit{\#name} will come from the metaprogram context -- line 9.
 Notice the syntax highlighting being correct inside the quote macro.
 Finally, line 19 converts \textit{output} to a \textit{TokenStream}.
 
 The compiler will append the macro's \outputh{output} below the annotated type for derive macros.
-A snippet of the output is as follows - it comes from line 12.
+A snippet of the output is as follows -- it comes from line 12.
 
 \clientCodeFromFile[firstline=11,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
 \paragraph{Attribute macros}
 \label{sec:attribute-macro}
 A function-like macro with context-awareness results in attribute macros.
-Therefore, two token streams - the input and the context - are passed as arguments to it.
+Therefore, two token streams -- the input and the context -- are passed as arguments to it.
 This time the attribute above the function is \textit{proc\_macro\_attribute}.
 \Fref{lst:attribute-macro} shows another reflect macro that returns the \contexth{context} unaltered.
 
@@ -298,7 +298,7 @@ However, the attribute is the macro's \functionh{function name}.
 
 \clientCodeFromFile[firstline=13,lastline=14]{Metaprogramming/client/src/main.highlighted.rs}
 
-The \inputh{attribute's input} - not following a specific syntax - is the first stream passed to the function, while the \contexth{context} is the second.
+The \inputh{attribute's input} -- not following a specific syntax -- is the first stream passed to the function, while the \contexth{context} is the second.
 Like function macros, the \contexth{context} will be replaced with the \outputh{output}.
 
 Since the metalanguage is Rust code itself, it is time to learn more about Rust.

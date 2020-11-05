@@ -21,7 +21,7 @@ Gamma et al., which the rest of this report will refer to as the Gang of Four (G
 Each pattern is documented with a name, the problem it is solving, the solution, and the consequences of using it.
 Thus, each pattern is an explicit specification for the solution's design while the name becomes a vocabulary encapsulating the specification \cite{gamma_94_01, bulajic_12_01}.
 The GoF also groups the patterns into 3 categories: creational, structural, and behavioral.
-This report will focus on one creational pattern - \textit{Abstract Factory} - and one behavioral pattern - \textit{Visitor}.
+This report will focus on one creational pattern -- \textit{Abstract Factory} -- and one behavioral pattern -- \textit{Visitor}.
 No Structural patterns will be discussed.
 Since the \textit{Factory Method} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover the \textit{Factory Method} too.
 A discussion of the \textit{Factory Method}, \textit{Abstract Factory}, and \textit{Visitor} follows.
@@ -57,7 +57,7 @@ The first problem calls for an abstraction of the product being created.
 This will allow the confirmation process to function against an abstract button and not a blue or glossy one.
 
 Problem two calls for the isolation of a button's instantiation from the decision logic.
-This means another abstract class - called \textit{Factory} - to hold the instantiation of a concrete product.
+This means another abstract class -- called \textit{Factory} -- to hold the instantiation of a concrete product.
 The logic will decide which concrete Factory to use at a later stage.
 The result is the design in \Fref{fig:FactoryMethod}.
 The client code will mostly be working with the interfaces in white.
@@ -110,15 +110,15 @@ This time just for more products.
 This report will only focus on problems two to fourth.
 
 \subsubsection{Solution}
-Problems two and four requires each product to have an abstract definition - called \textit{Abstract Product}.
-Doing so will hide the implementation for problem two - effectively solving problem two.
+Problems two and four requires each product to have an abstract definition -- called \textit{Abstract Product}.
+Doing so will hide the implementation for problem two -- effectively solving problem two.
 For problem four, all the application code will operate against the interface for a button, scroller, and any other product.
 The client code will never operate against concrete implementations.
 Thus, swapping from the glossy to the blue elements will not require any additional code changes at the method calls.
 
 Problems three and four both need to control the instantiation of a family of products.
 Therefore, a class dedicated to products creation will be needed.
-Problem four needs this class to be abstract to swap one family for another - hence it being called \textit{Abstract Factory}.
+Problem four needs this class to be abstract to swap one family for another -- hence it being called \textit{Abstract Factory}.
 Everything presented so far is the same as Factory Method's.
 However, more than one product needs to be created now.
 \Fref{fig:AbstractFactoryInterface} shows the Factory Method design extended to more than one product.

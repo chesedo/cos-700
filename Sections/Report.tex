@@ -75,7 +75,7 @@ Visitor consists of three parts:
 	\item Helper functions for traversing the object structure \cite{gamma_94_01} on lines 16 to 37.
 	      This allows for default implementations on the abstract visitor to call its respective helper.
 	      Doing this allows the client to write less code when their visitor will not visit each element.
-	      It means client code does not need to repeat code to visit into an element's children since the client can call a helper with the traversal code - like \textit{visit\_window} on line 27.
+	      It means client code does not need to repeat code to visit into an element's children since the client can call a helper with the traversal code -- like \textit{visit\_window} on line 27.
 	\item Double dispatch reflections on lines 40 to 58.
 	      With these, the client does not need to remember/match each abstract visitor method with the element they are currently using.
 	      The client can just call \textit{apply} on the element and have it redirect to the correct visitor method.

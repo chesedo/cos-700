@@ -55,7 +55,7 @@ An analogy is borrowing a book from a friend with a promise of returning the boo
 
 As seen in \Fref{lst:fn-borrow}, borrowing makes the function \textit{take\_borrow} take a reference to the data.
 References are activated with an ampersand (\textit{\&}) before the type.
-Once \textit{take\_borrow} has ended, control goes back to \textit{main} - where the cleanup code will be inserted.
+Once \textit{take\_borrow} has ended, control goes back to \textit{main} -- where the cleanup code will be inserted.
 Having references as function parameters is called borrowing \cite{klabnik_2019_01}.
 The ampersand is also used in the call argument on line 3 to signal the called function will borrow the data.
 
@@ -73,7 +73,7 @@ As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using
 Again, \textit{mut} is also used in the call on line 3 to make it explicit that the function will modify the data.
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01}, as seen on line 2.
 
-The two ownership forms - moving and borrowing - together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
+The two ownership forms -- moving and borrowing -- together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
 	\item Moving will always invalidate the variable.
 	\item Borrowed variables cannot be mutated.
@@ -82,7 +82,7 @@ The two ownership forms - moving and borrowing - together with mutable variables
 	      But only one variable can hold a mutable borrow, while no other immutable borrows can exist at the same time.
 \end{itemize}
 
-The compliler wll always enforce these constraints, requiring all code - written by hand or a macro - to meet them.
+The compliler wll always enforce these constraints, requiring all code -- written by hand or a macro -- to meet them.
 Meeting these constraints also requires some shift in thinking.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language, which will now be discussed.
 
@@ -102,15 +102,15 @@ Structs are used to define objects with named data pieces, as shown in \Fref{lst
 Each of the struct properties is named followed by a type.
 
 \paragraph{Methods}
-The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 - 19 in \Fref{lst:oop}.
+The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 -- 19 in \Fref{lst:oop}.
 
 The ownership rules apply to the struct as follow:
 \begin{itemize}
 	\item The method \textit{have\_burial} moves \textit{self} and will result in cleanup code being inserted on line 18.
 	      Thus, any objects of \textit{Foo} after \textit{have\_burial} is called will be invalidated.
-	      This happens on line 33, resulting in a compile error - the same error happened in \Fref{lst:fn-move}.
+	      This happens on line 33, resulting in a compile error -- the same error happened in \Fref{lst:fn-move}.
 	\item The method \textit{get\_age} will take a borrow of the struct object.
-	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} - also why \textit{bar} needs to be \textit{mut} in \textit{main} on line 22.
+	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} -- also why \textit{bar} needs to be \textit{mut} in \textit{main} on line 22.
 \end{itemize}
 
 \exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
@@ -138,8 +138,8 @@ Therefore, Rust meets the encapsulation concept.
 
 \paragraph{pub}
 As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member are explicitly made public, as are the methods \textit{get\_age} and \textit{have\_birthday}.
-All the other data members and methods are private - Rust's default - and unreachable by client code.
-\textit{Main} is allowed to access the private members and methods - even though they are hidden - because they are all in the same file.
+All the other data members and methods are private -- Rust's default -- and unreachable by client code.
+\textit{Main} is allowed to access the private members and methods -- even though they are hidden -- because they are all in the same file.
 
 \subsubsection{Inheritance}
 Inheritance allows an object to inherit some of its data members and procedures from a parent object \cite{meyer_97_01,stefik_85_01,gamma_94_01,savitch_15_01}.
@@ -197,7 +197,7 @@ Dispatching, as discussed next, resolves this problem \cite{pierce_02_01}.
 Dispatching is the matching of the correct method to an object at method invocations \cite{driesen_95_01}.
 Sometimes there is only one object to match against, making matching easy.
 However, it can also be the case that multiple objects have the same method name, making matching harder.
-The matching can happen at compile-time - called \textit{static dispatching} - or run-time - called \textit{dynamic dispatching}.
+The matching can happen at compile-time -- called \textit{static dispatching} -- or run-time -- called \textit{dynamic dispatching}.
 
 \subsubsection{Static Dispatch}
 Matching the method call at compile-time is called \textit{static dispatch} \cite{klabnik_2019_01, alexandrescu_01_01, abadi_12_01}.
@@ -210,20 +210,19 @@ Then an example of the \textit{monomorphization} process is shown in \Fref{lst:m
 
 \exampleCodeFromFile[firstline=38,lastline=43]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
 
-Each \textit{show} call in the expanded functions can match only one object - \textit{Tester} and \textit{String} respectively - making this a simple case.
-Using \textit{trait objects} - rather than generics - will result in multiple objects having the same method name and the need for dynamic dispatch.
+Each \textit{show} call in the expanded functions can match only one object -- \textit{Tester} and \textit{String} respectively -- making this a simple case.
+Using \textit{trait objects} -- rather than generics -- will result in multiple objects having the same method name and the need for dynamic dispatch.
 
 \subsubsection{Dynamic Dispatch}
 When the compiler cannot determine which method to call at compile-time, because the object type is not fixed, dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01, abadi_12_01} occurs.
 At run-time, pointers held by the trait objects are used to determine which method to call \cite{klabnik_2019_01} based on the object type the method is called on.
 
-% TODO: double dash
 \Fref{lst:traits-dyn-dispatch} shows the \textit{work} function implemented using dynamic dispatch rather than generics -- refer to \textit{work} in \Fref{lst:traits} line 10 for the generic version.
 Since generics are not used, \textit{monomorphization} will not happen.
 Calling this function with a \textit{Tester} object means the \textit{show} for \textit{Tester} needs to match at the method invocation on line 2.
 But later, calling this function with a \textit{String} object means \textit{String}'s \textit{show} needs to match.
 Since the objects passed in changes at run-time, knowing which object to match against can, therefore, only be known at run-time.
-Thus, pointers inside the \textit{Show} trait object - line 1 of \Fref{lst:traits} - are used at run-time to match each object against its method.
+Thus, pointers inside the \textit{Show} trait object -- line 1 of \Fref{lst:traits} -- are used at run-time to match each object against its method.
 
 \exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
 
@@ -264,18 +263,18 @@ Therefore, putting the dynamic trait behind any pointer will allow it to be used
 % TODO: consider trimming - change AF implementation to use Box<T>
 Rust offers many pointer options: \cite{klabnik_2019_01}
 \begin{itemize}
-	\item A reference - also called a borrow.
+	\item A reference -- also called a borrow.
 	\item The \textit{Box$<$T$>$} used to hold heap objects.
 	      \textit{Box} differs from a reference since \textit{Box} owns its \textit{T} \footnote{https://joshleeb.com/blog/rust-traits-trait-objects/}.
 	      Thus, when the box is dropped, the object it holds is dropped too.
 	\item The \textit{Rc$<$T$>$} reference counting pointer that is essentially a run-time immutable borrow.
 	      When the reference count reaches zero, the \textit{T} is dropped.
 	\item The special \textit{RefCell$<$T$>$} which exposes mutable access behind an immutable object using the \textit{Interior Mutability Pattern}.
-	\item The combined \textit{Rc$<$RefCell$<$T$>$$>$} - the reference counting pointer allows multiple objects to exist, while the \textit{RefCell} allows mutable access to each existing object.
-	\item \textit{Arc$<$T$>$} - the thread-safe version of \textit{Rc}.
-	\item \textit{Mutex$<$T$>$} - a thread-safe version of \textit{RefCell}.
+	\item The combined \textit{Rc$<$RefCell$<$T$>$$>$} -- the reference counting pointer allows multiple objects to exist, while the \textit{RefCell} allows mutable access to each existing object.
+	\item \textit{Arc$<$T$>$} -- the thread-safe version of \textit{Rc}.
+	\item \textit{Mutex$<$T$>$} -- a thread-safe version of \textit{RefCell}.
 	      However, a lock needs to be acquired first.
-	\item \textit{RwLock$<$T$>$} - like \textit{Mutex}, but distinguishes between a reader and a writer.
+	\item \textit{RwLock$<$T$>$} -- like \textit{Mutex}, but distinguishes between a reader and a writer.
 	      It is the run-time equivalent of mutable and immutable borrows.
 	\item Finally, \textit{Arc$<$RwLock$<$T$>$$>$} which will be used by our Abstract Factory.
 	      It will hold \textit{T}s for use in multiple threads using \textit{Arc}, while \textit{RwLock} will guarantee only one writer.
@@ -291,7 +290,7 @@ This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the
 
 \exampleCodeFromFile{enums/src/main.rs}{enums}{Enums holding objects in Rust}
 
-Lines 9 to 12 show the use of \textit{match} - called a \textit{switch} in most languages - to match against each possible enum variant.
+Lines 9 to 12 show the use of \textit{match} -- called a \textit{switch} in most languages -- to match against each possible enum variant.
 Line 10 and 11 are each called a \textit{match arm}.
 Line 10 shows how an object can be extracted on an arm and be assigned to a \textit{value} variable.
 If any of the arms are missing, the compiler will provide an error stating not all the enum options are covered.
@@ -308,7 +307,7 @@ The \textit{if let} pattern also allows extraction of the enum object.
 However, since the object is not used inside the if block, no extraction needs to occur.
 When using the \textit{\_}, the enum object will not be extracted.
 
-\textit{Match} blocks and \textit{if} conditions - which include \textit{if let} - are considered expressions in Rust.
+\textit{Match} blocks and \textit{if} conditions -- which include \textit{if let} -- are considered expressions in Rust.
 Returning from a \textit{match} is quite common, especially with a particular enum used for error handling, as discussed in \Fref{sec:result-enum}.
 Resulting in lines 16 and 18 not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
 The value returned from the \textit{if} is assigned to the \textit{valid} variable.
@@ -321,7 +320,7 @@ The definition for \textit{Result} can be seen in \Fref{lst:enum-result} on line
 \exampleCodeFromFile[lastline=40]{enum-result/src/main.rs}{enum-result}{The \textit{Result} enum}
 
 A function will return \textit{Result} to indicate if it was successful with the \textit{Ok} variant holding the successful value of type \textit{T}.
-In the event of an error, the \textit{Err} variant is returned with the error of type \textit{E} - like \textit{may\_error} on line 7.
+In the event of an error, the \textit{Err} variant is returned with the error of type \textit{E} -- like \textit{may\_error} on line 7.
 Any calls to \textit{may\_error} have to handle the possible error.
 A few error handling options exist: trying an alternative, panicking, or propagating the error.
 
@@ -334,7 +333,7 @@ If the \textit{Err} enum is returned, then just run the alternative instead.
 \paragraph{Panicking}
 The caller will use a \textit{match pattern} to extract the error and panic, as seen on lines 13 to 16.
 However, writing matches all the time for possible errors breaks the flow of the code.
-So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} - Rust enums are like ordinary objects that can have methods.
+So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} -- Rust enums are like ordinary objects that can have methods.
 
 The helper method \textit{expect}, as seen on line 22, does the exact same as the match on lines 13 to 16.
 
@@ -342,12 +341,12 @@ The helper method \textit{expect}, as seen on line 22, does the exact same as th
 The caller might decide more information is needed to panic.
 So the caller's caller will need to handle the error instead.
 
-Line 30 shows how to propagate the error up the stack - the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
-Line 29 uses the \textit{result} if it is fine - the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
+Line 30 shows how to propagate the error up the stack -- the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
+Line 29 uses the \textit{result} if it is fine -- the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
 Again, the match is verbose and Rust offers a helper to make it shorter.
 The helper is the \textit{?} (question mark) operator.
-The \textit{?} operator can be used in any function returning a \textit{Result} or \textit{Option} - or type implementing the \textit{std::ops::Try} trait \cite{klabnik_2019_01}.
-Line 37 shows how to use \textit{?} - doing precisely the same as lines 28 to 31.
+The \textit{?} operator can be used in any function returning a \textit{Result} or \textit{Option} -- or type implementing the \textit{std::ops::Try} trait \cite{klabnik_2019_01}.
+Line 37 shows how to use \textit{?} -- doing precisely the same as lines 28 to 31.
 
 % macro rules: Hygiene and token list
 
