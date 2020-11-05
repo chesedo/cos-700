@@ -24,18 +24,6 @@
 
 \DeclareGraphicsRule{*}{mps}{*}{}
 
-\newenvironment{code}[3][ht]
- {\VerbatimEnvironment
-  \begin{listing}[#1]
-  \caption{#2}\label{lst:#3}
-  \begin{minted}[
-    breaklines,
-    escapeinside=||,
-    linenos,
-    xleftmargin=21pt
-    ]{rust}}
- {\end{minted}\end{listing}}
-
 \newtcbinputlisting[auto counter]{\libraryCodeFromFile}[4][firstline=1,lastline=-1]{%
   listing engine=minted,
   minted language=rust,
