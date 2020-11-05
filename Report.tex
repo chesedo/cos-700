@@ -27,7 +27,7 @@
 \newtcbinputlisting[auto counter]{\libraryCodeFromFile}[4][firstline=1,lastline=-1]{%
   listing engine=minted,
   minted language=rust,
-  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
+  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\footnotesize,tabsize=2,firstnumber=1,lastline=1},
   listing file={Code/Rust/#2},
   listing only,
   size=title,
@@ -42,7 +42,7 @@
 \newtcbinputlisting{\clientCodeFromFile}[2][firstline=1,lastline=-1]{%
   listing engine=minted,
   minted language=rust,
-  minted options={autogobble,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
+  minted options={autogobble,breaklines,escapeinside=||,fontsize=\footnotesize,tabsize=2,firstnumber=1,#1},
   listing file={Code/Rust/#2},
   listing only,
   breakable,
@@ -58,7 +58,7 @@
 \newtcbinputlisting[use counter from=libraryCodeFromFile]{\exampleCodeFromFile}[4][firstline=1,lastline=-1]{%
   listing engine=minted,
   minted language=rust,
-  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
+  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\footnotesize,tabsize=2,firstnumber=1,#1},
   listing file={Code/Rust/#2},
   listing only,
   size=title,
