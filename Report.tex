@@ -124,17 +124,31 @@
 \linespread{1.25}
 
 \section*{Abstract}
+Design patterns are generic solutions to common software design problems.
+This report focuses on a foundation for Rust metaprogramming macros to automatically create implementations for design patterns at compile-time.
+The foundation is derived by creating a macro to implement the Abstract Factory design pattern.
+Thereafter, the foundation is applied to a macro implementing the Visitor design pattern.
+
+Both macro implementations need to know what a manual implementation for each design pattern will look like in Rust.
+Thus, a manual implementation for each design pattern is also presented after exploring the Rust language.
+The metaprogramming style used by Rust is also explored in this report.
 
 \section*{Keywords:}
+Metaprogramming,
+Rust,
+Design Patterns,
+Procedural Macros,
+Abstract Factory,
+Visitor
 
 \newpage
 
-\section{Introduction}
-
-\input{Sections/Report.tex}
-
-\section{Conclusion}
-
+\input{Sections/Introduction.tex}
+% \input{Sections/DesignPatterns.tex}
+% \input{Sections/Metaprogramming.tex}
+% \input{Sections/Rust.tex}
+% \input{Sections/Report.tex}
+\input{Sections/Conclusion.tex}
 
 \bibliographystyle{alpha}
 \bibliography{References}

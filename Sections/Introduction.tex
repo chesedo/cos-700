@@ -1,0 +1,21 @@
+\section{Introduction}
+This report will focus on the possibility and foundations needed to implement design patterns using metaprogramming in the Rust language.
+Software design is constantly faced with solving the same problems.
+The design solutions to these problems became known as design patterns.
+Manually programming a design pattern is a tedious task that can be solved using metaprogramming.
+
+Rust is a new programming language created by Mozilla and was announced the most loved language for the 5th consecutive year, according to the 2020 Developer Survey by StackOverflow\footnote{https://insights.stackoverflow.com/survey/2020\#technology-most-loved-dreaded-and-wanted-languages}.
+Rust also has metaprogramming support.
+Thus, this report's first objective is to see if Rust's metaprogramming has the capacity to implement design patterns.
+If Rust's metaprogramming is capable enough, this report will propose a foundation for implementing any design pattern using Rust's metaprogramming.
+
+In \Fref{sec:design-patterns} this report will explore the need for design patterns and how they came about.
+Next, the definition and design of the Abstract Factory pattern and the Visitor pattern will be created.
+Both designs will be implemented in Rust in \Fref{sec:reporting}.
+
+\Fref{sec:metaprogramming} will identify different types of metaprogramming and classify the types Rust uses.
+Some lesser-used programming concepts and programming concepts unique to Rust will be explored in \Fref{sec:rust}.
+
+Finally, \Fref{sec:reporting} will create implementations for the Abstract Factory and Visitor pattern in the same way a programmer will do manually.
+The section will then create a Rust macro to write the same Abstract Factory implementation as the manual implementation.
+Using the foundations for the Abstract Factory implementation, the section will create a Rust macro for the Visitor implementation.

@@ -1,0 +1,20 @@
+\section{Conclusion}
+This report showed that Rust macros can be used to implement design patterns.
+The Abstract Factory pattern was first implemented using Rust attribute macros.
+The macro definition led to the foundation of parsing the macro input to a model using \textit{syn}.
+This model is then expanded to the pattern's implementation using \textit{quote}.
+The model was used to create a function-like Rust macro to implement the Visitor pattern.
+The same model can be implied to other patterns.
+
+Both macros have some limitations that future research can explore.
+The Abstract Factory implementation uses dynamic dispatch, which has a performance trade-off.
+``Abstract return types''\footnote{https://www.ncameron.org/blog/abstract-return-types-aka--impl-trait-/} may be a solution to this problem.
+Visitor's implementation requires the client to supply the traversal code in the \textit{helper\_tmpl} option manually.
+However, Rust macros can read the file system.
+Thus, it might be possible for the macro the read all the files for a module and build a composition graph of all the module's types.
+The traversal code can then be automatically written by the macro -- effectively reducing the visitor macro call to one line.
+Lastly, the Visitor has no global option to apply \textit{no\_default} or \textit{helper\_tmpl} to all its types but will require repeating the option on every type.
+The macro currently uses an outer attribute\footnotemark on each type to set the option.
+An inner attribute\footnotemark[\value{footnote}] can be used on the macro for global options.
+
+\footnotetext{https://doc.rust-lang.org/reference/attributes.html}
