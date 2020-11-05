@@ -73,6 +73,7 @@ As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using
 Again, \textit{mut} is also used in the call on line 3 to make it explicit that the function will modify the data.
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01}, as seen on line 2.
 
+% TODO: trim candidate
 The two ownership forms -- moving and borrowing -- together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
 	\item Moving will always invalidate the variable.
@@ -112,6 +113,7 @@ The ownership rules apply to the struct as follow:
 	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} -- also why \textit{bar} needs to be \textit{mut} in \textit{main} on line 22.
 \end{itemize}
 
+% TODO: trim line spaces in listing
 \exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
 
 \addtocounter{footnote}{1}\footnotetext{%
@@ -135,6 +137,7 @@ In Rust, encapsulation is the default unless specified otherwise using the \text
 Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
 Therefore, Rust meets the encapsulation concept.
 
+% TODO: trim candidate
 \paragraph{pub:}
 As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member are explicitly made public, as are the methods \textit{get\_age} and \textit{have\_birthday}.
 All the other data members and methods are private -- Rust's default -- and unreachable by client code.
@@ -163,12 +166,13 @@ In turn, \textit{work} knows it is safe to call \textit{show()} on the object fo
 
 Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen on line 16.
 The \textit{Show} trait has a default implementation for \textit{show\_size} on line 5.
-Thus, \textit{Tester} does not need to implement \textit{show\_size}.
-\textit{Tester} is only required to implement the \textit{show} method.
+Thus, \textit{Tester} does not need to implement \textit{show\_size}, but is only required to implement the \textit{show} method.
 
 Traits allow one to use composition to construct complex objects.
-Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} (Design Patterns) for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text, as seen in \Fref{lst:composition}.
+Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text, as seen in \Fref{lst:composition}.
 
+% TODO: trim spaces
+% TODO: remove text?
 \exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
 
 Using traits, an abstract button and display text is defined on lines 1 to 4.

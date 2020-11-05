@@ -1,8 +1,7 @@
 \section{Design Patterns}
 \label{sec:design-patterns}
 Software design focuses on designing and implementing software to solve a particular problem \cite{ieee_1016-2009, satzinger_15_01}.
-There should be no surprise to see some problems repeating themselves with time \cite{keshvari_11_01}.
-The solutions to these problems are the same each time.
+Some problems repeating themselves with time \cite{keshvari_11_01} with the solutions being the same each time.
 But a novice designer facing any of these repeated problems for the first time will try to solve them from first principles \cite{gamma_94_01, sonnentag_98_01}.
 When the solution proves flawed or misunderstood some weeks later, a small improvement will be made to the solution \cite{zhu_05_01, ieee_1016-2009}.
 These improvements are repeated until all the flaws are removed from the solution \cite{stephens_15_01, satzinger_15_01}.
@@ -11,8 +10,7 @@ On the other hand, seasoned designers create good designs from their own or thei
 These designs focus not only on immediate development but also on the development needed during maintenance \cite{kerievsky_05_01,gamma_94_01}.
 These solutions are easy to find in mature libraries and projects \cite{gamma_94_01}.
 Unfortunately, novices are unlikely to get exposure to these projects \cite{zhu_05_01} or are just overwhelmed by their size \cite{hu_18_01}.
-Having exposure to these projects will allow novices to jump to the good design directly.
-This saves time on the iteration process \cite{satzinger_15_01}.
+Having exposure to these projects will allow novices to jump to the good design directly, saving time on the iteration process \cite{satzinger_15_01}.
 
 But rather than taking novices to the projects, it might be possible to take the designs to the novices \cite{kim_03_01}.
 This is exactly what happened in the 90s.
@@ -36,7 +34,7 @@ The Factory Method design pattern proposes to solve three variants of this probl
 The first problem is when a function does not have enough information to determine the concrete object it should create.
 The method/function only knows the abstract object it wants.
 An example of this is the button on a confirmation dialog.
-The abstract confirmation process only needs to create a button.
+An abstract confirmation process only needs to create a button.
 Whether this is a blue button used during saving or a glossy button used when installing is not the abstract confirmation process's concern.
 
 Problem two follows on from problem one.

@@ -70,13 +70,13 @@ beginfig(1);
 
     % Alignments
     topToBottom.midx(40)(Factory, AbstractFactory);
-    topToBottom.midx(50)(AbstractFactory, BrandFactory);
+    topToBottom.midx(30)(AbstractFactory, BrandFactory);
 
     topToBottom.left(15)(Button, Scroller, ProductN);
     leftToRight.bottom(50)(AbstractFactory, ProductN);
 
-    topToBottom.midx(20)(BrandFactory, BlueProductN, BlueScroller, BlueButton);
-    topToBottom.midx(20)(FancyFactory, GlossyProductN, GlossyScroller, GlossyButton);
+    topToBottom.midx(15)(BrandFactory, BlueProductN, BlueScroller, BlueButton);
+    topToBottom.midx(15)(FancyFactory, GlossyProductN, GlossyScroller, GlossyButton);
 
     leftToRight.midy(50)(BlueScroller, GlossyScroller);
 
@@ -97,8 +97,8 @@ beginfig(1);
     link(dependency)(AbstractFactory.methodStack.pict[2].e -- ProductN.w);
 
     % Concrete Factory links
-    link(inheritance)(pathStepY(BrandFactory.n, AbstractFactory.s, 15));
-    link(inheritance)(pathStepY(FancyFactory.n, AbstractFactory.s, 15));
+    link(inheritance)(pathStepY(BrandFactory.n, AbstractFactory.s, 5));
+    link(inheritance)(pathStepY(FancyFactory.n, AbstractFactory.s, 5));
 
     % Concrete productN links
     path PathProductN;

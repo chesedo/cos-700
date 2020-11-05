@@ -15,12 +15,12 @@ beginfig(1);
         ("+Visit_Button(e: Button)",
         "+Visit_Scroller(e: Scroller)");
 
-    centered_allign_top(DrawVisitor, NameVisitor)(20, below(AbstractVisitor.s, 50));
+    centered_allign_top(DrawVisitor, NameVisitor)(20, below(AbstractVisitor.s, 25));
 
     drawObjects(AbstractVisitor, DrawVisitor, NameVisitor);
 
-    link(inheritance)(pathStepY(DrawVisitor.n + (10, 0), AbstractVisitor.s, 20));
-    link(inheritance)(pathStepY(NameVisitor.n, AbstractVisitor.s, 20));
+    link(inheritance)(pathStepY(DrawVisitor.n + (10, 0), AbstractVisitor.s, 5));
+    link(inheritance)(pathStepY(NameVisitor.n, AbstractVisitor.s, 5));
 endfig;
 
 end

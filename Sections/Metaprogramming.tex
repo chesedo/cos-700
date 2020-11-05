@@ -44,7 +44,7 @@ This section will briefly discuss these dimensions, as presented by Lilis and Sa
 \subsubsection{Relationship to the object language}
 Metaprogramming will output code in some language.
 The output language is called the object language, while the metaprogram is written in the metalanguage.
-These two languages can be may be different.
+These two languages can be different.
 If they are different, the system is called heterogeneous.
 For a heterogeneous system, the metalanguage can extend the object language with extra features or be a completely new language.
 When they are the same, it is called a homogenous system \cite{sheard_01_01}.
@@ -142,8 +142,7 @@ Many systems use strings, graphs, or an algebraic data structure \cite{sheard_01
 \paragraph{String:}
 The final program is held in a string.
 This option is not desired since building a class may need hundreds of string append operations spanning hundreds of lines.
-The object code will be interleaved with the metaprogram making it hard to distinguish between them.
-This makes it easy to construct a string that is not syntactically correct.
+The object code will be interleaved with the metaprogram making it hard to distinguish between them, making it easy to construct a string that is not syntactically correct.
 
 \paragraph{Graphs:}
 A graph type will add structure to the program being built.
@@ -243,7 +242,7 @@ There are four possible token types \footnote{https://doc.rust-lang.org/proc\_ma
 \end{itemize}
 
 2, 3, and 5 in the above macro call will be literal tokens.
-The +(plus) sign and ,(comma) will be punctuations in both streams.
+The +(plus) sign and comma(,) will be punctuations in both streams.
 Again, parsing and generating the list will be hard.
 The next example shows how to use the \textit{syn} and \textit{quote} libraries to make parsing and generating easier.
 
@@ -291,7 +290,7 @@ Therefore, two token streams -- the input and the context -- are passed as argum
 This time the attribute above the function is \textit{proc\_macro\_attribute}.
 \Fref{lst:attribute-macro} shows another reflect macro that returns the \contexth{context} unaltered.
 
-\exampleCodeFromFile[firstline=28]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
+\exampleCodeFromFile[firstline=30]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
 
 Client code will again annotate a type with an attribute to call the macro.
 However, the attribute is the macro's \functionh{function name}.

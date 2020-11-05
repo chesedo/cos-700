@@ -14,15 +14,15 @@ beginfig(1);
     Note.noteAcceptButton("v->Visit_Button(self)");
     Note.noteAcceptScroller("v->Visit_Scroller(self)");
 
-    centered_allign_top(Button, Scroller)(10, below(Element.s, 50));
+    centered_allign_top(Button, Scroller)(10, below(Element.s, 25));
 
-    noteAcceptButton.n = Button.sw - (0, 40);
-    noteAcceptScroller.n = Scroller.s - (0, 40);
+    noteAcceptButton.n = Button.sw - (0, 10);
+    noteAcceptScroller.n = Scroller.s - (0, 10);
 
     drawObjects(Element, Button, Scroller, noteAcceptButton, noteAcceptScroller);
 
-    link(inheritance)(pathStepY(Button.n, Element.s, 20));
-    link(inheritance)(pathStepY(Scroller.n, Element.s, 20));
+    link(inheritance)(pathStepY(Button.n, Element.s, 5));
+    link(inheritance)(pathStepY(Scroller.n, Element.s, 5));
     link(dashedLink)(Button.methodStack.pict[0].w -- noteAcceptButton.n);
     link(dashedLink)(Scroller.methodStack.pict[0].w -- noteAcceptScroller.nw + (10, 0));
 endfig;

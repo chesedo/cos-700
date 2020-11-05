@@ -44,19 +44,19 @@ beginfig(1);
 
     % Alignments
     leftToRight.midy(40)(BrandFactory, Button, FancyFactory);
-    topToBottom.midx(40)(Factory, Button);
+    topToBottom.midx(30)(Factory, Button);
 
-    centered_allign_top(BlueButton, GlossyButton)(10, below(Button.s, 50));
+    centered_allign_top(BlueButton, GlossyButton)(10, below(Button.s, 30));
 
-    topToBottom.right(25)(BrandFactory, noteBlueButton);
-    topToBottom.left(25)(FancyFactory, noteGlossyButton);
+    topToBottom.right(10)(BrandFactory, noteBlueButton);
+    topToBottom.left(10)(FancyFactory, noteGlossyButton);
 
 
     drawObjects(Factory, T, BrandFactory, FancyFactory, Button, BlueButton, GlossyButton, noteBlueButton, noteGlossyButton);
 
     % Factory links
-    link(inheritance)(pathStepY(BrandFactory.n, Factory.s, 20));
-    link(inheritance)(pathStepY(FancyFactory.n, Factory.s, 20));
+    link(inheritance)(pathStepY(BrandFactory.n, Factory.s, 15));
+    link(inheritance)(pathStepY(FancyFactory.n, Factory.s, 15));
 
     item(iStereo)("<<bind>>")(obj.n = .65[BrandFactory.n,Factory.s]);
     item(iStereo)("<T -> Button>")(obj.nw = .45[BrandFactory.n,Factory.s]);
@@ -67,8 +67,8 @@ beginfig(1);
     clink(dependency)(BrandFactory, Button);
     clink(dependency)(FancyFactory, Button);
     
-    link(inheritance)(pathStepY(BlueButton.n, Button.s, 20));
-    link(inheritance)(pathStepY(GlossyButton.n, Button.s, 20));
+    link(inheritance)(pathStepY(BlueButton.n, Button.s, 5));
+    link(inheritance)(pathStepY(GlossyButton.n, Button.s, 5));
 
     % Note links
     clink(dashedLink)(BrandFactory.methodStack.pict[0], noteBlueButton);
