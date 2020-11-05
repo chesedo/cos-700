@@ -22,12 +22,14 @@
 \usepackage[plain]{fancyref}
 \usepackage[breakable,minted,skins]{tcolorbox}
 
+\usepackage{geometry}
+
 \DeclareGraphicsRule{*}{mps}{*}{}
 
-\newtcbinputlisting[auto counter]{\libraryCodeFromFile}[4][firstline=1,lastline=-1]{%
+\newtcbinputlisting[auto counter]{\libraryCodeFromFile}[3][]{%
   listing engine=minted,
   minted language=rust,
-  minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\footnotesize,tabsize=2,firstnumber=1,lastline=1},
+  minted options={linenos,breaklines,fontsize=\footnotesize,tabsize=2,firstnumber=1},
   listing file={Code/Rust/#2},
   listing only,
   size=title,
@@ -35,7 +37,7 @@
   boxrule=0.5mm,
   colback=white,
   coltext=Black!95!,
-  title=\small{Listing \thetcbcounter}: #4,
+  title=\small{\thetcbcounter}: \UScore{#2},
   label=lst:#3
 }
 
@@ -85,6 +87,8 @@
     bottomrule=1pt,
     toprule=1pt
 }
+
+\DeclareUrlCommand\UScore{\urlstyle{rm}}
 
 \newcommand*{\fancyreflstlabelprefix}{lst}
 \frefformat{plain}{\fancyreflstlabelprefix}{listing\fancyrefdefaultspacing#1}

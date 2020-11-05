@@ -43,18 +43,12 @@ The design pattern implementations are built on the simple GUI library, shown in
 	\item A concrete \textit{Window} struct that can hold \textit{Child} elements.
 \end{itemize}
 
-\libraryCodeFromFile[lastline=38]{macro-client/src/gui/elements.rs}{client-gui}{Simple GUI defined by client}
-
 The abstract \textit{Button} and \textit{Input} each have a concrete brand version.
 They are the \textit{BrandButton} and \textit{BrandInput} shown in \Fref{lst:brand-elements}.
-
-\libraryCodeFromFile{macro-client/src/gui/brand_elements.rs}{brand-elements}{Brand GUI elements}
 
 \subsubsection{Manual Abstract Factory implementation}
 \Fref{lst:abstract-factory-hand} shows an implementation of AF for the GUI.
 This implementation maps directly to the UML presented for AF in \Fref{sec:design-abstract-factory}.
-
-\libraryCodeFromFile[firstline=5,lastline=17]{macro-client/src/abstract_factory_hand.rs}{abstract-factory-hand}{Manual abstract factory}
 
 Line 2 imports the concrete brand elements from \Fref{lst:brand-elements}, with line 3 importing the abstract elements from \Fref{lst:client-gui}.
 A factory method is defined in lines 6 to 8.
@@ -63,7 +57,8 @@ The \textit{Display} super trait is to show the macro can handle complex AFs.
 
 Client code will create a concrete brand factory as follow:
 
-\clientCodeFromFile[firstline=19,lastline=37]{macro-client/src/abstract_factory_hand.rs}
+% TODO: remove one of the dyn?
+\clientCodeFromFile[firstline=19,lastline=35]{macro-client/src/abstract_factory_hand.rs}
 
 \subsubsection{Manual Visitor implementation}
 \label{sec:visitor-manual-implementation}
@@ -81,15 +76,13 @@ Visitor consists of three parts:
 	      The client can just call \textit{apply} on the element and have it redirect to the correct visitor method.
 \end{itemize}
 
-\libraryCodeFromFile[firstline=5,lastline=62]{macro-client/src/visitor_hand.rs}{visitor-hand}{Manual visitor}
-
 A client will write a concrete visitor, as shown below.
 This visitor collects the names of each element in a structure except for the names of windows to show the power of the default implementations delegating to the helpers.
 Because the default implementation in \Fref{lst:visitor-hand} line 12 uses the helper in line 27, \textit{VisitorName} does not need to implement anything for \textit{Window} to traverse into a \textit{Window}'s children.
 This visitor implements the \textit{Display} trait to be able to call \textit{to\_string()} on it.
 Calling \textit{to\_string()} will join all the names this visitor collected.
 
-\clientCodeFromFile[firstline=64,lastline=88]{macro-client/src/visitor_hand.rs}
+\clientCodeFromFile[firstline=64]{macro-client/src/visitor_hand.highlighted.rs}
 
 The next client code shows how to use this visitor.
 First, a window, button, and input are created.
@@ -97,7 +90,7 @@ A random name is set on the input before it, and the button, is added to the win
 A \textit{VisitorName} is created and applied to the window.
 Lastly, a test shows the visitor collected the correct names.
 
-\clientCodeFromFile[firstline=111,lastline=128]{macro-client/src/visitor_hand.rs}
+% \clientCodeFromFile[firstline=111,lastline=128]{macro-client/src/visitor_hand.rs}
 
 \subsection{Macros}
 Rust's metaprogramming abilities will be used to create macros that can write the repeated sections in the manual implementations.
@@ -114,7 +107,7 @@ Some of the syntax elements will come from \textit{syn}, and others will have to
 The client meta-code for AF is as follows -- since it is the same as the manual implementation, it also maps directly to the AF UML given in \Fref{sec:design-abstract-factory}:
 % TODO: coloring will help
 
-\clientCodeFromFile[firstline=5,lastline=36]{macro-client/src/abstract_factory.rs}
+\clientCodeFromFile[firstline=5,lastline=35]{macro-client/src/abstract_factory.rs}
 
 The client needs to specify the factory method they will use.
 This factory method needs to take a generic element \textit{T}.
@@ -141,8 +134,6 @@ Two models need to be created for the AF macros:
 \textit{TraitSpecifier} is defined in \Fref{lst:trait-specifier}.
 It will use the syntax \textit{trait =$>$ concrete} to map a trait type to its concrete definition.
 
-\libraryCodeFromFile[firstline=5,lastline=29]{macro-lib/src/trait_specifier.rs}{trait-specifier}{Making a parsable trait specifier}
-
 Lines 1 and 2 import the \textit{syn} elements that will be used.
 The tests use line 9.
 The model is defined in lines 10 to 14 to hold the abstract trait, the arrow token, and the concrete.
@@ -151,16 +142,12 @@ Lines 17 to 25 implement the \textit{Parse}\footnote{https://docs.rs/syn/1.0.48/
 Here parsing is simple, \textit{parse} each stream token or propagate the errors.
 \textit{Syn} will take care of converting the errors into compiler errors.
 
-\textit{AbstractFactoryAttribute} is defined in \Fref{lst:abstract-factory-attribute-model}.
+\textit{AbstractFactoryAttribute} is defined in \Fref{lst:abstract-factory-attribute}.
 This will be the input passed to the \textit{abstract\_factory} macro.
-
-\libraryCodeFromFile[firstline=7,lastline=27]{macro-patterns/src/abstract_factory.rs}{abstract-factory-attribute-model}{Meta-code model for abstract factory macro}
 
 The model takes the factory method trait as the first input, separated (\textit{sep}) by a comma, followed by a comma-separated list of types the abstract factory will create as, was shown in the client meta-code.
 
-The \textit{expand} method for the \textit{AbstractFactoryAttribute} model is defined as seen in \Fref{lst:abstract-factory-attribute-expand}.
-
-\libraryCodeFromFile[firstline=29,lastline=48]{macro-patterns/src/abstract_factory.rs}{abstract-factory-attribute-expand}{Expanding an abstract factory macro model}
+The \textit{expand} method for the \textit{AbstractFactoryAttribute} model is defined as seen in \Fref{lst:abstract-factory-attribute}.
 
 The expand method takes in a trait definition syntax tree as \textit{input\_trait} in line 3.
 In lines 4 to 11, a factory method super trait is created for each type passed to the macro.
@@ -176,15 +163,11 @@ Line 14 appends the factory super trait that was just constructed to the context
 The new context input is returned in line 17.
 
 \paragraph{Definitions:}
-The AF macro is shown in \Fref{lst:abstract-factory-macro} to be an attribute macro, as was defined in \Fref{sec:attribute-macro}.
-Line 11 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 12 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute-model}.
-Line 14 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute-expand}.
+The AF macro is shown in \Fref{lst:macro-patterns} to be an attribute macro, as was defined in \Fref{sec:attribute-macro}.
+Line 11 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 12 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute}.
+Line 14 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute}.
 
-\libraryCodeFromFile[firstline=4,lastline=18]{macro-patterns/src/lib.rs}{abstract-factory-macro}{Abstract Factory macro definition}
-
-The \textit{interpolate\_traits} macro -- also being an attribute macro -- is shown in \Fref{lst:interpolate-traits-macro}.
-
-\libraryCodeFromFile[firstline=20,lastline=29]{macro-patterns/src/lib.rs}{interpolate-traits-macro}{Interpolate traits macro definition}
+The \textit{interpolate\_traits} macro -- also being an attribute macro -- is shown in \Fref{lst:macro-patterns}.
 
 Line 6 parses the macro inputs to a comma-separated list of \textit{TraitSpecifier}s defined in \Fref{lst:trait-specifier}.
 Rather than parsing the context input to a model, the context input is used as a template for each concrete factory implementation.
@@ -193,8 +176,6 @@ However, these templates need to be expanded when the macro is run.
 Macros are run at the compile-time of the client code.
 Thus a string interpolator like \textit{quote} is needed that can run at the macro's run-time.
 \Fref{lst:fn-interpolate} defines such a helper for a \textit{proc\_macro2} token stream.
-
-\libraryCodeFromFile[lastline=56]{macro-lib/src/token_stream_utils.rs}{fn-interpolate}{Run-time string interpolator}
 
 Line 7 defines an \textit{Interpolate} trait for types that will be interpolatable at macro run-time.
 Line 8 implements the \textit{Interpolate} trait for \textit{syn}'s \textit{Punctuated} type if the punctuated tokens implement the \textit{Interpolate} trait -- the \textit{TraitSpecifier} token will be made interpolatable in the next listing.
@@ -212,13 +193,11 @@ Only the \textit{Ident} tokens are matched against the replacements.
 Thus, if the identifier matches any of the replacements in line 35, then the replacement value is copied to the \textit{new} stream in line 36.
 Otherwise, the identifier is copied in line 40.
 
-\Fref{lst:trait-specifier-interpolate} shows interpolation being implemented for the \textit{TraitSpecifier} -- specified in \Fref{lst:trait-specifier}.
+\Fref{lst:trait-specifier} shows interpolation being implemented for the \textit{TraitSpecifier} -- specified in \Fref{lst:trait-specifier}.
 Lines 5 and 6 set up the hash map to replace \textit{TRAIT} with the abstract trait and \textit{CONCRETE} with the concrete type.
 Line 8 calls \textit{interpolate} as defined in \Fref{lst:fn-interpolate}, line 24.
 
-\libraryCodeFromFile[firstline=31,lastline=40]{macro-lib/src/trait_specifier.rs}{trait-specifier-interpolate}{Implement \textit{Interpolate} for \textit{TraitSpecifier}}
-
-Thus, line 9 in \Fref{lst:interpolate-traits-macro} will use the context input as a template to interpolate each \textit{TraitSpecifier} passed into the \textit{interpolate\_traits} macro.
+Thus, line 9 in \Fref{lst:macro-patterns} will use the context input as a template to interpolate each \textit{TraitSpecifier} passed into the \textit{interpolate\_traits} macro.
 
 \subsubsection{Visitor macro}
 The Visitor macro implementation will be a function-like macro -- as was defined in section \Fref{sec:function-like-macro}.
@@ -228,7 +207,7 @@ The model will be expanded to match a manual implementation using \textit{quote}
 The following shows the client meta-code for the Visitor macro -- meta-code being the macro input as defined in \Fref{sec:metaprogramming}.
 This will result in the same code as \Fref{lst:visitor-hand}.
 
-\clientCodeFromFile[firstline=2,lastline=21]{macro-client/src/visitor.rs}
+\clientCodeFromFile[firstline=2,lastline=20]{macro-client/src/visitor.rs}
 
 A list of types is being passed to the \textit{visitor} macro function.
 A type can also have two options inside the \textit{\#[options]} syntax:
@@ -259,8 +238,6 @@ Six parsable models need to be created:
 The \textit{KeyValue} type is the most complex to parse.
 It is defined in \Fref{lst:key-value}.
 
-\libraryCodeFromFile[lastline=39]{macro-lib/src/key_value.rs}{key-value}{Parses a single key value option}
-
 \textit{KeyValue} parses a single \textit{key = value}.
 The \textit{key} is an identifier with \textit{value} holding a token -- lines 8 to 10.
 The \textit{value} part is optional for boolean options.
@@ -275,24 +252,16 @@ Finally, the entire \textit{KeyValue} is returned in lines 33 to 37.
 The \textit{OptionsAttribute} is simple, as seen in \Fref{lst:options-attribute}.
 It parses the \textit{\#[list-of-KeyValues]} stream, as defined in lines 8 to 12.
 
-\libraryCodeFromFile[lastline=24]{macro-lib/src/options_attribute.rs}{options-attribute}{Parses an attribute with options}
-
 \Fref{lst:simple-type} shows the \textit{SimpleType} model.
 It consists of an optional \textit{dyn} keyword followed by a type identifier (\textit{Ident}).
 \textit{ToTokens} is implemented on \textit{SimpleType} to be able to use it in \textit{quote} later, lines 24 to 29.
 
-\libraryCodeFromFile[lastline=29]{macro-lib/src/simple_type.rs}{simple-type}{Parses a simple type identifier with an optional \textit{dyn}}
-
 \textit{AnnotatedType} will combine a generic type with an optional \textit{OptionsAttribute}, as seen in \Fref{lst:annotated-type}.
-
-\libraryCodeFromFile[lastline=27]{macro-lib/src/annotated_type.rs}{annotated-type}{Parses an annotated type}
 
 % NOTE: will `Option' like dyn make this simpler? Cannot use since Option is only possible if implementing the Token trait.
 
 Lastly, \textit{VisitorFunction} -- the input to the Visitor macro -- will be a comma punctuated list of \textit{AnnotatedType}s, as shown in \Fref{lst:visitor-function}.
 The generic \textit{T} in \textit{AnnotatedType} is set to \textit{SimpleType}.
-
-\libraryCodeFromFile[lastline=131]{macro-patterns/src/visitor.rs}{visitor-function}{Model to parse and expand Visitor macro inputs}
 
 \textit{VisitorFunction} makes use of a private \textit{Options} struct -- lines 94 to 98 -- to dissect the options passed to each type.
 In lines 102 to 104, \textit{Options} defaults to:
@@ -338,8 +307,6 @@ Once iterating over all the types is done, lines 79 to 90 write the macro output
 The list for each of the three parts is expanded without a separator in lines 81, 84, and 89.
 
 \paragraph{Definition:}
-The function-like -- as was defined in \Fref{sec:function-like-macro} -- \textit{visitor} macro is shown in \Fref{lst:visitor-macro}.
+The function-like -- as was defined in \Fref{sec:function-like-macro} -- \textit{visitor} macro is shown in \Fref{lst:macro-patterns}.
 It uses the \textit{VisitorFunction} model defined in \Fref{lst:visitor-function} to parse the macro input in line 5.
 The model is expanded in line 7.
-
-\libraryCodeFromFile[firstline=31,lastline=38]{macro-patterns/src/lib.rs}{visitor-macro}{Visitor macro definition}
