@@ -124,7 +124,7 @@ The factory method and factory elements are passed to the macro.
 The client will create their concrete \textit{BrandFactory} and use the \textit{interpolate\_traits} attribute macro to implement each element's factory method.
 Here the client uses two invocations of \textit{interpolate\_traits} since \textit{Window} is concrete and does not use the \textit{dyn} keyword.
 
-\paragraph{Models}
+\paragraph{Models:}
 Both \textit{abstract\_factory} and \textit{interpolate\_traits} take in a comma-separated list of inputs.
 The \textit{syn} library provides the \textit{Punctuated}\footnote{https://docs.rs/syn/1.0.48/syn/punctuated/struct.Punctuated.html} type to parse a list of elements separated by any punctuation marker.
 \textit{Syn} also provides \textit{Type}\footnote{https://docs.rs/syn/1.0.48/syn/enum.Type.html} for parsing Rust types that will be used by the \textit{abstract\_factory} macro.
@@ -175,7 +175,7 @@ Thus, if \textit{MyFactory, Type1, Type2} is passed to the macro, then line 9 wi
 Line 14 appends the factory super trait that was just constructed to the context input.
 The new context input is returned on line 17.
 
-\paragraph{Definitions}
+\paragraph{Definitions:}
 The AF macro is shown in \Fref{lst:abstract-factory-macro} to be an attribute macro, as was defined in \Fref{sec:attribute-macro}.
 Line 11 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 12 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute-model}.
 Line 14 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute-expand}.
@@ -241,7 +241,7 @@ The client code above shows how the \textit{helper\_tmpl} option is used on the 
 \textit{Syn} does not make provision for parsing complex options like this.
 Thus, this section will create new syntax elements to parse the input for the Visitor macro.
 
-\paragraph{Models}
+\paragraph{Models:}
 Six parsable models need to be created:
 \begin{enumerate}
 	\item \textit{KeyValue} to parse a \textit{key = value} stream.
@@ -337,7 +337,7 @@ Lastly, the \textit{Visitable} trait is implemented for the type on lines 70 to 
 Once iterating over all the types is done, lines 79 to 90 write the macro output.
 The list for each of the three parts is expanded without a separator on lines 81, 84, and 89.
 
-\paragraph{Definition}
+\paragraph{Definition:}
 The function-like -- as was defined in \Fref{sec:function-like-macro} -- \textit{visitor} macro is shown in \Fref{lst:visitor-macro}.
 It uses the \textit{VisitorFunction} model defined in \Fref{lst:visitor-function} to parse the macro input on line 5.
 The model is expanded on line 7.

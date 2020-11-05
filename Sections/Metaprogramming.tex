@@ -20,20 +20,20 @@ Being able to write a program using code opens up many uses.
 \subsection{Uses}
 There are three main uses for metaprogramming: code optimization, code reuse, and analysis.
 
-\paragraph{Code optimization}
+\paragraph{Code optimization:}
 A metaprogram can be used to improve the execution speed of the code.
 For example, with a Just-In-Time (JIT) compiler, a metaprogram can optimize blocks of code that are called more often than others \cite{hinsen_13_01} or by caching the results of a method's call \cite{seaton_15_01}.
 Another example is the use of Domain-Specific Languages (DSL). 
 Here a metaprogram has a better understanding of the code and can apply optimizations unknown to the compiler.
 Optimizations include knowing a value can never be negative \cite{hinsen_13_01}, simplifying an expression \cite{sheard_01_01}, or offloading to the GPU \cite{videau_18_01}.
 
-\paragraph{Code reuse}
+\paragraph{Code reuse:}
 Metaprogramming can also be viewed as a code reuse tool.
 Repeated code -- like design patterns \cite{lilis_15_01, alexandrescu_01_01} -- can be wrapped behind a metaprogram function that will write the reusable code \cite{savidis_19_01, klabnik_2019_01}.
 Complex code can also be translated from a simpler language that end-users can understand \cite{hinsen_13_01}.
 The generated code can be anything from one-liners to classes \cite{savidis_19_01}.
 
-\paragraph{Analysis}
+\paragraph{Analysis:}
 Reading a program as input is the last use for metaprogramming.
 After reading a program, the metaprogram can analyze its control flow, check types on a dynamic language, or build a proof theorem \cite{sheard_01_01}.
 
@@ -55,7 +55,7 @@ When they are the same, it is called a homogenous system \cite{sheard_01_01}.
 Programming comes in different models, such as procedural, functional, and Object-oriented.
 The same is true for metaprogramming, which includes the following.
 
-\paragraph{Macro systems}
+\paragraph{Macro systems:}
 A macro system takes input and expands it to some output.
 The output can be another macro.
 Thus expansion continues until no more macros are left.
@@ -69,46 +69,46 @@ Parsing the input can be procedural or pattern-based.
 Procedural will use an algorithm to generate the output.
 Patterns will match an input pattern to its output.
 
-\paragraph{Reflection systems}
+\paragraph{Reflection systems:}
 Reflection is the process an object follows to look at its members and methods.
 The object can then modify its structure dynamically.
 This is commonly done at run-time but can also happen at compile-time.
 
-\paragraph{Metaobject Protocol (MOP)}
+\paragraph{Metaobject Protocol (MOP):}
 Rather than modifying an object's structure, MOPs modify an object's behavior.
 This is done by inheriting from a metaclass that can modify its own behavior.
 The modification then affects the subclasses \cite{lee_95_01}.
 MOPs can also be used to modify a language's behavior \cite{seaton_15_01}.
 
-\paragraph{Aspect-Oriented Programming (AOP)}
+\paragraph{Aspect-Oriented Programming (AOP):}
 Assume one wants to add logging or performance metrics to all functions in a program.
 Modifying each function will add a responsibility that does not form part of the function's duties.
 There is also the cost in the time it will take to modify each function.
 AOP will \textit{weave} the extra responsibility -- called \textit{advice} -- into each function.
 
-\paragraph{Generative Programming}
+\paragraph{Generative Programming:}
 This is like a macro system.
 The difference being that generative code is clearly not meta-code to be expanded by the macro system.
 They also typically represent their data as an Abstract Syntax Tree (AST). 
 
-\paragraph{Multistage Programming}
+\paragraph{Multistage Programming:}
 Generating object code in stages is made possible by multistage programming.
 The generations can either be automatic or require manual annotations \cite{sheard_01_01, taha_04_01}.
 
 \subsubsection{Metaprogram execution}
 Three options exist for when the metaprogram can be executed.
 
-\paragraph{Before compilation}
+\paragraph{Before compilation:}
 % TODO: merge 1st and 2nd sentence
 The metaprogram can be executed before compilation.
 This offers the option of using any language for metaprogramming.
 The metaprogram takes a source file with meta-code and outputs a file without meta-code.
 
-\paragraph{During compilation}
+\paragraph{During compilation:}
 This option runs the metaprogram as part of the compilation.
 This requires the compiler to support metaprogramming, or it needs to have a plugin for metaprogramming.
 
-\paragraph{Run-time}
+\paragraph{Run-time:}
 Lastly, the metaprogram might execute at run-time.
 This will require the language execution system to support dynamic code generation and execution.
 
@@ -116,13 +116,13 @@ This will require the language execution system to support dynamic code generati
 % The meta-code location dimension takes the location of the meta-code to be used as input by the metaprogram into consideration.
 The meta-code location dimension takes into consideration the location of the meta-code to be used as input.
 
-\paragraph{External}
+\paragraph{External:}
 The meta-code can be in an external file and will result in a new file with the object code.
 This option is used with the before compilation option and generative model.
 Alternatively, suppose this option is used with compilation time execution.
 In that case, the file needs to be passed to the compiler with a flag.
 
-\paragraph{Embedded}
+\paragraph{Embedded:}
 The meta-code can also be embedded within the program to be transformed.
 This means the source file has a mixture of regular code and meta-code.
 Embedded code can have three levels of context-awareness.
@@ -139,18 +139,18 @@ The final dimension to consider is the representation used to hold the final cod
 Since the final code is the metaprogram's data \cite{bawden_99_01}, it needs to be held in some type.
 Many systems use strings, graphs, or an algebraic data structure \cite{sheard_01_01}:
 
-\paragraph{String}
+\paragraph{String:}
 The final program is held in a string.
 This option is not desired since building a class may need hundreds of string append operations spanning hundreds of lines.
 The object code will be interleaved with the metaprogram making it hard to distinguish between them.
 This makes it easy to construct a string that is not syntactically correct.
 
-\paragraph{Graphs}
+\paragraph{Graphs:}
 A graph type will add structure to the program being built.
 Furthermore, it makes a better separation between the object code and the metaprogram code.
 However, it still does not guarantee that the structure will be syntactically correct.
 
-\paragraph{Algebraic}
+\paragraph{Algebraic:}
 Storing the data as an algebraic expression with type encoding or an AST is the only guarantee of a syntactically correct program.
 However, building an AST by hand is hard.
 Lisp solved this problem by using \textit{quasiquotes} \cite{bawden_99_01}.
@@ -208,7 +208,7 @@ Thus, anything in the \textit{quoted} ``string'' is correctly highlighted, forma
 
 The three flavors of Procedural Macros are function-like, derive, and attribute macros.
 
-\paragraph{Function-like macros}
+\paragraph{Function-like macros:}
 \label{sec:function-like-macro}
 These are the most straightforward flavor of procedural macros.
 They take an input stream and return an output stream -- i.e., they are context unaware.
@@ -247,7 +247,7 @@ The +(plus) sign and ,(comma) will be punctuations in both streams.
 Again, parsing and generating the list will be hard.
 The next example shows how to use the \textit{syn} and \textit{quote} libraries to make parsing and generating easier.
 
-\paragraph{Derive macros}
+\paragraph{Derive macros:}
 These macros are used to automatically implement interface methods on objects, as seen in \Fref{lst:derive-macro}.
 
 \exampleCodeFromFile[firstline=9,lastline=28]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
@@ -284,7 +284,7 @@ A snippet of the output is as follows -- it comes from line 12.
 
 \clientCodeFromFile[firstline=11,lastline=11]{Metaprogramming/client/src/main.highlighted.rs}
 
-\paragraph{Attribute macros}
+\paragraph{Attribute macros:}
 \label{sec:attribute-macro}
 A function-like macro with context-awareness results in attribute macros.
 Therefore, two token streams -- the input and the context -- are passed as arguments to it.

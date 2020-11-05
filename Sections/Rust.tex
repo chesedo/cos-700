@@ -95,13 +95,12 @@ These three are \textit{Objects as Data and their Behaviour}, \textit{Encapsulat
 An object holds both data and procedures operating on the data \cite{meyer_97_01,stefik_85_01,gamma_94_01,malik_09_01}.
 Rust holds data in \textit{struct}s with the operations being defined in \textit{impl} blocks \cite{klabnik_2019_01}.
 
-% TODO: test : (colon) on all paragraphs
 \paragraph{Struct:}
 A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C-like languages \cite{robinson_04_01,savitch_15_01,malik_09_01}.
 Structs are used to define objects with named data pieces, as shown in \Fref{lst:oop} lines 1 to 5.
 Each of the struct properties is named followed by a type.
 
-\paragraph{Methods}
+\paragraph{Methods:}
 The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 -- 19 in \Fref{lst:oop}.
 
 The ownership rules apply to the struct as follow:
@@ -136,7 +135,7 @@ In Rust, encapsulation is the default unless specified otherwise using the \text
 Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
 Therefore, Rust meets the encapsulation concept.
 
-\paragraph{pub}
+\paragraph{pub:}
 As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member are explicitly made public, as are the methods \textit{get\_age} and \textit{have\_birthday}.
 All the other data members and methods are private -- Rust's default -- and unreachable by client code.
 \textit{Main} is allowed to access the private members and methods -- even though they are hidden -- because they are all in the same file.
@@ -324,20 +323,20 @@ In the event of an error, the \textit{Err} variant is returned with the error of
 Any calls to \textit{may\_error} have to handle the possible error.
 A few error handling options exist: trying an alternative, panicking, or propagating the error.
 
-\paragraph{Alternative}
+\paragraph{Alternative:}
 % TODO: have example
 % or trim
 Trying an alternative is quite simple.
 If the \textit{Err} enum is returned, then just run the alternative instead.
 
-\paragraph{Panicking}
+\paragraph{Panicking:}
 The caller will use a \textit{match pattern} to extract the error and panic, as seen on lines 13 to 16.
 However, writing matches all the time for possible errors breaks the flow of the code.
 So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} -- Rust enums are like ordinary objects that can have methods.
 
 The helper method \textit{expect}, as seen on line 22, does the exact same as the match on lines 13 to 16.
 
-\paragraph{Propagation}
+\paragraph{Propagation:}
 The caller might decide more information is needed to panic.
 So the caller's caller will need to handle the error instead.
 
