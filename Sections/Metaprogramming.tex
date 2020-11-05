@@ -218,9 +218,9 @@ Note, \Fref{sec:rust} will explain Rust syntax in detail.
 
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macro definitions and will not appear in future examples.
-The \textit{\#[proc\_macro]} attribute on line 4 marks the function that follows as a function-like macro.
+The \textit{\#[proc\_macro]} attribute in line 4 marks the function that follows as a function-like macro.
 Line 5 shows it taking one \inputh{input} and returning one \outputh{output} -- both of type \textit{TokenStream}.
-On line 6, the input is returned unaltered.
+In line 6, the input is returned unaltered.
 
 Client code will have a call as follows to use the macro.
 
@@ -253,8 +253,8 @@ These macros are used to automatically implement interface methods on objects, a
 
 Line 1 shows the import for the \textit{syn} library to parse an unstructured input list of tokens to a syntax tree.
 This is followed by the \textit{quote} macro in the \textit{quote} library for generating a token stream.
-Derive macros have the \textit{proc\_macro\_derive} attribute with an argument for the macro \functionh{name}, as seen on line 4.
-The \contexth{function's input} on line 5 is the context the macro is called on.
+Derive macros have the \textit{proc\_macro\_derive} attribute with an argument for the macro \functionh{name}, as seen in line 4.
+The \contexth{function's input} in line 5 is the context the macro is called on.
 Thus, derive macros have local context-awareness.
 
 % TODO: this is unexplained. The next section explains Rust, but this is thin.
@@ -269,7 +269,7 @@ Line 7 parses the context to a \textit{DerivedInput} syntax tree from \textit{sy
 TokenStreams can be parsed to any syntax tree defined by the macro developer.
 Here \textit{DerivedInput} is chosen since it is provided by \textit{syn} for derive macros.
 \textit{Syn} will give a compilation error if the parsing fails.
-Getting the struct's name happens on line 9.
+Getting the struct's name happens in line 9.
 
 Lines 11 to 17 show the use of the \textit{quote} library for quasiquotes.
 Rather than a \textit{quoted} ``string'', it uses the \textit{quote} macro.
