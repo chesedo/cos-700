@@ -215,7 +215,7 @@ They take an input stream and return an output stream - i.e., they are context u
 \Fref{lst:function-like-macro} shows a reflective function-like macro that returns its input unaltered as output.
 Note, \Fref{sec:Rust} will explain Rust syntax in detail.
 
-\libraryCodeFromFile[lastline=7]{Metaprogramming/library/src/lib.highlighted.rs}{function-like-macro}{Declaring a function-like macro}
+\exampleCodeFromFile[lastline=7]{Metaprogramming/library/src/lib.highlighted.rs}{function-like-macro}{Declaring a function-like macro}
 
 Lines 1 and 2 import the \textit{proc\_macro} library and the \textit{TokenStream} type in the library.
 These two lines will be needed for all macro definitions and will not appear in future examples.
@@ -250,7 +250,7 @@ The next example shows how to use the \textit{syn} and \textit{quote} libraries 
 \paragraph{Derive macros}
 These macros are used to automatically implement interface methods on objects as seen in \Fref{lst:derive-macro}.
 
-\libraryCodeFromFile[firstline=9,lastline=28]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
+\exampleCodeFromFile[firstline=9,lastline=28]{Metaprogramming/library/src/lib.highlighted.rs}{derive-macro}{A derive macro using \textit{syn} and \textit{quote}}
 
 Line 1 shows the import for the \textit{syn} library to parse an unstructured input list of tokens to a syntax tree.
 This is followed by the \textit{quote} macro in the \textit{quote} library for generating a token stream.
@@ -291,7 +291,7 @@ Therefore, two token streams - the input and the context - are passed as argumen
 This time the attribute above the function is \textit{proc\_macro\_attribute}.
 \Fref{lst:attribute-macro} shows another reflect macro that returns the \contexth{context} unaltered.
 
-\libraryCodeFromFile[firstline=28]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
+\exampleCodeFromFile[firstline=28]{Metaprogramming/library/src/lib.highlighted.rs}{attribute-macro}{Declaring an attribute macro}
 
 Client code will again annotate a type with an attribute to call the macro.
 However, the attribute is the macro's \functionh{function name}.
