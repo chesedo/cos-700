@@ -17,9 +17,7 @@ pub trait AbstractGuiFactory:
 }
 
 struct BrandFactory {}
-
 impl AbstractGuiFactory for BrandFactory {}
-
 impl Factory<dyn Button> for BrandFactory {
     fn create(&self, name: String) -> Box<dyn Button> {
         Box::new(brand_elements::BrandButton::new(name))

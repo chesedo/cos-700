@@ -15,7 +15,6 @@ pub trait Factory<T: Element + ?Sized> {
 pub trait AbstractGuiFactory: Display {}
 
 struct BrandFactory {}
-
 impl AbstractGuiFactory for BrandFactory {}
 
 #[interpolate_traits(

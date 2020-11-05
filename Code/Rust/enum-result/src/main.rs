@@ -9,19 +9,13 @@ fn may_error() -> Result<i32, String> {
 
 fn error_explicit_handle() {
     let r = may_error();
-
     let r = match r {
         Result::Ok(result) => result,
         Result::Err(error) => panic!("Operation failed: {}", error),
     };
-
-    // Use r
 }
-
 fn error_short_handle() {
     let r = may_error().expect("Operation failed");
-
-    // Use r
 }
 
 fn error_explicit_propogation() -> Result<i32, String> {
@@ -32,7 +26,6 @@ fn error_explicit_propogation() -> Result<i32, String> {
 
     Ok(2)
 }
-
 fn error_short_propogation() -> Result<i32, String> {
     let r = may_error()?;
 

@@ -27,22 +27,22 @@ The initial variable's access is then invalidated \cite{klabnik_2019_01}.
 An analogy example would be to give a book to a friend.
 The friend can do anything from annotating to burning the book as they feel fit since the friend is the book's owner.
 
-\exampleCodeFromFile[firstline=2,lastline=7]{moved/src/main.highlighted.rs}{moved}{Example of ownership transfer}
+\exampleCodeFromFile{moved/src/main.highlighted.rs}{moved}{Example of ownership transfer}
 
 In \Fref{lst:moved}, in line 2, a heap data object is created and assigned to variable \textit{s}.
 Line 3 assigns \textit{s} to \textit{t}.
 However, because \textit{s} is a heap object, the compiler transfers ownership of the data from \textit{s} to \textit{t} and marks \textit{s} as invalid.
 
-When trying to use the data in line 5, via \textit{s}, the compiler throws an error saying \textit{s} was moved.
+When trying to use the data in line 4, via \textit{s}, the compiler throws an error saying \textit{s} was moved.
 Any reference to \textit{s} after line 3 will always give a compiler error.
 
-Finally, the scope of \textit{t} ends in line 6.
-Since the compiler can guarantee \textit{t} is the only variable owning the data, the compiler can free the memory in line 6.
+Finally, the scope of \textit{t} ends in line 5.
+Since the compiler can guarantee \textit{t} is the only variable owning the data, the compiler can free the memory in line 5.
 
 \exampleCodeFromFile{fn-move/src/main.highlighted.rs}{fn-move}{Function taking ownership}
 
 Having ownership moving makes excellent memory guarantees within a function; however, it is annoying when calling another function, as seen in \Fref{lst:fn-move}.
-The \textit{take\_ownership} function takes ownership of the heap data resulting in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope in line 10.
+The \textit{take\_ownership} function takes ownership of the heap data resulting in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope in line 8.
 When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, making the call in line 5 invalid.
 When taking ownership is not desired, the second form of ownership, borrowing, should be used instead.
 
@@ -60,7 +60,7 @@ Having references as function parameters is called borrowing \cite{klabnik_2019_
 The ampersand is also used in the call argument in line 3 to signal the called function will borrow the data.
 
 However, in Rust, all variables are immutable by default \cite{klabnik_2019_01}.
-Hence changing the data in \textit{take\_borrow} causes an error stating the borrow is not mutable in line 9.
+Hence changing the data in \textit{take\_borrow} causes an error stating the borrow is not mutable in line 7.
 Returning to the borrowed book analogy.
 One would not make highlights and notes in a book one borrowed unless the owner gave explicit permission.
 
@@ -69,20 +69,11 @@ Mutable borrows are an explicit indication that a function/variable is allowed t
 
 \exampleCodeFromFile{fn-mut-borrow/src/main.rs}{fn-mut-borrow}{Function taking mutable borrow}
 
-As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using \textit{\&mut } on the type.
+As seen in \Fref{lst:fn-mut-borrow}, line 6, mutable borrows are activated using \textit{\&mut } on the type.
 Again, \textit{mut} is also used in the call in line 3 to make it explicit that the function will modify the data.
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01}, as seen in line 2.
 
-% TODO: trim candidate
-The two ownership forms -- moving and borrowing -- together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
-\begin{itemize}
-	\item Moving will always invalidate the variable.
-	\item Borrowed variables cannot be mutated.
-	      However, more than one variable can borrow the data simultaneously in parallel and concurrent code.
-	\item Mutable borrowing does allow mutations.
-	      But only one variable can hold a mutable borrow, while no other immutable borrows can exist at the same time.
-\end{itemize}
-
+The two ownership forms -- moving and borrowing -- together with mutable variables put some constraints on the code for variables and their calls \cite{klabnik_2019_01}.
 The compliler wll always enforce these constraints, requiring all code -- written by hand or a macro -- to meet them.
 Meeting these constraints also requires some shift in thinking.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language, which will now be discussed.
@@ -98,23 +89,21 @@ Rust holds data in \textit{struct}s with the operations being defined in \textit
 
 \paragraph{Struct:}
 A \textit{struct} is the same as a \textit{struct} in C \cite{stroustrup_13_01} and other C-like languages \cite{robinson_04_01,savitch_15_01,malik_09_01}.
-Structs are used to define objects with named data pieces, as shown in \Fref{lst:oop} lines 1 to 5.
-Each of the struct properties is named followed by a type.
+Structs are used to define objects with named data pieces followed by a type, as shown in \Fref{lst:oop} lines 1 to 5.
 
 \paragraph{Methods:}
-The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 7 -- 19 in \Fref{lst:oop}.
+The operations to perform on a struct are defined in \textit{impl} blocks, as seen in lines 6 -- 16 in \Fref{lst:oop}.
 
 The ownership rules apply to the struct as follow:
 \begin{itemize}
-	\item The method \textit{have\_burial} moves \textit{self} and will result in cleanup code being inserted in line 18.
+	\item The method \textit{have\_burial} moves \textit{self} and will result in cleanup code being inserted in line 15.
 	      Thus, any objects of \textit{Foo} after \textit{have\_burial} is called will be invalidated.
-	      This happens in line 33, resulting in a compile error -- the same error happened in \Fref{lst:fn-move}.
+	      This happens in line 22, resulting in a compile error -- the same error happened in \Fref{lst:fn-move}.
 	\item The method \textit{get\_age} will take a borrow of the struct object.
-	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} -- also why \textit{bar} needs to be \textit{mut} in \textit{main} in line 22.
+	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} -- also why \textit{bar} needs to be \textit{mut} in \textit{main} in line 19.
 \end{itemize}
 
-% TODO: trim line spaces in listing
-\exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
+\exampleCodeFromFile[lastline=31]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
 
 \addtocounter{footnote}{1}\footnotetext{%
 	\label{return}
@@ -122,6 +111,7 @@ The ownership rules apply to the struct as follow:
 	Lines without a semi-colon and that are the last line in a scope act as return statements.
 	Thus, line 9 acts as a return statement.
 }
+\addtocounter{footnote}{1}\footnotetext{\label{pub}\textit{main} can access the private members because main in the same file as them.}
 \addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single type.}
 \addtocounter{footnote}{1}\footnotetext{%
 	\label{associate}
@@ -137,12 +127,6 @@ In Rust, encapsulation is the default unless specified otherwise using the \text
 Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
 Therefore, Rust meets the encapsulation concept.
 
-% TODO: trim candidate
-\paragraph{pub:}
-As can be seen in \Fref{lst:oop}, the \textit{Foo} struct and its \textit{name} data member are explicitly made public, as are the methods \textit{get\_age} and \textit{have\_birthday}.
-All the other data members and methods are private -- Rust's default -- and unreachable by client code.
-\textit{Main} is allowed to access the private members and methods -- even though they are hidden -- because they are all in the same file.
-
 \subsubsection{Inheritance}
 Inheritance allows an object to inherit some of its data members and procedures from a parent object \cite{meyer_97_01,stefik_85_01,gamma_94_01,savitch_15_01}.
 Inheritance is mostly used to reduce code duplication.
@@ -155,37 +139,36 @@ Both concepts are realized using \textit{traits}, thereby allowing Rust to imple
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
 Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 8.
 
-\exampleCodeFromFile[lastline=20]{traits/src/main.rs}{traits}{Working with traits}
+\exampleCodeFromFile[lastline=18]{traits/src/main.rs}{traits}{Working with traits}
 
 The compiler uses \textit{traits} at compile time to guarantee an object implements a set of methods using \textit{trait bounds}.
-Line 10 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
+Line 9 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
 Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
 In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
 
 % TODO: use colors to make easier
 
-Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen in line 16.
-The \textit{Show} trait has a default implementation for \textit{show\_size} in line 5.
+Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen in line 14.
+The \textit{Show} trait has a default implementation for \textit{show\_size} in line 4.
 Thus, \textit{Tester} does not need to implement \textit{show\_size}, but is only required to implement the \textit{show} method.
 
 Traits allow one to use composition to construct complex objects.
 Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text, as seen in \Fref{lst:composition}.
 
-% TODO: trim spaces
 % TODO: remove text?
 \exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
 
 Using traits, an abstract button and display text is defined in lines 1 to 4.
 The confirmation dialog ``has-a'' \cite{malik_09_01} button and display text in lines 7 to 8.
-Using associate functions\footnotemark[\ref{associate}], a composition constructor is created in line 13.
+Using associate functions\footnotemark[\ref{associate}], a composition constructor is created in line 12.
 To construct the open dialog, the open button will be passed to this constructor.
 The safe dialog will need the safe button to be passed in.
-Finally, the \textit{show} method in line 18 will show the confirmation dialog, whether it is the open dialog, save dialog, or a new dialog definition.
+Finally, the \textit{show} method in line 15 will show the confirmation dialog, whether it is the open dialog, save dialog, or a new dialog definition.
 This is called polymorphism since a dialog will change form depending on the elements passed to the constructor at run-time \cite{savitch_15_01,malik_09_01,gamma_94_01}.
 
 The \textit{show} method will now work with more than one button.
 The open button will have a different implementation for the \textit{draw} method, defined in line 2, than the save button.
-Since the buttons change at run-time, the compiler will be unable to determine the correct \textit{draw} method to call in \textit{show} in line 21.
+Since the buttons change at run-time, the compiler will be unable to determine the correct \textit{draw} method to call in \textit{show} in line 16.
 Dispatching, as discussed next, resolves this problem \cite{pierce_02_01}.
 
 \subsection{Dispatch}
@@ -196,14 +179,14 @@ The matching can happen at compile-time -- called \textit{static dispatching} --
 
 \subsubsection{Static Dispatch}
 Matching the method call at compile-time is called \textit{static dispatch} \cite{klabnik_2019_01, alexandrescu_01_01, abadi_12_01}.
-When Rust compiles generics on a function or type, as seen in \Fref{lst:traits}, line 10, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
+When Rust compiles generics on a function or type, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
 \textit{Monomorphization} creates a new function or type at compile time for each concrete object passed into the generic placeholders.
 
-In \Fref{lst:traits}, line 10, the generic \textit{work} method is defined.
-Suppose the \textit{work} method is called with a \textit{Tester}, defined in line 28, and later with a \textit{String}.
+In \Fref{lst:traits}, line 9, the generic \textit{work} method is defined.
+Suppose the \textit{work} method is called with a \textit{Tester}, defined in line 13, and later with a \textit{String}.
 Then an example of the \textit{monomorphization} process is shown in \Fref{lst:monomorphization}.
 
-\exampleCodeFromFile[firstline=22,lastline=27]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
+\exampleCodeFromFile[firstline=20,lastline=25]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
 
 Each \textit{show} call in the expanded functions can match only one object -- \textit{Tester} and \textit{String} respectively -- making this a simple case.
 Using \textit{trait objects} -- rather than generics -- will result in multiple objects having the same method name and the need for dynamic dispatch.
@@ -212,7 +195,7 @@ Using \textit{trait objects} -- rather than generics -- will result in multiple 
 When the compiler cannot determine which method to call at compile-time, because the object type is not fixed, dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01, abadi_12_01} occurs.
 At run-time, pointers held by the trait objects are used to determine which method to call \cite{klabnik_2019_01} based on the object type the method is called on.
 
-\Fref{lst:traits-dyn-dispatch} shows the \textit{work} function implemented using dynamic dispatch rather than generics -- refer to \textit{work} in \Fref{lst:traits} line 10 for the generic version.
+\Fref{lst:traits-dyn-dispatch} shows the \textit{work} function implemented using dynamic dispatch rather than generics -- refer to \textit{work} in \Fref{lst:traits} line 9 for the generic version.
 Since generics are not used, \textit{monomorphization} will not happen.
 Calling this function with a \textit{Tester} object means the \textit{show} for \textit{Tester} needs to match at the method invocation in line 2.
 But later, calling this function with a \textit{String} object means \textit{String}'s \textit{show} needs to match.
@@ -243,9 +226,11 @@ Thus, two different objects implementing \textit{Show} can have different sizes.
 Ownership will want to pass each object on the stack, but with dynamic dispatch, each object will need a different stack size only known at run-time.
 Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time since the \textit{Show} dynamic trait cannot implement the \textit{Sized} trait.
 
+% TODO: shorten
 Since all function arguments expect the type to implement the \textit{Sized} trait but having the \textit{Show} dynamic trait not implement it, a compile error will be given stating \textit{dyn Show} does not implement \textit{Sized} when trying to use it as a function argument.
 However, pointers do implement \textit{Sized}.
 Therefore, putting the dynamic trait behind any pointer will allow it to be used as a function argument or local variable.
+The reference (taking a borrow) and the \textit{Box$<$T$>$} type are two such pointers\cite{klabnik_2019_01}.
 
 % TODO: consider removal
 % \begin{notebox}
@@ -255,21 +240,13 @@ Therefore, putting the dynamic trait behind any pointer will allow it to be used
 % 	The syntax is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
 % \end{notebox}
 
-Rust offers many pointer options\cite{klabnik_2019_01}, but this report will make use of:
-\begin{itemize}
-	\item A reference -- also called a borrow.
-	\item The \textit{Box$<$T$>$} used to hold heap objects.
-	      \textit{Box} differs from a reference since \textit{Box} owns its \textit{T} \footnote{https://joshleeb.com/blog/rust-traits-trait-objects/}.
-	      Thus, when the box is dropped, the object it holds is dropped too.
-\end{itemize}
-
 One more Rust uniqueness is left to be covered. Rust treats enums differently than other languages.
 
 \subsection{Enums}
-In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \Fref{lst:enums}, lines 1 to 3.
+In Rust, enums can also hold objects \cite{klabnik_2019_01} as seen in \Fref{lst:enums}, lines 1 to 4.
 The \textit{Option} enum, as defined here, is built into the standard Rust library \cite{klabnik_2019_01} to replace \textit{null} as used in most languages.
 An \textit{Option} can either be \textit{Some} object or \textit{None}.
-This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by checking that the ``\textit{null}'' (\textit{None}) option is handled at compile-time.
+This is a design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by handling the (\textit{None}) option at compile-time.
 
 \exampleCodeFromFile{enums/src/main.rs}{enums}{Enums holding objects in Rust}
 
@@ -287,43 +264,35 @@ Thus, there are two options for mitigating the exhaustive check \cite{klabnik_20
 \end{itemize}
 
 The \textit{if let} pattern also allows extraction of the enum object.
-However, since the object is not used inside the if block, no extraction needs to occur.
-When using the \textit{\_}, the enum object will not be extracted.
+Here the extraction will not be used as indicated by the \textit{\_} (underscore).
 
 \textit{Match} blocks and \textit{if} conditions -- which include \textit{if let} -- are considered expressions in Rust.
-Returning from a \textit{match} is quite common, especially with a particular enum used for error handling, as discussed in \Fref{sec:result-enum}.
-Resulting in lines 16 and 18 not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
-The value returned from the \textit{if} is assigned to the \textit{valid} variable.
+Thus, lines 16 and 18 are not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression which is assigned to the \textit{valid} variable.
 
 \subsubsection{Result enum for error handling}
 \label{sec:result-enum}
 While most languages use exceptions to propagate errors back to the caller, Rust uses the \textit{Result} enum instead.
 The definition for \textit{Result} can be seen in \Fref{lst:enum-result} in lines 1 to 4.
 
-\exampleCodeFromFile[lastline=40]{enum-result/src/main.rs}{enum-result}{The \textit{Result} enum}
+\exampleCodeFromFile[lastline=33]{enum-result/src/main.rs}{enum-result}{The \textit{Result} enum}
 
 A function will return \textit{Result} to indicate if it was successful with the \textit{Ok} variant holding the successful value of type \textit{T}.
 In the event of an error, the \textit{Err} variant is returned with the error of type \textit{E} -- like \textit{may\_error} in line 7.
-Any calls to \textit{may\_error} have to handle the possible error.
-A few error handling options exist: panicking, or propagating the error.
+Any calls to \textit{may\_error} have to handle the possible error by panicking or propogating the error.
 
 \paragraph{Panicking:}
-The caller will use a \textit{match pattern} to extract the error and panic, as seen in lines 13 to 16.
+The caller will use a \textit{match pattern} to extract the error and panic, as seen in lines 12 to 15.
 However, writing matches all the time for possible errors breaks the flow of the code.
-So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} -- Rust enums are like ordinary objects that can have methods.
-
-The helper method \textit{expect}, as seen in line 22, does the exact same as the match in lines 13 to 16.
+So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html}.
+The helper method \textit{expect}, as seen in line 18, is identical to lines 12 to 15.
 
 \paragraph{Propagation:}
 The caller might decide more information is needed to panic.
 So the caller's caller will need to handle the error instead.
 
-Line 30 shows how to propagate the error up the stack -- the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
+Line 24 shows how to propagate the error up the stack -- the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
 Line 29 uses the \textit{result} if it is fine -- the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
-Again, the match is verbose and Rust offers a helper to make it shorter.
-The helper is the \textit{?} (question mark) operator.
-The \textit{?} operator can be used in any function returning a \textit{Result} or \textit{Option} -- or type implementing the \textit{std::ops::Try} trait \cite{klabnik_2019_01}.
-Line 37 shows how to use \textit{?} -- doing precisely the same as lines 28 to 31.
+Line 30 shows how to use the \textit{?} (question mark) operator to do the same thing.
 
 % macro rules: Hygiene and token list
 

@@ -1,7 +1,6 @@
 #[allow(unused_imports)]
 use macro_patterns::visitor;
 use std::fmt;
-
 use crate::gui::elements::{Button, Child, Input, Window};
 
 visitor!(

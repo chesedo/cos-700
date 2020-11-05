@@ -1,6 +1,5 @@
 trait Show {
     fn show(&self) -> String;
-
     // Method with a default implemetation
     fn show_size(&self) -> usize {
         self.show().chars().count()
@@ -12,7 +11,6 @@ fn work<T: Show>(object: T) {
 }
 
 struct Tester {}
-
 impl Show for Tester {
     fn show(&self) -> String {
         String::from("Tester")
