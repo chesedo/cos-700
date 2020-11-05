@@ -1,10 +1,11 @@
 \section{Conclusion}
-This report showed that Rust macros can be used to implement design patterns.
+This report showed that Rust's metaprogramming is capable of implementing design patterns that are identical to manual implementations.
 The Abstract Factory pattern was first implemented using Rust attribute macros.
-The macro definition led to the foundation of parsing the macro input to a model using \textit{syn}.
+The macro definition led to a foundation that can be used to implement other design pattern macros.
+The foundation uses a model to parse the macro input into using \textit{syn}.
 This model is then expanded to the pattern's implementation using \textit{quote}.
-The model was used to create a function-like Rust macro to implement the Visitor pattern.
-The same model can be implied to other patterns.
+The foundation was applied to create a function-like Rust macro to implement the Visitor pattern.
+The same foundation can thus be applied to other design patterns.
 
 Both macros have some limitations that future research can explore.
 The Abstract Factory implementation uses dynamic dispatch, which has a performance trade-off.
@@ -16,5 +17,13 @@ The traversal code can then be automatically written by the macro -- effectively
 Lastly, the Visitor has no global option to apply \textit{no\_default} or \textit{helper\_tmpl} to all its types but will require repeating the option on every type.
 The macro currently uses an outer attribute\footnotemark on each type to set the option.
 An inner attribute\footnotemark[\value{footnote}] can be used on the macro for global options.
+
+The \textit{iterpolate\_traits} macro creates code that almost forwards to a sub-method by mapping one type to another, close to the Decorator design pattern.
+Future research can investigate how a new macro will need to change from \textit{interpolate\_traits} to implement Decorator.
+The same goes for the Proxy, Adapter, and some parts of Mediator design patterns.
+
+A study of automating this process will also be interesting.
+This will be an external metaprogram that identifies repeated patterns in a library, across libraries, or on whole repositories.
+It will then create a Rust macro for each repeated pattern and change the identified code sections to use the macro instead.
 
 \footnotetext{https://doc.rust-lang.org/reference/attributes.html}

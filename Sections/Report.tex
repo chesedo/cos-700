@@ -273,19 +273,19 @@ Line 28 parses the = (equal) sign with the \textit{value} being parsed on line 3
 Finally, the entire \textit{KeyValue} is returned on lines 33 to 37.
 
 The \textit{OptionsAttribute} is simple, as seen in \Fref{lst:options-attribute}.
-It parses the \textit{\#} token, a group of enclosing square brackets, and a comma punctuated list of \textit{KeyValue}s.
+It parses the \textit{\#[list-of-KeyValues]} stream, as defined on lines 8 to 12.
 
 \libraryCodeFromFile[lastline=24]{macro-lib/src/options_attribute.rs}{options-attribute}{Parses an attribute with options}
 
 \Fref{lst:simple-type} shows the \textit{SimpleType} model.
-It consists of an optional \textit{dyn} keyword followed by a type identifier.
-\textit{ToTokens} is implemented on \textit{SimpleType} to be able to use it in \textit{quote} later.
+It consists of an optional \textit{dyn} keyword followed by a type identifier (\textit{Ident}).
+\textit{ToTokens} is implemented on \textit{SimpleType} to be able to use it in \textit{quote} later, lines 24 to 29.
 
 \libraryCodeFromFile[lastline=29]{macro-lib/src/simple_type.rs}{simple-type}{Parses a simple type identifier with an optional \textit{dyn}}
 
 \textit{AnnotatedType} will combine a generic type with an optional \textit{OptionsAttribute}, as seen in \Fref{lst:annotated-type}.
 
-\libraryCodeFromFile[lastline=27]{macro-lib/src/rich_type.rs}{annotated-type}{Parses an annotated type}
+\libraryCodeFromFile[lastline=27]{macro-lib/src/annotated_type.rs}{annotated-type}{Parses an annotated type}
 
 % NOTE: will `Option' like dyn make this simpler? Cannot use since Option is only possible if implementing the Token trait.
 
@@ -303,7 +303,8 @@ On lines 102 to 104, \textit{Options} defaults to:
 	\item The helper function being empty.
 \end{itemize}
 
-Each option passed to the type is iterated on line 106.
+% TODO: change on to in
+Each option passed to the type is iterated on, in line 106.
 If the option has the \textit{no\_default} key, then creating a default trait method for the type is turned off on lines 107 to 110.
 The option \textit{helper\_tmpl = false} turns off creating a helper function on 114, while the option \textit{helper\_tmpl = \{template\}} activates a custom helper template on lines 117 to 119.
 Line 120 ignores anything else passed to the \textit{helper\_tmpl} option.
@@ -318,7 +319,7 @@ As defined in \Fref{sec:visitor-manual-implementation}, the Visitor implementati
 	\item A \textit{Visitable} implementation for each type.
 \end{enumerate}
 
-Lines 23 to 25 define variables to holds each of these three parts in a list.
+Lines 23 to 25 define variables to hold each of these three parts in a list.
 Line 27 starts an iterator over each type passed to the \textit{Visit} macro.
 Line 28 gets the type name to construct a function name on line 31 -- \textit{format\_ident}\footnote{https://docs.rs/quote/1.0.7/quote/macro.format\_ident.html} is a \textit{quote} macro for creating an \textit{Ident} token.
 Line 29 creates a local variable of the type for use in \textit{quote}.
