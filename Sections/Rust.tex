@@ -150,26 +150,18 @@ Both concepts are realized using \textit{traits}, thereby allowing Rust to imple
 
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
-Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 7.
+Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 8.
 
-\exampleCodeFromFile[firstline=3,lastline=36]{traits/src/main.rs}{traits}{Working with traits}
+\exampleCodeFromFile[lastline=20]{traits/src/main.rs}{traits}{Working with traits}
 
 The compiler uses \textit{traits} at compile time to guarantee an object implements a set of methods using \textit{trait bounds}.
 Line 10 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
 Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
 In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
 
-% TODO: might not be needed - consider for removal
 % TODO: use colors to make easier
-More complex trait bounds can be constructed as shown on line 14 -- lines 20 to 23 are equivalent to line 14 but easier to understand.
-Here \textit{T} (\textit{first}) has to implement the traits:
-\begin{itemize}
-	\item \textit{Show} to be able to call the \textit{show()} method on it.
-	\item \textit{Display} to pass it to \textit{println!}.
-	\item \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
-\end{itemize}
 
-Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen on line 30.
+Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen on line 16.
 The \textit{Show} trait has a default implementation for \textit{show\_size} on line 5.
 Thus, \textit{Tester} does not need to implement \textit{show\_size}.
 \textit{Tester} is only required to implement the \textit{show} method.
@@ -207,7 +199,7 @@ In \Fref{lst:traits}, line 10, the generic \textit{work} method is defined.
 Suppose the \textit{work} method is called with a \textit{Tester}, defined on line 28, and later with a \textit{String}.
 Then an example of the \textit{monomorphization} process is shown in \Fref{lst:monomorphization}.
 
-\exampleCodeFromFile[firstline=38,lastline=43]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
+\exampleCodeFromFile[firstline=22,lastline=27]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
 
 Each \textit{show} call in the expanded functions can match only one object -- \textit{Tester} and \textit{String} respectively -- making this a simple case.
 Using \textit{trait objects} -- rather than generics -- will result in multiple objects having the same method name and the need for dynamic dispatch.
@@ -259,24 +251,12 @@ Therefore, putting the dynamic trait behind any pointer will allow it to be used
 % 	The syntax is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
 % \end{notebox}
 
-% TODO: consider trimming - change AF implementation to use Box<T>
-Rust offers many pointer options: \cite{klabnik_2019_01}
+Rust offers many pointer options\cite{klabnik_2019_01}, but this report will make use of:
 \begin{itemize}
 	\item A reference -- also called a borrow.
 	\item The \textit{Box$<$T$>$} used to hold heap objects.
 	      \textit{Box} differs from a reference since \textit{Box} owns its \textit{T} \footnote{https://joshleeb.com/blog/rust-traits-trait-objects/}.
 	      Thus, when the box is dropped, the object it holds is dropped too.
-	\item The \textit{Rc$<$T$>$} reference counting pointer that is essentially a run-time immutable borrow.
-	      When the reference count reaches zero, the \textit{T} is dropped.
-	\item The special \textit{RefCell$<$T$>$} which exposes mutable access behind an immutable object using the \textit{Interior Mutability Pattern}.
-	\item The combined \textit{Rc$<$RefCell$<$T$>$$>$} -- the reference counting pointer allows multiple objects to exist, while the \textit{RefCell} allows mutable access to each existing object.
-	\item \textit{Arc$<$T$>$} -- the thread-safe version of \textit{Rc}.
-	\item \textit{Mutex$<$T$>$} -- a thread-safe version of \textit{RefCell}.
-	      However, a lock needs to be acquired first.
-	\item \textit{RwLock$<$T$>$} -- like \textit{Mutex}, but distinguishes between a reader and a writer.
-	      It is the run-time equivalent of mutable and immutable borrows.
-	\item Finally, \textit{Arc$<$RwLock$<$T$>$$>$} which will be used by our Abstract Factory.
-	      It will hold \textit{T}s for use in multiple threads using \textit{Arc}, while \textit{RwLock} will guarantee only one writer.
 \end{itemize}
 
 One more Rust uniqueness is left to be covered. Rust treats enums differently than other languages.
@@ -321,13 +301,7 @@ The definition for \textit{Result} can be seen in \Fref{lst:enum-result} on line
 A function will return \textit{Result} to indicate if it was successful with the \textit{Ok} variant holding the successful value of type \textit{T}.
 In the event of an error, the \textit{Err} variant is returned with the error of type \textit{E} -- like \textit{may\_error} on line 7.
 Any calls to \textit{may\_error} have to handle the possible error.
-A few error handling options exist: trying an alternative, panicking, or propagating the error.
-
-\paragraph{Alternative:}
-% TODO: have example
-% or trim
-Trying an alternative is quite simple.
-If the \textit{Err} enum is returned, then just run the alternative instead.
+A few error handling options exist: panicking, or propagating the error.
 
 \paragraph{Panicking:}
 The caller will use a \textit{match pattern} to extract the error and panic, as seen on lines 13 to 16.
