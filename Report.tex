@@ -55,7 +55,7 @@
   coltext=black
 }
 
-\newtcbinputlisting[auto counter]{\exampleCodeFromFile}[4][firstline=1,lastline=-1]{%
+\newtcbinputlisting[use counter from=libraryCodeFromFile]{\exampleCodeFromFile}[4][firstline=1,lastline=-1]{%
   listing engine=minted,
   minted language=rust,
   minted options={autogobble,linenos,breaklines,escapeinside=||,fontsize=\small,tabsize=2,firstnumber=1,#1},
