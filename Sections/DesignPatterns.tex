@@ -23,8 +23,8 @@ Thus, each pattern is an explicit specification for the solution's design while 
 The GoF also groups the patterns into 3 categories: creational, structural, and behavioral.
 This report will focus on one creational pattern - \textit{Abstract Factory} - and one behavioral pattern - \textit{Visitor}.
 No Structural patterns will be discussed.
-Since the \textit{Factory Method} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover \textit{Factory Method} too.
-A discussion of \textit{Factory Method}, \textit{Abstract Factory}, and \textit{Visitor} follows.
+Since the \textit{Factory Method} pattern can be used to implement the \textit{Abstract Factory} pattern \cite{nykonenko_12_01, gamma_94_01}, this section will cover the \textit{Factory Method} too.
+A discussion of the \textit{Factory Method}, \textit{Abstract Factory}, and \textit{Visitor} follows.
 
 \subsection{Factory Method}
 When an object is created, an isolated function/method may not care which concrete version gets created.
@@ -107,7 +107,7 @@ This is, swapping all the glossy GUI items to the flat blue items for the entire
 Again, reminding us of the Factory Method design.
 This time just for more products.
 
-For this report, we will only focus on problems two to fourth.
+This report will only focus on problems two to fourth.
 
 \subsubsection{Solution}
 Problems two and four requires each product to have an abstract definition - called \textit{Abstract Product}.
@@ -120,7 +120,7 @@ Problems three and four both need to control the instantiation of a family of pr
 Therefore, a class dedicated to products creation will be needed.
 Problem four needs this class to be abstract to swap one family for another - hence it being called \textit{Abstract Factory}.
 Everything presented so far is the same as Factory Method's.
-We now want to create more than one product.
+However, more than one product needs to be created now.
 \Fref{fig:AbstractFactoryInterface} shows the Factory Method design extended to more than one product.
 
 \begin{figure}[h]
@@ -189,7 +189,7 @@ Thus, having an \textit{Abstract Visitor} to represent both is needed.
 	\label{fig:AbstractVisitorInterface}
 \end{figure}
 
-\textit{Abstract Visitor} will have a method for each class it needs to visit as seen in \Fref{fig:AbstractVisitorInterface}.
+\textit{Abstract Visitor} will have a method for each class it needs to visit, as seen in \Fref{fig:AbstractVisitorInterface}.
 Requiring the client to remember the method corresponding to each class will not be ideal when the classes reach more than 30.
 It is also not ideal for generic pieces of code since the method names are not the same.
 
@@ -200,7 +200,7 @@ It is also not ideal for generic pieces of code since the method names are not t
 	\label{fig:VisitorAccept}
 \end{figure}
 
-To solve this, each class has a method to \textit{accept} a visitor as seen in \Fref{fig:VisitorAccept}.
+To solve this, each class has a method to \textit{accept} a visitor, as seen in \Fref{fig:VisitorAccept}.
 This method calls for another abstraction called \textit{Element} with the \textit{accept} method.
 In the \textit{accept} method, each class can call the visitor operation corresponding to it.
 
@@ -209,7 +209,7 @@ New operations (\textit{Visitors}) can easily be added without touching the clas
 Catering for next week's survey means creating a new visitor without touching button or scroller.
 Related operations are now also isolated to each visitor.
 Thus the classes are not polluted with unrelated methods.
-Visitors also store the state information they need rather than passing it to each function as seen in \textit{NameVisitor}.
+Visitors also store the state information they need rather than passing it to each function, as seen in \textit{NameVisitor}.
 
 However, there are two problems.
 First, adding a new class means updating all the visitors with a method for it.
@@ -220,5 +220,5 @@ This will leave the name visitor not being able to get the name of scroll elemen
 
 The code implementations for a design pattern follows the same structure.
 This means repeated coding each time a pattern is used.
-But, computers excel at following repetitive instructions and can do so quickly.
+However, computers excel at following repetitive instructions and can do so quickly.
 Writing these structures using instructions is made possible with metaprogramming.

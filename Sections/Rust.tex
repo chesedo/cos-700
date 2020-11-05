@@ -1,5 +1,5 @@
 \section{Rust}
-\label{sec:Rust}
+\label{sec:rust}
 \newcommand{\errorh}[1]{\textcolor{Red!60!Maroon}{\footnotesize{- #1}}}
 
 Rust is a relatively new language created by Mozilla to be memory safe yet have low level like performance \cite{klabnik_2019_01}.
@@ -12,7 +12,7 @@ However, Rust achieves both by using a less popular model known as ownership \ci
 
 \subsection{Ownership}
 In the ownership model, the compiler uses statical analysis \cite{rasmussen_2019_01} to track which variable owns a piece of heap data -- this does not apply to stack data.
-Each data piece can only be owned by one variable at a time called the \textit{owner} \cite{klabnik_2019_01}.
+Each data piece can only be owned by one variable at a time, called the \textit{owner} \cite{klabnik_2019_01}.
 
 A variable also has scope.
 The scope starts at the variable declaration and ends at the closing curly bracket of the code block containing the variable.
@@ -71,7 +71,7 @@ Mutable borrows are an explicit indication that a function/variable is allowed t
 
 As seen in \Fref{lst:fn-mut-borrow}, line 8, mutable borrows are activated using \textit{\&mut } on the type.
 Again, \textit{mut} is also used in the call on line 3 to make it explicit that the function will modify the data.
-Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01} as seen on line 2.
+Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01}, as seen on line 2.
 
 The two ownership forms - moving and borrowing - together with mutable variables put some constraints on the code for variables and their calls: \cite{klabnik_2019_01}
 \begin{itemize}
@@ -82,17 +82,18 @@ The two ownership forms - moving and borrowing - together with mutable variables
 	      But only one variable can hold a mutable borrow, while no other immutable borrows can exist at the same time.
 \end{itemize}
 
-The constraints will always be enforced by the compiler, thus requiring all code - written by hand or a macro - to meet them.
+The compliler wll always enforce these constraints, requiring all code - written by hand or a macro - to meet them.
 Meeting these constraints also requires some shift in thinking.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language, which will now be discussed.
 
 \subsection{Not quite OOP}
 No single definition exists to qualify a language as Object-Oriented \cite{meyer_97_01,stefik_85_01,gamma_94_01,klabnik_2019_01}.
-Three Object-Oriented concepts will be explored to understand Rust better, these three are \textit{Objects as Data and their Behaviour}, \textit{Encapsulation}, and \textit{Inheritance}.
+Three Object-Oriented concepts will be explored to understand Rust better.
+These three are \textit{Objects as Data and their Behaviour}, \textit{Encapsulation}, and \textit{Inheritance}.
 
 \subsubsection{Objects as Data and their Behaviour}
 An object holds both data and procedures operating on the data \cite{meyer_97_01,stefik_85_01,gamma_94_01,malik_09_01}.
-Rust holds data in \textit{struct}s and the operations are defined in \textit{impl} blocks \cite{klabnik_2019_01}.
+Rust holds data in \textit{struct}s with the operations being defined in \textit{impl} blocks \cite{klabnik_2019_01}.
 
 % TODO: test : (colon) on all paragraphs
 \paragraph{Struct:}
@@ -112,22 +113,21 @@ The ownership rules apply to the struct as follow:
 	\item To age, while having a birthday, \textit{have\_birthday} needs to take a mutable borrow of \textit{self} - also why \textit{bar} needs to be \textit{mut} in \textit{main} on line 22.
 \end{itemize}
 
+\exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
+
 \addtocounter{footnote}{1}\footnotetext{%
 	\label{return}
 	Rust does not always use the \textit{return} keyword.
-	Lines without a semi-colon that are the last lines in a scope act as return statements.
+	Lines without a semi-colon and that are the last line in a scope act as return statements.
 	Thus, line 9 acts as a return statement.
 }
-
-\exampleCodeFromFile[lastline=46]{oop/src/main.highlighted.rs}{oop}{Example of a Struct and Methods}
-
 \addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single type.}
 \addtocounter{footnote}{1}\footnotetext{%
 	\label{associate}
 	Rust does not provide constructors like other OOP languages.
 	Instead, Rust has what it calls \textit{associate functions}.
 	An associate function is a method definition not containing \textit{self} in the parameter list \cite{klabnik_2019_01}.
-	They are used as constructors by returning an owned instance of the struct as seen on line 39.
+	They are used as constructors by returning an owned instance of the struct, as seen on line 39.
 }
 
 \subsubsection{Encapsulation}
@@ -146,12 +146,12 @@ Inheritance allows an object to inherit some of its data members and procedures 
 Inheritance is mostly used to reduce code duplication.
 Rust does not make provision for the inheritance concept.
 
-Rust does make provision for ``Program to an interface, not an implementation'' and ``Favor object composition over class inheritance'' which the GoF include as concepts for OOP design \cite{gamma_94_01}.
-Both concepts are realized using \textit{traits} thereby allowing Rust to implement the GoF design patterns.
+Rust does make provision for ``Program to an interface, not an implementation'' and ``Favor object composition over class inheritance'', which the GoF includes as concepts for OOP design \cite{gamma_94_01}.
+Both concepts are realized using \textit{traits}, thereby allowing Rust to implement the GoF design patterns.
 
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
-Thus, \textit{traits} allow the definition of abstract behavior to program to an interface as seen in \Fref{lst:traits}, lines 1 to 7.
+Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 7.
 
 \exampleCodeFromFile[firstline=3,lastline=36]{traits/src/main.rs}{traits}{Working with traits}
 
@@ -170,12 +170,13 @@ Here \textit{T} (\textit{first}) has to implement the traits:
 	\item \textit{PartialEq} to compare it with \textit{U} (\textit{second}).
 \end{itemize}
 
-Traits are implemented on structs using the \textit{impl} keyword followed by the trait name as seen on line 30.
+Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen on line 30.
 The \textit{Show} trait has a default implementation for \textit{show\_size} on line 5.
-Thus, \textit{Tester} does not need to implement \textit{show\_size}, it only needs to implement the \textit{show} method.
+Thus, \textit{Tester} does not need to implement \textit{show\_size}.
+\textit{Tester} is only required to implement the \textit{show} method.
 
 Traits allow one to use composition to construct complex objects.
-Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} (Design Patterns) for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text as seen in \Fref{lst:composition}.
+Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} (Design Patterns) for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text, as seen in \Fref{lst:composition}.
 
 \exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
 
@@ -184,27 +185,28 @@ The confirmation dialog ``has-a'' \cite{malik_09_01} button and display text on 
 Using associate functions\footnotemark[\ref{associate}], a composition constructor is created on line 13.
 To construct the open dialog, the open button will be passed to this constructor.
 The safe dialog will need the safe button to be passed in.
-Finally, the \textit{show} method on line 18 will show the confirmation dialog - whether it is the open dialog, save dialog, or a new dialog definition.
+Finally, the \textit{show} method on line 18 will show the confirmation dialog, whether it is the open dialog, save dialog, or a new dialog definition.
 This is called polymorphism since a dialog will change form depending on the elements passed to the constructor at run-time \cite{savitch_15_01,malik_09_01,gamma_94_01}.
 
 The \textit{show} method will now work with more than one button.
 The open button will have a different implementation for the \textit{draw} method, defined on line 2, than the save button.
-Since the buttons change at runtime, the compiler will be unable to determine the correct \textit{draw} method to call in \textit{show} on line 21.
+Since the buttons change at run-time, the compiler will be unable to determine the correct \textit{draw} method to call in \textit{show} on line 21.
 Dispatching, as discussed next, resolves this problem \cite{pierce_02_01}.
 
 \subsection{Dispatch}
 Dispatching is the matching of the correct method to an object at method invocations \cite{driesen_95_01}.
 Sometimes there is only one object to match against, making matching easy.
-But it can also be the case that multiple objects have the same method name, making matching harder.
+However, it can also be the case that multiple objects have the same method name, making matching harder.
 The matching can happen at compile-time - called \textit{static dispatching} - or run-time - called \textit{dynamic dispatching}.
 
 \subsubsection{Static Dispatch}
 Matching the method call at compile-time is called \textit{static dispatch} \cite{klabnik_2019_01, alexandrescu_01_01, abadi_12_01}.
-When Rust compiles generics on a function or type, as seen in \Fref{lst:traits} line 10, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
+When Rust compiles generics on a function or type, as seen in \Fref{lst:traits}, line 10, Rust uses what it calls \textit{monomorphization} \cite{klabnik_2019_01}.
 \textit{Monomorphization} creates a new function or type at compile time for each concrete object passed into the generic placeholders.
 
-In \Fref{lst:traits} line 10, we defined the generic \textit{work} method.
-Suppose the \textit{work} method is called with a \textit{Tester}, defined on line 28, and later with a \textit{String}, then an example of the \textit{monomorphization} process is shown in \Fref{lst:monomorphization}.
+In \Fref{lst:traits}, line 10, the generic \textit{work} method is defined.
+Suppose the \textit{work} method is called with a \textit{Tester}, defined on line 28, and later with a \textit{String}.
+Then an example of the \textit{monomorphization} process is shown in \Fref{lst:monomorphization}.
 
 \exampleCodeFromFile[firstline=38,lastline=43]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
 
@@ -212,7 +214,7 @@ Each \textit{show} call in the expanded functions can match only one object - \t
 Using \textit{trait objects} - rather than generics - will result in multiple objects having the same method name and the need for dynamic dispatch.
 
 \subsubsection{Dynamic Dispatch}
-When the compiler cannot determine at compile-time which method to call because the object type is not fixed, dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01, abadi_12_01} takes place.
+When the compiler cannot determine which method to call at compile-time, because the object type is not fixed, dynamic dispatch \cite{alexandrescu_01_01, klabnik_2019_01, abadi_12_01} occurs.
 At run-time, pointers held by the trait objects are used to determine which method to call \cite{klabnik_2019_01} based on the object type the method is called on.
 
 % TODO: double dash
@@ -220,7 +222,7 @@ At run-time, pointers held by the trait objects are used to determine which meth
 Since generics are not used, \textit{monomorphization} will not happen.
 Calling this function with a \textit{Tester} object means the \textit{show} for \textit{Tester} needs to match at the method invocation on line 2.
 But later, calling this function with a \textit{String} object means \textit{String}'s \textit{show} needs to match.
-Since the objects passed in changes at run-time, knowing which object to match against can therefore only be known at run-time.
+Since the objects passed in changes at run-time, knowing which object to match against can, therefore, only be known at run-time.
 Thus, pointers inside the \textit{Show} trait object - line 1 of \Fref{lst:traits} - are used at run-time to match each object against its method.
 
 \exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
@@ -232,20 +234,20 @@ Three changes need to be made to the function signature to use trait objects rat
 	\item Borrowing (\& before \textit{dyn}) now takes place.
 \end{itemize}
 
-The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch which is caused by the \textit{Sized} trait.
+The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch caused by the \textit{Sized} trait.
 
 \subsubsection{Sized trait}
 Rust keeps all local variables and function arguments on the stack.
 Having values on the stack requires their size to be known at compile-time.
 A special trait called \textit{Sized} is used by the compiler to mark that the size of a type is known at compile-time \cite{klabnik_2019_01}.
-This marking is the only use of the \textit{Sized} trait and it has no meaning or representation after compilation.
+This marking is the only use of the \textit{Sized} trait, and it has no meaning or representation after compilation.
 However, Rust automatically/implicitly adds the \textit{Sized} trait bound to all function arguments and local variables.
 
 The size of an object is influenced by the data it holds.
 Also, any object can choose to implement \textit{Show}.
 Thus, two different objects implementing \textit{Show} can have different sizes.
-Ownership will want to pass each object on the stack, but, with dynamic dispatch, each object will need a different stack size only known at run-time.
-Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time - i.e. the \textit{Show} dynamic trait will not implement the \textit{Sized} trait.
+Ownership will want to pass each object on the stack, but with dynamic dispatch, each object will need a different stack size only known at run-time.
+Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time since the \textit{Show} dynamic trait cannot implement the \textit{Sized} trait.
 
 Since all function arguments expect the type to implement the \textit{Sized} trait but having the \textit{Show} dynamic trait not implement it, a compile error will be given stating \textit{dyn Show} does not implement \textit{Sized} when trying to use it as a function argument.
 However, pointers do implement \textit{Sized}.
@@ -292,7 +294,7 @@ This is yet another design Rust uses to be memory safe \footnote{Tony Hoare, the
 Lines 9 to 12 show the use of \textit{match} - called a \textit{switch} in most languages - to match against each possible enum variant.
 Line 10 and 11 are each called a \textit{match arm}.
 Line 10 shows how an object can be extracted on an arm and be assigned to a \textit{value} variable.
-If any of the arms are missing, the compiler will provide an error stating not all the enum options are covered,
+If any of the arms are missing, the compiler will provide an error stating not all the enum options are covered.
 Matches need to be exhaustive since all variants need to be covered in Rust.
 The exhaustive check is not always desired.
 Thus, there are two options for mitigating the exhaustive check \cite{klabnik_2019_01}.
@@ -304,10 +306,10 @@ Thus, there are two options for mitigating the exhaustive check \cite{klabnik_20
 
 The \textit{if let} pattern also allows extraction of the enum object.
 However, since the object is not used inside the if block, no extraction needs to occur.
-When using the \textit{\_}, the enum object will not be extract.
+When using the \textit{\_}, the enum object will not be extracted.
 
 \textit{Match} blocks and \textit{if} conditions - which include \textit{if let} - are considered expressions in Rust.
-Returning from a \textit{match} is quite common, especially with a particular enum used for error handling as discussed in \Fref{sec:result-enum}.
+Returning from a \textit{match} is quite common, especially with a particular enum used for error handling, as discussed in \Fref{sec:result-enum}.
 Resulting in lines 16 and 18 not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression.
 The value returned from the \textit{if} is assigned to the \textit{valid} variable.
 
@@ -330,7 +332,7 @@ Trying an alternative is quite simple.
 If the \textit{Err} enum is returned, then just run the alternative instead.
 
 \paragraph{Panicking}
-The caller will use a \textit{match pattern} to extract the error and panic as seen on lines 13 to 16.
+The caller will use a \textit{match pattern} to extract the error and panic, as seen on lines 13 to 16.
 However, writing matches all the time for possible errors breaks the flow of the code.
 So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html} - Rust enums are like ordinary objects that can have methods.
 
