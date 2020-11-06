@@ -109,7 +109,7 @@ The ownership rules apply to the struct as follow:
 	\label{return}
 	Rust does not always use the \textit{return} keyword.
 	Lines without a semi-colon and that are the last line in a scope act as return statements.
-	Thus, line 9 acts as a return statement.
+	Thus, line 8 acts as a return statement.
 }
 \addtocounter{footnote}{1}\footnotetext{\label{pub}\textit{main} can access the private members because main in the same file as them.}
 \addtocounter{footnote}{1}\footnotetext{\label{impl}Rust code can have multiple \textit{impl} blocks for a single type.}
@@ -139,17 +139,15 @@ Both concepts are realized using \textit{traits}, thereby allowing Rust to imple
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
 Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 7.
 
-\exampleCodeFromFile[lastline=18]{traits/src/main.rs}{traits}{Working with traits}
+\exampleCodeFromFile[lastline=18]{traits/src/main.highlighted.rs}{traits}{Working with traits}
 
 The compiler uses \textit{traits} at compile time to guarantee an object implements a set of methods using \textit{trait bounds}.
 Line 9 shows the \textit{work} function having a \textit{trait bound} on the generic \textit{T} type.
-Thus, any object choosing to implement the \textit{Show} trait can be passed to \textit{work}.
+Thus, any object choosing to implement the \functionh{\textit{Show}} trait can be passed to \textit{work}.
 In turn, \textit{work} knows it is safe to call \textit{show()} on the object for type \textit{T}.
 
-% TODO: use colors to make easier
-
 Traits are implemented on structs using the \textit{impl} keyword followed by the trait name, as seen in line 14.
-The \textit{Show} trait has a default implementation for \textit{show\_size} in line 4.
+The \functionh{\textit{Show}} trait has a default implementation for \textit{show\_size} in line 4.
 Thus, \textit{Tester} does not need to implement \textit{show\_size}, but is only required to implement the \textit{show} method.
 
 Traits allow one to use composition to construct complex objects.
@@ -199,13 +197,13 @@ Since generics are not used, \textit{monomorphization} will not happen.
 Calling this function with a \textit{Tester} object means the \textit{show} for \textit{Tester} needs to match at the method invocation in line 2.
 But later, calling this function with a \textit{String} object means \textit{String}'s \textit{show} needs to match.
 Since the objects passed in changes at run-time, knowing which object to match against can, therefore, only be known at run-time.
-Thus, pointers inside the \textit{Show} trait object -- line 1 of \Fref{lst:traits} -- are used at run-time to match each object against its method.
+Thus, pointers inside the \functionh{\textit{Show}} trait object -- line 1 of \Fref{lst:traits} -- are used at run-time to match each object against its method.
 
-\exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
+\exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.highlighted.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
 
 Three changes need to be made to the function signature to use trait objects rather than generics -- compare to \textit{work} in \Fref{lst:traits}, line 9.
 \begin{enumerate}
-	\item The generic \textit{T} is removed and replaced with \textit{Show}.
+	\item The generic \textit{T} is removed and replaced with \functionh{\textit{Show}}.
 	\item The \textit{dyn} keyword is added to the type to indicate that dynamic dispatch will take place explicitly \cite{klabnik_2019_01}.
 	\item Borrowing (\& before \textit{dyn}) now takes place.
 \end{enumerate}
@@ -216,17 +214,17 @@ The static dispatch generic trait examples in \Fref{lst:traits} can also be made
 \label{sec:sized-trait}
 Rust keeps all local variables and function arguments on the stack.
 Having values on the stack requires their size to be known at compile-time.
-A special trait called \textit{Sized} is used by the compiler to mark that the size of a type is known at compile-time \cite{klabnik_2019_01}.
+A special trait called \textit{Sized} is used by the compiler to mark that the size of a type is known at compile-time.
 This marking is the only use of the \textit{Sized} trait, and it has no meaning or representation after compilation.
-However, Rust automatically/implicitly adds the \textit{Sized} trait bound to all function arguments and local variables.
+However, Rust automatically/implicitly adds the \textit{Sized} trait bound to all function arguments and local variables \cite{klabnik_2019_01}.
 
 The size of an object is influenced by the data it holds.
-Also, any object can choose to implement \textit{Show}.
-Thus, two different objects implementing \textit{Show} can have different sizes.
+Also, any object can choose to implement \functionh{\textit{Show}}.
+Thus, two different objects implementing \functionh{\textit{Show}} can have different sizes.
 Ownership will want to pass each object on the stack, but with dynamic dispatch, each object will need a different stack size only known at run-time.
-Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time, thus the \textit{Show} dynamic trait cannot implement the \textit{Sized} trait.
+Therefore, the \functionh{\textit{Show}} dynamic trait's size cannot be determined at compile-time, thus it cannot implement the \textit{Sized} trait.
 
-Since all function arguments expect the type to implement the \textit{Sized} trait but having the \textit{Show} dynamic trait not implement it, a compile error will be given stating \textit{dyn Show} does not implement \textit{Sized} when trying to use it as a function argument.
+Since all function arguments expect the type to implement the \textit{Sized} trait but having the \functionh{\textit{Show}} dynamic trait not implement it, a compile error will be given stating \textit{dyn \functionh{Show}} does not implement \textit{Sized} when trying to use it as a function argument.
 However, pointers do implement \textit{Sized}.
 Therefore, putting the dynamic trait behind any pointer will allow it to be used as a function argument or local variable.
 The reference (taking a borrow) and the \textit{Box$<$T$>$} type are two such pointers\cite{klabnik_2019_01}.
@@ -239,11 +237,11 @@ The \textit{Option} enum, as defined here, is built into the standard Rust libra
 An \textit{Option} can either be \textit{Some} object or \textit{None}.
 This is a design Rust uses to be memory safe \footnote{Tony Hoare, the inventor of the \textit{null} reference, has called the \textit{null} reference a billion-dollar mistake in his 2009 presentation "Null References: The Billion Dollar Mistake" (https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)} by handling the (\textit{None}) option at compile-time.
 
-\exampleCodeFromFile{enums/src/main.rs}{enums}{Enums holding objects in Rust}
+\exampleCodeFromFile{enums/src/main.highlighted.rs}{enums}{Enums holding objects in Rust}
 
 Lines 9 to 12 show the use of \textit{match} -- called a \textit{switch} in most languages -- to match against each possible enum variant.
 Line 10 and 11 are each called a \textit{match arm}.
-Line 10 shows how an object can be extracted on an arm and be assigned to a \textit{value} variable.
+Line 10 shows how an object can be extracted on an arm and be assigned to a \inputh{\textit{value}} variable.
 If any of the arms are missing, the compiler will provide an error stating not all the enum options are covered.
 Matches need to be exhaustive since all variants need to be covered in Rust.
 The exhaustive check is not always desired.
@@ -255,10 +253,10 @@ Thus, there are two options for mitigating the exhaustive check \cite{klabnik_20
 \end{itemize}
 
 The \textit{if let} pattern also allows extraction of the enum object.
-Here the extraction will not be used as indicated by the \textit{\_} (underscore).
+Here the extraction will not be used as indicated by the \outputh{\textit{\_}} (underscore).
 
 \textit{Match} blocks and \textit{if} conditions -- which include \textit{if let} -- are considered expressions in Rust.
-Thus, lines 16 and 18 are not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression which is assigned to the \textit{valid} variable.
+Thus, lines 16 and 18 are not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression which is assigned to the \contexth{\textit{valid}} variable.
 
 \subsubsection{Result Enum for Error Handling}
 \label{sec:result-enum}
@@ -275,16 +273,16 @@ Any calls to \textit{may\_error} have to handle the possible error by panicking 
 The caller will use a \textit{match pattern} to extract the error and panic, as seen in lines 12 to 15.
 However, writing matches all the time for possible errors breaks the flow of the code.
 So the \textit{Result} enum has some helper methods defined on it \footnote{https://doc.rust-lang.org/std/result/enum.Result.html}.
-The helper method \textit{expect}, as seen in line 18, is identical to lines 12 to 15.
+The helper method \textit{expect}, as seen in line 18, is the same as to lines 12 to 15.
 
 \paragraph{Propagation:}
 The caller might decide more information is needed to panic.
 So the caller's caller will need to handle the error instead.
 
 Line 24 shows how to propagate the error up the stack -- the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
-Line 29 uses the \textit{result} if it is fine -- the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
+Line 23 uses the \textit{result} if it is fine -- the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
 Line 30 shows how to use the \textit{?} (question mark) operator to do the same thing.
-The \textit{?} can be used in functions that return \textit{Result}.
+The \textit{?} can be used in functions that return \textit{Result} \cite{klabnik_2019_01}.
 
 % macro rules: Hygiene and token list
 
