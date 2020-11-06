@@ -61,23 +61,24 @@ impl Visitable for Window {
     }
 }
 
-struct VisitorName {
+struct NameVisitor {
     names: Vec<String>,
 }
-impl VisitorName {
+impl NameVisitor {
     pub fn new() -> Self {
-        VisitorName { names: Vec::new() }
+        NameVisitor { names: Vec::new() }
     }
 }
-impl Visitor for VisitorName {
+impl Visitor for NameVisitor {
     fn visit_button(&mut self, button: &dyn Button) {
         self.names.push(button.get_name().to_string());
     }
     fn visit_input(&mut self, input: &dyn Input) {
-        self.names.push(format!("{} ({})", input.get_name(), input.get_input()));
+        self.names
+            .push(format!("{} ({})", input.get_name(), input.get_input()));
     }
 }
-impl fmt::Display for VisitorName {
+impl fmt::Display for NameVisitor {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.names.join(", "))
     }

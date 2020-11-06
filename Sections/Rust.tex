@@ -2,7 +2,7 @@
 \label{sec:rust}
 \newcommand{\errorh}[1]{\textcolor{Red!60!Maroon}{\footnotesize{- #1}}}
 
-Rust is a relatively new language created by Mozilla to be memory safe yet have low level like performance \cite{klabnik_2019_01}.
+Rust is a relatively new language sponsored by Mozilla Research to be memory safe yet have low level like performance \cite{klabnik_2019_01}.
 Traditionally, memory safe languages will make use of a garbage collector which slows performance \cite{hertz_05_01}.
 Garbage collector languages include C\# \cite{robinson_04_01}, Java \cite{gosling_96_01}, Python \cite{martelli_06_01}, Golang \cite{tsoukalos_18_01} and Javascript \cite{flanagan_06_01}.
 Languages that perform well use manual memory management, which is not memory safe whenever the programmer is not careful.
@@ -43,7 +43,7 @@ Since the compiler can guarantee \textit{t} is the only variable owning the data
 
 Having ownership moving makes excellent memory guarantees within a function; however, it is annoying when calling another function, as seen in \Fref{lst:fn-move}.
 The \textit{take\_ownership} function takes ownership of the heap data resulting in memory cleanup code correctly being inserted at the end of \textit{take\_ownership}'s scope in line 8.
-When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, making the call in line 5 invalid.
+When \textit{main} calls \textit{take\_ownership}, \textit{a} becomes the new owner of \textit{s}'s data, making the call in line 4 invalid.
 When taking ownership is not desired, the second form of ownership, borrowing, should be used instead.
 
 \subsubsection{Borrowing}
@@ -64,7 +64,7 @@ Hence changing the data in \textit{take\_borrow} causes an error stating the bor
 Returning to the borrowed book analogy.
 One would not make highlights and notes in a book one borrowed unless the owner gave explicit permission.
 
-\subsection{Immutable by default}
+\subsection{Immutable by Default}
 Mutable borrows are an explicit indication that a function/variable is allowed to change the data.
 
 \exampleCodeFromFile{fn-mut-borrow/src/main.rs}{fn-mut-borrow}{Function taking mutable borrow}
@@ -74,16 +74,16 @@ Again, \textit{mut} is also used in the call in line 3 to make it explicit that 
 Variables -- on the stack or heap -- also need to be declared \textit{mut} to use them as mutable \cite{klabnik_2019_01}, as seen in line 2.
 
 The two ownership forms -- moving and borrowing -- together with mutable variables put some constraints on the code for variables and their calls \cite{klabnik_2019_01}.
-The compliler wll always enforce these constraints, requiring all code -- written by hand or a macro -- to meet them.
+The compliler wll always enforce these constraints, requiring all code -- written manually by hand or a macro -- to meet them.
 Meeting these constraints also requires some shift in thinking.
 Another shift is required because Rust may not classify as an Object-Oriented Programming (OOP) language, which will now be discussed.
 
-\subsection{Not quite OOP}
+\subsection{Not Quite OOP}
 No single definition exists to qualify a language as Object-Oriented \cite{meyer_97_01,stefik_85_01,gamma_94_01,klabnik_2019_01}.
 Three Object-Oriented concepts will be explored to understand Rust better.
 These three are \textit{Objects as Data and their Behaviour}, \textit{Encapsulation}, and \textit{Inheritance}.
 
-\subsubsection{Objects as Data and their Behaviour}
+\subsubsection{Objects as Data and Their Behaviour}
 An object holds both data and procedures operating on the data \cite{meyer_97_01,stefik_85_01,gamma_94_01,malik_09_01}.
 Rust holds data in \textit{struct}s with the operations being defined in \textit{impl} blocks \cite{klabnik_2019_01}.
 
@@ -118,12 +118,12 @@ The ownership rules apply to the struct as follow:
 	Rust does not provide constructors like other OOP languages.
 	Instead, Rust has what it calls \textit{associate functions}.
 	An associate function is a method definition not containing \textit{self} in the parameter list \cite{klabnik_2019_01}.
-	They are used as constructors by returning an owned instance of the struct, as seen in line 39.
+	They are used as constructors by returning an owned instance of the struct, as seen in line 28.
 }
 
 \subsubsection{Encapsulation}
 Encapsulation hides the implementation details from the client \cite{klabnik_2019_01,meyer_97_01,savitch_15_01}.
-In Rust, encapsulation is the default unless specified otherwise using the \textit{pub} keyword.
+In Rust, encapsulation is the default unless specified otherwise using the \textit{pub} keyword, as seen on lines 2, 7, and 10.
 Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
 Therefore, Rust meets the encapsulation concept.
 
@@ -137,7 +137,7 @@ Both concepts are realized using \textit{traits}, thereby allowing Rust to imple
 
 \textit{Traits} are similar \cite{klabnik_2019_01} to \textit{interfaces} in other languages like C\# \cite{robinson_04_01} and Java \cite{gosling_96_01}.
 In C++, \textit{abstract classes} are the equivalent of \textit{interfaces} \cite{malik_09_01,stroustrup_13_01,alexandrescu_01_01}.
-Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 8.
+Thus, \textit{traits} allow the definition of abstract behavior to program to an interface, as seen in \Fref{lst:traits}, lines 1 to 7.
 
 \exampleCodeFromFile[lastline=18]{traits/src/main.rs}{traits}{Working with traits}
 
@@ -155,7 +155,6 @@ Thus, \textit{Tester} does not need to implement \textit{show\_size}, but is onl
 Traits allow one to use composition to construct complex objects.
 Getting back to the abstract confirmation dialog presented in \Fref{sec:factory-method-problems} for an open dialog and a safe dialog, using composition, the generic confirmation dialog will have to be composed of a button and text, as seen in \Fref{lst:composition}.
 
-% TODO: remove text?
 \exampleCodeFromFile{composition/src/lib.rs}{composition}{Using composition}
 
 Using traits, an abstract button and display text is defined in lines 1 to 4.
@@ -184,7 +183,7 @@ When Rust compiles generics on a function or type, Rust uses what it calls \text
 
 In \Fref{lst:traits}, line 9, the generic \textit{work} method is defined.
 Suppose the \textit{work} method is called with a \textit{Tester}, defined in line 13, and later with a \textit{String}.
-Then an example of the \textit{monomorphization} process is shown in \Fref{lst:monomorphization}.
+Then an example of the \textit{monomorphization} process during compilations is shown in \Fref{lst:monomorphization}.
 
 \exampleCodeFromFile[firstline=20,lastline=25]{traits/src/main.rs}{monomorphization}{Example of \textit{monomorphization}}
 
@@ -204,7 +203,7 @@ Thus, pointers inside the \textit{Show} trait object -- line 1 of \Fref{lst:trai
 
 \exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
 
-Three changes need to be made to the function signature to use trait objects rather than generics.
+Three changes need to be made to the function signature to use trait objects rather than generics -- compare to \textit{work} in \Fref{lst:traits}, line 9.
 \begin{enumerate}
 	\item The generic \textit{T} is removed and replaced with \textit{Show}.
 	\item The \textit{dyn} keyword is added to the type to indicate that dynamic dispatch will take place explicitly \cite{klabnik_2019_01}.
@@ -213,7 +212,7 @@ Three changes need to be made to the function signature to use trait objects rat
 
 The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch caused by the \textit{Sized} trait.
 
-\subsubsection{Sized trait}
+\subsubsection{Sized Trait}
 Rust keeps all local variables and function arguments on the stack.
 Having values on the stack requires their size to be known at compile-time.
 A special trait called \textit{Sized} is used by the compiler to mark that the size of a type is known at compile-time \cite{klabnik_2019_01}.
@@ -224,21 +223,12 @@ The size of an object is influenced by the data it holds.
 Also, any object can choose to implement \textit{Show}.
 Thus, two different objects implementing \textit{Show} can have different sizes.
 Ownership will want to pass each object on the stack, but with dynamic dispatch, each object will need a different stack size only known at run-time.
-Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time since the \textit{Show} dynamic trait cannot implement the \textit{Sized} trait.
+Therefore, the \textit{Show} dynamic trait's size cannot be determined at compile-time, thus the \textit{Show} dynamic trait cannot implement the \textit{Sized} trait.
 
-% TODO: shorten
 Since all function arguments expect the type to implement the \textit{Sized} trait but having the \textit{Show} dynamic trait not implement it, a compile error will be given stating \textit{dyn Show} does not implement \textit{Sized} when trying to use it as a function argument.
 However, pointers do implement \textit{Sized}.
 Therefore, putting the dynamic trait behind any pointer will allow it to be used as a function argument or local variable.
 The reference (taking a borrow) and the \textit{Box$<$T$>$} type are two such pointers\cite{klabnik_2019_01}.
-
-% TODO: consider removal
-% \begin{notebox}
-% 	\textit{Sized} is a unique Rust trait.
-% 	It is the only trait automatically added as a trait bound on all generics.
-% 	For this reason, a special syntax is needed when the programmer wants to opt-out of the \textit{Sized} trait bound.
-% 	The syntax is the \textit{?Sized} trait bound \cite{klabnik_2019_01}.
-% \end{notebox}
 
 One more Rust uniqueness is left to be covered. Rust treats enums differently than other languages.
 
@@ -269,7 +259,7 @@ Here the extraction will not be used as indicated by the \textit{\_} (underscore
 \textit{Match} blocks and \textit{if} conditions -- which include \textit{if let} -- are considered expressions in Rust.
 Thus, lines 16 and 18 are not including their ending semi-colon to return \textit{true} and \textit{false} from the \textit{if} expression which is assigned to the \textit{valid} variable.
 
-\subsubsection{Result enum for error handling}
+\subsubsection{Result Enum for Error Handling}
 \label{sec:result-enum}
 While most languages use exceptions to propagate errors back to the caller, Rust uses the \textit{Result} enum instead.
 The definition for \textit{Result} can be seen in \Fref{lst:enum-result} in lines 1 to 4.
@@ -293,6 +283,7 @@ So the caller's caller will need to handle the error instead.
 Line 24 shows how to propagate the error up the stack -- the \textit{return} is to return from the function \textit{error\_explicit\_propogation} and not the match.
 Line 29 uses the \textit{result} if it is fine -- the lack of \textit{return} returns from the match and assigns \textit{result} to \textit{r}.
 Line 30 shows how to use the \textit{?} (question mark) operator to do the same thing.
+The \textit{?} can be used in functions that return \textit{Result}.
 
 % macro rules: Hygiene and token list
 

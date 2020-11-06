@@ -199,7 +199,7 @@ It is also not ideal for generic pieces of code since the method names are not t
 \end{figure}
 
 To solve this, each class has a method to \textit{accept} a visitor, as seen in \Fref{fig:VisitorAccept}.
-This method calls for another abstraction called \textit{Element} with the \textit{accept} method.
+This method calls for another abstraction, called \textit{Visitable}, with the \textit{accept} method.
 In the \textit{accept} method, each class can call the visitor operation corresponding to it.
 
 \subsubsection{Consequences}
