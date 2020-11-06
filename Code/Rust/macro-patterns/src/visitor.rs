@@ -16,6 +16,7 @@ use syn::{Ident, Token};
 /// NoDefault,
 ///
 /// #[helper_tmpl = {visitor.visit_button(window.button);}]
+/// CustomTemplate,
 /// ```
 ///
 /// Thus, it takes a list of types that will be visited.

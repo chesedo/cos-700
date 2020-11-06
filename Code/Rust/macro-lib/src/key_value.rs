@@ -2,7 +2,7 @@ use proc_macro2::TokenTree;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::{parse_str, Ident, Token};
 
-/// Holds a single key value attribute, with the value being optional
+/// Holds a single key value attribute, with the value being optional.
 /// Streams in the following form will be parsed:
 /// ```text
 /// key = value

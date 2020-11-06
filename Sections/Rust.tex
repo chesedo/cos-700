@@ -123,7 +123,7 @@ The ownership rules apply to the struct as follow:
 
 \subsubsection{Encapsulation}
 Encapsulation hides the implementation details from the client \cite{klabnik_2019_01,meyer_97_01,savitch_15_01}.
-In Rust, encapsulation is the default unless specified otherwise using the \textit{pub} keyword, as seen on lines 2, 7, and 10.
+In Rust, encapsulation is the default unless specified otherwise using the \textit{pub} keyword, as seen in lines 2, 7, and 10.
 Encapsulation allows the struct creator to change the internal procedures of the struct without affecting the public interface used by clients.
 Therefore, Rust meets the encapsulation concept.
 
@@ -213,6 +213,7 @@ Three changes need to be made to the function signature to use trait objects rat
 The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch caused by the \textit{Sized} trait.
 
 \subsubsection{Sized Trait}
+\label{sec:sized-trait}
 Rust keeps all local variables and function arguments on the stack.
 Having values on the stack requires their size to be known at compile-time.
 A special trait called \textit{Sized} is used by the compiler to mark that the size of a type is known at compile-time \cite{klabnik_2019_01}.
