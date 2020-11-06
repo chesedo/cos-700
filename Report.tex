@@ -8,7 +8,7 @@
 \@ifpackageloaded{tex4ht}{%
   \usepackage[dvips]{graphicx}
 }{%
-\usepackage[pdftex]{graphicx}
+  \usepackage[pdftex]{graphicx}
 }
 \makeatother
 
@@ -101,12 +101,12 @@
    \includegraphics[width=12cm]{up_logo.png} \\
    \vspace{2cm}
    \textbf{COS700 Research} \\ \vspace{0.5cm}
-   \textbf{Design Pattern Metaprogramming Foundations in Rust\\ \large Abstract Factory and Visitor} \\ \vspace{0.5cm}
+   \textbf{Design Pattern Metaprogramming Foundations in Rust\\ \large A Study of Abstract Factory and Visitor} \\ \vspace{0.5cm}
    \textbf{Student number:} u19239395 \\ \vspace{0.5cm}
    \textbf{Supervisor}: \\ Dr. Linda Marshall
 }
 
-\date{??? 2020}
+\date{6 November 2020}
 \begin{document}
 \author{}
 
@@ -124,7 +124,8 @@ Thereafter, the foundation is applied to a macro implementing the Visitor design
 
 Both macro implementations need to know what a manual implementation for each design pattern will look like in Rust.
 Thus, a manual implementation for each design pattern is also presented after exploring the Rust language.
-The metaprogramming style used by Rust is also explored in this report.
+The macro implementations will create code that is identical to the manual implementations.
+The metaprogramming style used by Rust is also explored in this report to understand how Rust metaprogramming compares to metaprogramming in other languages.
 
 \section*{Keywords:}
 Metaprogramming,
@@ -138,13 +139,15 @@ Visitor
 \pagenumbering{arabic}
 
 \input{Sections/Introduction.tex}
-% \input{Sections/DesignPatterns.tex}
-% \input{Sections/Metaprogramming.tex}
-% \input{Sections/Rust.tex}
-% \input{Sections/Report.tex}
+\input{Sections/DesignPatterns.tex}
+\input{Sections/Metaprogramming.tex}
+\input{Sections/Rust.tex}
+\input{Sections/Report.tex}
 \input{Sections/Conclusion.tex}
 
 \bibliographystyle{alpha}
 \bibliography{References}
+
+\input{Sections/Appendix.tex}
 
 \end{document}
