@@ -29,7 +29,7 @@
 \newtcbinputlisting[auto counter]{\libraryCodeFromFile}[3][]{%
   listing engine=minted,
   minted language=rust,
-  minted options={linenos,breaklines,fontsize=\footnotesize,tabsize=2,firstnumber=1},
+  minted options={linenos,breaklines,escapeinside=||,fontsize=\footnotesize,tabsize=2,firstnumber=1},
   listing file={Code/Rust/#2},
   listing only,
   size=title,
@@ -95,9 +95,12 @@
 \Frefformat{plain}{\fancyreflstlabelprefix}{Listing\fancyrefdefaultspacing#1}
 
 \newcommand{\functionh}[1]{\highlight[Yellow!100!]{#1}}
+\newcommand{\functionbh}[1]{\highlight[Orange!30!]{#1}}
 \newcommand{\inputh}[1]{\highlight[Blue!40!]{#1}}
+\newcommand{\inputbh}[1]{\highlight[Purple!40!]{#1}}
 \newcommand{\outputh}[1]{\highlight[Green!40!]{#1}}
 \newcommand{\contexth}[1]{\highlight[Red!40!]{#1}}
+\newcommand{\methodh}[1]{\highlight[Cyan!30!]{#1}}
 
 \title
 {

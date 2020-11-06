@@ -77,8 +77,6 @@ Visitor consists of three parts:
 	      Doing this allows the client to write less code when their visitor will not visit each element.
 	      It means client code does not need to repeat code to visit into an element's children since the client can call a helper with the traversal code -- like \textit{visit\_window} in line 31.
 	\item Making each element visitable in lines 43 to 62 which maps to the \textit{Visitable} UML, as defined in \Fref{sec:design-visitor}.
-	      With these, the client does not need to remember/match each abstract visitor method with the element they are currently using.
-	      The client can just call \textit{apply} on the element and have it redirect to the correct visitor method.
 \end{enumerate}
 
 A client will write a concrete visitor, as shown below.
@@ -108,16 +106,15 @@ A model will be composed of syntax elements.
 Some of the syntax elements will come from \textit{syn}, and others will have to be created.
 
 The client meta-code for AF is as follows -- since it is the same as the manual implementation, it also maps directly to the AF UML given in \Fref{sec:design-abstract-factory}:
-% TODO: coloring will help
 
-\clientCodeFromFile[firstline=5,lastline=35]{macro-client/src/abstract_factory.rs}
+\clientCodeFromFile[firstline=5,lastline=35]{macro-client/src/abstract_factory.highlighted.rs}
 
 The client needs to specify the factory method they will use.
 This factory method needs to take a generic element \textit{T}.
-The \textit{AbstractGuiFactory} is annotated with an attribute macro (see \Fref{sec:attribute-macro}) named \textit{abstract\_factory}.
-The factory method and factory elements are passed to the macro.
+The \textit{AbstractGuiFactory} is annotated with an attribute macro (see \Fref{sec:attribute-macro}) named \functionh{\textit{abstract\_factory}}.
+The \inputh{factory method} and factory \inputbh{elements} are passed to the macro.
 
-The client will create their concrete \textit{BrandFactory} and use the \textit{interpolate\_traits} attribute macro to implement each element's factory method.
+The client will create their concrete \textit{BrandFactory} and use the \functionbh{\textit{interpolate\_traits}} attribute macro to implement each element's factory method.
 Here the client uses two invocations of \textit{interpolate\_traits} since \textit{Window} is concrete and does not use the \textit{dyn} keyword.
 
 \paragraph{Models:}
@@ -131,7 +128,7 @@ Two models need to be created for the AF macros:
 	\item A \textbf{\textit{TraitSpecifier}} to hold an item passed to the \textit{interpolate\_traits} macro.
 	      Each item will map a trait to its corresponding concrete type.
 	\item \textbf{\textit{AbstractFactoryAttribute}} to hold the input passed to the \textit{abstract\_factory} macro.
-	      The input will consist of a factory method and a list of elements the AF will create.
+	      The input will consist of a \inputh{factory method} and a list of \inputbh{elements} the AF will create.
 \end{enumerate}
 
 \textbf{\textit{TraitSpecifier}} is defined in \Fref{lst:trait-specifier}.
@@ -142,7 +139,7 @@ The tests use line 13.
 The model is defined in lines 14 to 18 to hold the abstract trait, the arrow token, and the concrete.
 The \textit{Token}\footnote{https://docs.rs/syn/1.0.48/syn/macro.Token.html} macro in line 16 is a helper from \textit{syn} to expand Rust tokens and punctuations easily.
 Lines 21 to 29 implement the \textit{Parse}\footnote{https://docs.rs/syn/1.0.48/syn/parse/trait.Parse.html} trait from \textit{syn} for parsing a token stream to this model.
-Here parsing is simple, \textit{parse} each stream token or propagate the errors.
+Here parsing is simple, \methodh{\textit{parse}} each stream token or propagate the errors.
 \textit{Syn} will take care of converting the errors into compiler errors.
 
 \textbf{\textit{AbstractFactoryAttribute}} is defined in \Fref{lst:abstract-factory-attribute}.
@@ -150,23 +147,23 @@ This will be the input passed to the \textit{abstract\_factory} macro.
 
 The model takes the factory method trait as the first input, separated (\textit{sep}) by a comma, followed by a comma-separated list of types the abstract factory will create as, was shown in the client meta-code.
 
-A \textit{expand} method for the \textit{AbstractFactoryAttribute} model is also defined in \Fref{lst:abstract-factory-attribute}.
-The expand method takes in a trait definition syntax tree as \textit{input\_trait} in line 36.
-In lines 38 to 45, a factory method super trait is created for each type passed to the macro.
+An \textit{expand} method for the \textit{AbstractFactoryAttribute} model is also defined in \Fref{lst:abstract-factory-attribute}.
+The expand method takes in a trait definition syntax tree as \contexth{\textit{input\_trait}} in line 36.
+In lines 38 to 45, a factory method super trait is created for each \inputbh{type} passed to the macro.
 Lines 39 and 40 create local variables to be passed to \textit{quote}.
 Line 42 uses a \textit{syn} helper function to turn a \textit{quote} into a syntax tree.
 Since \textit{types} defined in line 29 is a list, \textit{quote} has to be told to expand each list element.
 The special \textit{\#(list-quote)$<$sep$>$*} quasiquote is used to specify how to expand a list.
 The optional \textit{sep} character is used as a separator for each item.
 In line 43, the factory method is expanded for each type using the + (plus) sign as a separator.
-Thus, if \textit{MyFactory, Type1, Type2} is passed to the macro, then line 43 will create \textit{MyFactory$<$Type1$>$ + MyFactory$<$Type2$>$}.
+Thus, if \textit{\inputh{MyFactory}, \inputbh{Type1, Type2}} is passed to the macro, then line 43 will create \textit{\inputh{MyFactory}$<$\inputbh{Type1}$>$ + \inputh{MyFactory}$<$\inputbh{Type2}$>$}.
 
 Line 48 appends the factory super trait that was just constructed to the context input.
 The new context input is returned in line 51.
 
 \paragraph{Definitions:}
 The AF macro is shown in \Fref{lst:macro-patterns} to be an attribute macro, as was defined in \Fref{sec:attribute-macro}.
-Line 17 parses the input context -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 18 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute}.
+Line 17 parses the input \contexth{context} -- which is the \textit{AbstractGuiFactory} definition in the meta-code -- with line 18 parsing the macro inputs to \textit{AbstractFactoryAttribute} as defined in \Fref{lst:abstract-factory-attribute}.
 Line 20 expands the inputs on the context as defined in \Fref{lst:abstract-factory-attribute}.
 
 The \textit{interpolate\_traits} macro -- also being an attribute macro -- is also shown in \Fref{lst:macro-patterns}.
@@ -180,7 +177,7 @@ Thus a string interpolator like \textit{quote} is needed that can run at the mac
 \Fref{lst:fn-interpolate} defines such a helper for a \textit{proc\_macro2} token stream.
 
 Line 7 defines an \textit{Interpolate} trait for types that will be interpolatable at macro run-time.
-Line 12 implements the \textit{Interpolate} trait for \textit{syn}'s \textit{Punctuated} type if the punctuated tokens implement the \textit{Interpolate} trait -- the \textit{TraitSpecifier} token will be made interpolatable soon.
+Line 13 implements the \textit{Interpolate} trait for \textit{syn}'s \textit{Punctuated} type if the punctuated tokens implement the \textit{Interpolate} trait -- the \textit{TraitSpecifier} token will be made interpolatable soon.
 
 The \textit{interpolate} function in line 25 takes in a template \textit{stream} and hash map of items to replace in the input stream.
 Thus, if the hash map has a key of \textit{TRAIT} with the value of \textit{Window}, then each \textit{TRAIT} in the template will be replaced with \textit{Window}.
@@ -192,7 +189,7 @@ Four token types were presented in \Fref{sec:function-like-macro}.
 The \textit{Literal}, \textit{Punct}, and \textit{Group} tokens will be copied as-is.
 Since the \textit{Group} token holds its own token stream, it needs to recursively call \textit{interpolate} on its stream and create a new group from the result -- the span copied in line 41 is to preserve the context for compilation errors.
 Only the \textit{Ident} tokens are matched against the replacements.
-Thus, if the identifier matches any of the replacements in line 49, then the replacement value is copied to the \textit{new} stream in line 51.
+Thus, if the identifier matches any of the replacements in line 49, then the replacement \textit{value} is copied to the \textit{new} stream in line 51.
 Otherwise, the identifier is copied in line 57.
 
 \Fref{lst:trait-specifier}, lines 32 to 44, shows interpolation being implemented for the \textit{TraitSpecifier}.
