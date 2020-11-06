@@ -205,11 +205,11 @@ Thus, pointers inside the \textit{Show} trait object -- line 1 of \Fref{lst:trai
 \exampleCodeFromFile[firstline=5,lastline=7]{traits-dyn-dispatch/src/main.rs}{traits-dyn-dispatch}{Dynamic Dispatch with \textit{dyn}}
 
 Three changes need to be made to the function signature to use trait objects rather than generics.
-\begin{itemize}
+\begin{enumerate}
 	\item The generic \textit{T} is removed and replaced with \textit{Show}.
 	\item The \textit{dyn} keyword is added to the type to indicate that dynamic dispatch will take place explicitly \cite{klabnik_2019_01}.
 	\item Borrowing (\& before \textit{dyn}) now takes place.
-\end{itemize}
+\end{enumerate}
 
 The static dispatch generic trait examples in \Fref{lst:traits} can also be made to take a borrow, but taking ownership gives a compile-time error with dynamic dispatch caused by the \textit{Sized} trait.
 

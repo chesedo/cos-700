@@ -65,7 +65,7 @@ Client code will create a concrete brand factory as follow:
 % TODO: refer back to the UML (here and macro)
 A manual visitor implementation can be seen in \Fref{lst:visitor-hand}.
 Visitor consists of three parts:
-\begin{itemize}
+\begin{enumerate}
 	\item The abstract visitor, as defined in lines 3 to 14, maps to the UML for visitor, as defined in \Fref{sec:design-visitor}.
 	\item Helper functions for traversing the object structure \cite{gamma_94_01} in lines 16 to 37.
 	      This allows for default implementations on the abstract visitor to call its respective helper.
@@ -74,7 +74,7 @@ Visitor consists of three parts:
 	\item Double dispatch reflections in lines 40 to 58.
 	      With these, the client does not need to remember/match each abstract visitor method with the element they are currently using.
 	      The client can just call \textit{apply} on the element and have it redirect to the correct visitor method.
-\end{itemize}
+\end{enumerate}
 
 A client will write a concrete visitor, as shown below.
 This visitor collects the names of each element in a structure except for the names of windows to show the power of the default implementations delegating to the helpers.
