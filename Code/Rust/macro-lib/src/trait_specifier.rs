@@ -28,11 +28,15 @@ impl Parse for TraitSpecifier {
     }
 }
 
+/// Make TraitSpecifier interpolatible
 impl Interpolate for TraitSpecifier {
     fn interpolate(&self, stream: TokenStream) -> TokenStream {
         let mut replacements: HashMap<_, &dyn ToTokens> = HashMap::new();
 
+        // Replace each "TRAIT" with the absract trait
         replacements.insert("TRAIT", &self.abstract_trait);
+
+        // Replace each "CONCRETE" with the concrete type
         replacements.insert("CONCRETE", &self.concrete);
 
         interpolate(stream, &replacements)
@@ -50,7 +54,7 @@ mod tests {
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[test]
-    fn parse_trait_specifier() -> Result {
+    fn parse() -> Result {
         let actual: TraitSpecifier = parse_str("abstract_trait => concrete")?;
         let expected = TraitSpecifier {
             abstract_trait: parse_str("abstract_trait")?,

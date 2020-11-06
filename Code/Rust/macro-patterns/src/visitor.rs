@@ -5,11 +5,31 @@ use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::{Ident, Token};
 
+/// Model for holding the input passed to the visitor macro
+/// It expects a stream in the following format:
+/// ```text
+/// ConcreteType,
+///
+/// dyn DynamicType,
+///
+/// #[no_defuault]
+/// NoDefault,
+///
+/// #[helper_tmpl = {visitor.visit_button(window.button);}]
+/// ```
+///
+/// Thus, it takes a list of types that will be visited.
+/// A type can be concrete or dynamic.
+///
+/// Options can also be passed to type:
+/// - `no_default` to turn-off the defualt implementation for the trait method.
+/// - 'helper_tmpl` to be filled into the helper template for traversing a types internal structure.
 #[derive(Eq, PartialEq, Debug)]
 pub struct VisitorFunction {
     types: Punctuated<AnnotatedType<SimpleType>, Token![,]>,
 }
 
+/// Make VisitorFunction parsable
 impl Parse for VisitorFunction {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(VisitorFunction {
@@ -19,31 +39,34 @@ impl Parse for VisitorFunction {
 }
 
 impl VisitorFunction {
+    /// Expand the visitor model into its implementation
     pub fn expand(&self) -> TokenStream {
+        // Store each of the three parts
         let mut trait_functions: Vec<TokenStream> = Vec::new();
         let mut helpers: Vec<TokenStream> = Vec::new();
         let mut visitables: Vec<TokenStream> = Vec::new();
 
+        // Loop over each type given
         for t in self.types.iter() {
             let elem_name = t.inner_type.ident.to_lowercase();
             let elem_type = &t.inner_type;
-
             let fn_name = format_ident!("visit_{}", elem_name);
-
             let options = Options::new(&t.attrs.options);
 
-            let fn_def = if options.no_default {
-                quote! {
+            // Get trait function
+            if options.no_default {
+                trait_functions.push(quote! {
                     fn #fn_name(&mut self, #elem_name: &#elem_type);
-                }
+                })
             } else {
-                quote! {
+                trait_functions.push(quote! {
                     fn #fn_name(&mut self, #elem_name: &#elem_type) {
                         #fn_name(self, #elem_name)
                     }
-                }
+                })
             };
 
+            // Get helper function
             if options.has_helper {
                 if let Some(inner) = options.helper_tmpl {
                     helpers.push(quote! {
@@ -66,7 +89,7 @@ impl VisitorFunction {
                 }
             };
 
-            trait_functions.push(fn_def);
+            // Make visitable
             visitables.push(quote! {
                 impl Visitable for #elem_type {
                     fn apply(&self, visitor: &mut dyn Visitor) {
@@ -76,6 +99,7 @@ impl VisitorFunction {
             });
         }
 
+        // Built complete visitor implementation
         quote! {
             pub trait Visitor {
                 #(#trait_functions)*
@@ -91,6 +115,7 @@ impl VisitorFunction {
     }
 }
 
+/// Private struct for dissecting each option passed to a visitor type
 struct Options {
     no_default: bool,
     has_helper: bool,
@@ -99,11 +124,14 @@ struct Options {
 
 impl Options {
     fn new(options: &Punctuated<KeyValue, Token![,]>) -> Self {
+        // Defaults
         let mut no_default = false;
         let mut has_helper = true;
         let mut helper_tmpl = None;
 
+        // Loop over each option given
         for option in options.iter() {
+            // "no_default" turns no_default on
             if option.key == Ident::new("no_default", Span::call_site()) {
                 no_default = true;
                 continue;
@@ -112,9 +140,11 @@ impl Options {
             if option.key == Ident::new("helper_tmpl", Span::call_site()) {
                 match &option.value {
                     TokenTree::Ident(ident) if ident == &Ident::new("false", Span::call_site()) => {
+                        // "helper_tmpl = false" turns helper template off
                         has_helper = false;
                     }
                     TokenTree::Group(group) => {
+                        // Custom helper template was given
                         helper_tmpl = Some(group.stream());
                     }
                     _ => continue,

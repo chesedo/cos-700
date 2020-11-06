@@ -3,6 +3,16 @@ use syn::parse::{Parse, ParseStream, Result};
 use syn::{parse_str, Ident, Token};
 
 /// Holds a single key value attribute, with the value being optional
+/// Streams in the following form will be parsed:
+/// ```text
+/// key = value
+/// ```
+///
+/// The `value` is optional.
+/// Thus, the following is also valid.
+/// ```text
+/// key
+/// ```
 #[derive(Debug)]
 pub struct KeyValue {
     pub key: Ident,
@@ -24,16 +34,11 @@ impl Parse for KeyValue {
             });
         }
 
-        // Get the equal sign
-        let equal = input.parse()?;
-
-        // Get the next token item from the parse stream
-        let value = input.parse()?;
-
+        // Parse with value
         Ok(KeyValue {
             key,
-            equal_token: equal,
-            value,
+            equal_token: input.parse()?,
+            value: input.parse()?,
         })
     }
 }

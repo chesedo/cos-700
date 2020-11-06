@@ -7,8 +7,12 @@ use syn::{parse_quote, ItemTrait, Token, Type, TypeParamBound};
 /// Holds the tokens for the attributes passed to an AbstractFactory attribute macro
 /// Expects input in the following format
 /// ```text
-/// some_abstract_factory_trait, type_1, type_2, ... , type_n
+/// some_factory_method_trait, type_1, type_2, ... , type_n
 /// ```
+///
+/// `some_factory_method_trait` needs to be created by the client.
+/// It should have one generic type.
+/// Every `type_1` ... `type_n` will be filled into this generic type.
 #[derive(Eq, PartialEq, Debug)]
 pub struct AbstractFactoryAttribute {
     factory_trait: Type,
@@ -16,6 +20,7 @@ pub struct AbstractFactoryAttribute {
     types: Punctuated<Type, Token![,]>,
 }
 
+/// Make AbstractFactoryAttribute parsable
 impl Parse for AbstractFactoryAttribute {
     fn parse(input: ParseStream) -> Result<Self> {
         Ok(AbstractFactoryAttribute {
@@ -29,6 +34,7 @@ impl Parse for AbstractFactoryAttribute {
 impl AbstractFactoryAttribute {
     /// Add factory super traits to an `ItemTrait` to turn the `ItemTrait` into an Abstract Factory
     pub fn expand(&self, input_trait: &mut ItemTrait) -> TokenStream {
+        // Build all the super traits
         let factory_traits: Punctuated<TypeParamBound, Token![+]> = {
             let types = self.types.iter();
             let factory_name = &self.factory_trait;
@@ -38,7 +44,7 @@ impl AbstractFactoryAttribute {
             }
         };
 
-        // Add extra factory super traits
+        // Append extra factory super traits
         input_trait.supertraits.extend(factory_traits);
 
         quote! {

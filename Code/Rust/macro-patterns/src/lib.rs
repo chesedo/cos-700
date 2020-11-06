@@ -8,6 +8,9 @@ use syn::punctuated::Punctuated;
 use syn::{parse_macro_input, ItemTrait, Token};
 
 use abstract_factory::AbstractFactoryAttribute;
+use macro_lib::token_stream_utils::Interpolate;
+use macro_lib::TraitSpecifier;
+use visitor::VisitorFunction;
 
 #[proc_macro_attribute]
 pub fn abstract_factory(tokens: TokenStream, trait_expr: TokenStream) -> TokenStream {
@@ -17,9 +20,6 @@ pub fn abstract_factory(tokens: TokenStream, trait_expr: TokenStream) -> TokenSt
     attributes.expand(&mut input).into()
 }
 
-use macro_lib::token_stream_utils::Interpolate;
-use macro_lib::TraitSpecifier;
-
 #[proc_macro_attribute]
 pub fn interpolate_traits(tokens: TokenStream, concrete_impl: TokenStream) -> TokenStream {
     let attributes =
@@ -27,8 +27,6 @@ pub fn interpolate_traits(tokens: TokenStream, concrete_impl: TokenStream) -> To
 
     attributes.interpolate(concrete_impl.into()).into()
 }
-
-use visitor::VisitorFunction;
 
 #[proc_macro]
 pub fn visitor(tokens: TokenStream) -> TokenStream {

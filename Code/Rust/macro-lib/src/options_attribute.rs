@@ -3,7 +3,14 @@ use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::{bracketed, token, Token};
 
-/// Holds an outer attribute filled with key-value options
+/// Holds an outer attribute filled with key-value options.
+/// Streams in the following form will be parsed successfully:
+/// ```text
+/// #[key1 = value1, bool_key2, key3 = value]
+/// ```
+///
+/// The value part of an option is optional.
+/// Thus, `bool_key2` will have the value `default`.
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct OptionsAttribute {
     pub pound_token: Token![#],
@@ -14,10 +21,12 @@ pub struct OptionsAttribute {
 /// Make OptionsAttribute parsable from a token stream
 impl Parse for OptionsAttribute {
     fn parse(input: ParseStream) -> Result<Self> {
+        // Used to hold the stream inside square brackets
         let content;
+
         Ok(OptionsAttribute {
             pound_token: input.parse()?,
-            bracket_token: bracketed!(content in input),
+            bracket_token: bracketed!(content in input), // Use `syn` to extract the stream inside the square bracket group
             options: content.parse_terminated(KeyValue::parse)?,
         })
     }
@@ -32,7 +41,7 @@ mod tests {
     type Result = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[test]
-    fn parse_options_attribute() -> Result {
+    fn parse() -> Result {
         let actual: OptionsAttribute =
             parse_str("#[tmpl = {trait To {};}, no_default, other = Top]")?;
         let mut expected = OptionsAttribute {
