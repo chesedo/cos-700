@@ -3,6 +3,7 @@ beginfig(1);
     % Regular code flow
     Begin.StartReg;
     Activity.Reg("Program");
+    Reg.info.foreColor := white;
     End.EndReg;
 
     % Metaprogram flow
@@ -29,7 +30,7 @@ beginfig(1);
     clink(associationUni)(StartMeta, Meta);
     clink(associationUni)(Meta, EndMeta);
 
-    item.InputMeta(iAssoc)("code input")(InputMeta.s = .5[StartMeta.e, Meta.w]);
+    item.InputMeta(iAssoc)("meta-code")(InputMeta.s = .5[StartMeta.e, Meta.w]);
     item.OutputMeta(iAssoc)("program")(OutputMeta.s = .5[Meta.e, EndMeta.w]);
 
     link(associationUni)(pathStepY(OutputMeta.n, Reg.s, 8));

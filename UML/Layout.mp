@@ -1,6 +1,7 @@
 input metauml;
 beginfig(1);
     Package.Client("Client")();
+    Client.info.foreColor := white;
 
     Package.MacroPatterns("macro-patterns")();
     Package.MacroLib("macro-lib")();
@@ -14,7 +15,7 @@ beginfig(1);
 
     clink(associationUni)(Client, MacroPatterns);
     clink(associationUni)(MacroPatterns, MacroLib);
-    clink(associationUni)(MacroPatterns, MacroTestHelpers);
-    clink(associationUni)(MacroLib, MacroTestHelpers);
+    link(associationUni)(pathManhattanY(MacroPatterns.s, MacroTestHelpers.w));
+    link(associationUni)(pathVertical(MacroLib.s, MacroTestHelpers.top));
 endfig;
 end
